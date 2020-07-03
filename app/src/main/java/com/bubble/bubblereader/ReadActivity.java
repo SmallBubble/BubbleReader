@@ -1,4 +1,4 @@
-package com.bubble.newqingman;
+package com.bubble.bubblereader;
 
 import android.Manifest;
 import android.content.pm.PackageManager;

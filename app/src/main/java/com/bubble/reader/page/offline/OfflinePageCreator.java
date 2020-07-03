@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -55,7 +54,7 @@ public class OfflinePageCreator extends PageCreator {
     /**
      * 字体大小
      */
-    private int mFontSize = Dp2PxUtil.dip2px(19);
+    private int mFontSize = Dp2PxUtil.dip2px(64);
     ;
     /**
      * 行距
@@ -69,7 +68,7 @@ public class OfflinePageCreator extends PageCreator {
     /**
      * 段间距
      */
-    private int mParagraphSpace = Dp2PxUtil.dip2px(15);
+    private int mParagraphSpace = Dp2PxUtil.dip2px(30);
 
     private int mBackgroundColor = Color.WHITE;
 
@@ -89,6 +88,9 @@ public class OfflinePageCreator extends PageCreator {
      * 取消页
      */
     private PageBean mCancelPage;
+
+    private List<Integer> mMeasure = new ArrayList<>();
+    private List<Integer> mDraw = new ArrayList<>();
 
     public OfflinePageCreator(PageView readView) {
         super(readView);
@@ -121,8 +123,7 @@ public class OfflinePageCreator extends PageCreator {
             mEncoding = FileUtils.getFileEncoding(mBookFile);
             mMapFile = mRandomFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, mBookFile.length());
             mFileLength = mMapFile.limit();
-            mPages.add(getNextPageContent(0));
-            mPages.add(getNextPageContent((int) mPages.get(0).getPageEnd()));
+            mVisiblePage = getNextPageContent(0);
             drawStatic();
         } catch (Exception e) {
             e.printStackTrace();
@@ -206,14 +207,16 @@ public class OfflinePageCreator extends PageCreator {
      * @return
      */
     private PageBean getNextPageContent(int start) {
+        Log.e(TAG, "========================\n\n===================================");
         // 创建一个页面
         PageBean page = new PageBean();
         page.setPageStart(start);
         // 结束位置
         int end = start;
-        int contentHeight = 0;
+        int contentHeight = mLineSpace;
+        Log.e(TAG, "mFontSize  ==  " + mFontSize + "  mLineSpace  ===   " + mLineSpace + "   mParagraphSpace ==  " + mParagraphSpace + "  mPageHeight === " + mPageHeight);
         // 当开始位置不超过文件长度 并且新增一行的高度不超过页面高度时 获取页面内容
-        while (end < mFileLength && contentHeight + mFontSize < mPageHeight) {
+        while (end < mFileLength && contentHeight + mFontSize + mLineSpace < mPageHeight) {
             // 读取一个段落
             byte[] paragraph = readNextParagraph(end);
             String paragraphStr = null;
@@ -224,33 +227,53 @@ public class OfflinePageCreator extends PageCreator {
                 e.printStackTrace();
             }
             if (BookUtils.checkArticle(paragraphStr)) {
-                page.setChapterName(paragraphStr);
+                if (end == start) {
+                    // 第一段 是章节名称 就设置为页面的章节名称 否则结束这个页面（因为到了另外一章）
+                    page.setChapterName(paragraphStr);
+                } else {
+                    break;
+                }
             }
             if (!TextUtils.isEmpty(paragraphStr)) {
                 //去掉空字符
-                paragraphStr = paragraphStr.replaceAll("[\r\n]", " ");
+                paragraphStr = paragraphStr.replaceAll("[\r\n]", "");
                 // 分割段落 到页码中
                 while (paragraphStr.length() > 0) {
                     // 获取一行的文字个数
                     int size = mPaint.breakText(paragraphStr, true, mPageWidth, mMeasureLineWidth);
-                    Log.e(TAG, "mMeasureLineWidth " + Arrays.toString(mMeasureLineWidth));
-                    Log.e(TAG, "mPageWidth  size" + size);
-                    Log.e(TAG, "mPageWidth  " + mPageWidth);
 
-                    Log.e(TAG, "mPageWidth  " + page.getContent().size() + "  " + (mPageWidth < mMeasureLineWidth[0]));
-                    String line = paragraphStr.substring(0, mMeasureLineWidth[0] > mPageWidth ? size - 1 : size);
-                    Log.e(TAG, "mPageWidth  width" + mPaint.measureText(line));
+                    String line = paragraphStr.substring(0, size);
                     // 添加到页码
                     page.getContent().add(line);
                     // 记录当前高度
                     contentHeight += mLineSpace + mFontSize;
+                    Log.e(TAG, "换行  contentHeight  ==   " + contentHeight + "   " + line);
+
+                    // 当前行和剩余段落长度一样 说明这行就是段落结尾 并且 当前内容的高度+段间距的高度 不能超过总高度
+                    if (line.length() == paragraphStr.length() && mPageHeight > contentHeight + mParagraphSpace) {
+                        page.getContent().add("");
+                        contentHeight += mParagraphSpace;
+                        Log.e(TAG, "换段落  contentHeight  ==   " + contentHeight + "   ");
+                    }
+
                     // 获取剩下的内容
                     paragraphStr = paragraphStr.substring(size);
+                    // 如果再加上一行就超过总高度 就不要加上了 结束这个页面
+                    if (contentHeight + mLineSpace + mFontSize > mPageHeight) {
+                        break;
+                    }
                 }
-                page.getContent().add("");
-                contentHeight += mParagraphSpace;
             }
-            end += paragraph.length;
+            if (!TextUtils.isEmpty(paragraphStr)) {
+                try {
+                    // 这里要注意一定要按文本的编码获取段落剩余内容的长度 否则下标会出错
+                    end += paragraph.length - paragraphStr.getBytes(getEncoding()).length;
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                end += paragraph.length;
+            }
         }
         page.setBookStart(start == 0);
         page.setBookEnd(end == mFileLength);
@@ -301,32 +324,20 @@ public class OfflinePageCreator extends PageCreator {
 
 
     private void drawPage(PageBitmap pageBitmap, PageBean pageBean) {
-        Log.e(TAG, "  ");
-        Log.e(TAG, "drawPage  ");
-        Log.e(TAG, "drawPage  ");
-        Log.e(TAG, "drawPage  ");
-        Log.e(TAG, "drawPage  ");
-        Log.e(TAG, "  ");
+        Log.e(TAG, "========================\n\n===================================");
         Canvas canvas = new Canvas(pageBitmap.getBitmap());
         canvas.drawColor(mBackgroundColor);
-        int y = mFontSize;
+        int y = mFontSize + mLineSpace;
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
-
-            int size = mPaint.breakText(line, true, mPageWidth, mMeasureLineWidth);
-            Log.e(TAG, "mMeasureLineWidth " + Arrays.toString(mMeasureLineWidth));
-            Log.e(TAG, "mPageWidth  " + mPageWidth);
-            Log.e(TAG, "mPageWidth size " + size);
-            Log.e(TAG, "mPageWidth  " + i + "  " + (mPageWidth < mMeasureLineWidth[0]));
-            Log.e(TAG, "mPageWidth  width" + mPaint.measureText(line));
             if (line.trim().length() > 0) {
+                BubbleLog.e(TAG, "换行 " + y + "    " + line);
                 mPaint.setColor(Color.RED);
                 canvas.drawText(line, mPadding, y, mPaint);
                 y += mFontSize + mLineSpace;
-                BubbleLog.e(TAG, "换行 " + y);
             } else {
                 y += mParagraphSpace;
-                BubbleLog.e(TAG, "换段落 " + y);
+                BubbleLog.e(TAG, "换段落 " + y + "   " + line);
             }
         }
         mPaint.setColor(Color.GREEN);
@@ -336,18 +347,16 @@ public class OfflinePageCreator extends PageCreator {
 //        　　人们说，人们说那一战玄山
     }
 
-    private int index = 1;
 
     @Override
     public boolean onNextPage() {
         //如果已经是书籍末尾 就结束了  没有下一页内容了
         if (mVisiblePage.isBookEnd()) return false;
-        index++;
         // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
         mCancelPage = mVisiblePage;
         drawPage(mReadView.getCurrentPage(), mVisiblePage);
         // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
-        mVisiblePage = getNextPageContent(0);
+        mVisiblePage = getNextPageContent((int) mVisiblePage.getPageEnd());
         // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
         drawPage(mReadView.getNextPage(), mVisiblePage);
         return true;
@@ -364,10 +373,8 @@ public class OfflinePageCreator extends PageCreator {
     }
 
     private void drawStatic() {
-        if (mPages.size() > 0) {
-            drawPage(mReadView.getCurrentPage(), mPages.get(0));
-            drawPage(mReadView.getNextPage(), mPages.get(1));
-        }
+        drawPage(mReadView.getCurrentPage(), mVisiblePage);
+        drawPage(mReadView.getNextPage(), mVisiblePage);
     }
 
     public static class Builder extends PageCreator.Builder<Builder> {

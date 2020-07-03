@@ -4,12 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ReadActivity">
 
-    <Button
-        android:id="@+id/btnRead"
+    <com.bubble.reader.widget.PageView
+        android:id="@+id/readView"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="阅读" />
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

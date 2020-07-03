@@ -58,11 +58,10 @@ public class PageView extends View {
     private OnContentListener mOnReadListener = new OnContentListener() {
         @Override
         public boolean onNextPage() {
-            return true;
-//            if (mPageCreator != null) {
-//                return mPageCreator.onNextPage();
-//            }
-//            return false;
+            if (mPageCreator != null) {
+                return mPageCreator.onNextPage();
+            }
+            return false;
         }
 
         @Override
@@ -252,7 +251,9 @@ public class PageView extends View {
     @Override
     public void computeScroll() {
         super.computeScroll();
-        mDrawHelper.computeScroll();
+        if (mDrawHelper != null) {
+            mDrawHelper.computeScroll();
+        }
     }
 
     public OnContentListener getOnReadListener() {

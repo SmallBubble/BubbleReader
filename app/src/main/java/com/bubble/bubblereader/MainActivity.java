@@ -1,14 +1,33 @@
 package com.bubble.bubblereader;
 
-import android.os.Bundle;
+import android.content.Intent;
+import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.bubble.common.base.BaseActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void init() {
+
+    }
+
+    @Override
+    protected void initListener() {
+        findViewById(R.id.btnRead).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ReadActivity.class));
+            }
+        });
+    }
+
+    @Override
+    protected void initView() {
     }
 }

@@ -1,4 +1,4 @@
-package com.bubble.newqingman;
+package com.bubble.bubblereader;
 
 import com.bubble.common.base.BaseApplication;
 
