@@ -1,7 +1,6 @@
 package com.bubble.reader.creator;
 
-import android.util.Log;
-
+import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.widget.PageView;
 
 /**
@@ -25,7 +24,7 @@ public abstract class PageCreator {
     public final void init() {
         mPageWidth = mReadView.getMeasuredWidth() - mPadding * 2;
         mPageHeight = mReadView.getMeasuredHeight() - mPadding * 2;
-        Log.e(TAG, mPageWidth + "   " + mPageHeight);
+        BubbleLog.e(TAG, mPageWidth + "   " + mPageHeight);
         initData();
     }
 

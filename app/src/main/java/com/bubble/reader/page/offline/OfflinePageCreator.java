@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.common.utils.Dp2PxUtil;
@@ -156,13 +155,76 @@ public class OfflinePageCreator extends PageCreator {
         // 新页的开始位置
         int start = end;
 
-        while (start > 0) {
+        int contentHeight = 0;
+        String paragraphStr = "";
+
+        /*********************************找出章节名称和下标*********************************/
+
+        // 当没有到开头位置 段落不是章节 就一直往前读 知道读到章节名称
+        while (start > 0 && !BookUtils.checkArticle(paragraphStr)) {
             byte[] paragraph = readPreParagraph(start);
-
-            start--;
-
+            try {
+                paragraphStr = new String(paragraph, getEncoding());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            start -= paragraph.length;
         }
+        BubbleLog.e(TAG, paragraphStr);
+        int pageNum = 1;
+        if (!TextUtils.isEmpty(paragraphStr)) {
+            // 找到章节了 设置章节名称
+            page.setChapterName(paragraphStr);
+        }
+        /*********************************找出章节名称和下标*********************************/
 
+        /*********************************下面才是正式找出页面内容*********************************/
+        // 增加一行的高度不超出页面高度 并且章节页码小于当前显示的页面的页码
+        while (pageNum < mVisiblePage.getChapterPage() && start <= end) {
+            page.getContent().clear();
+            while (contentHeight + mFontSize + mLineSpace < mPageHeight) {
+                byte[] paragraph = readPreParagraph(start);
+                try {
+                    paragraphStr = new String(paragraph, getEncoding());
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                paragraphStr = paragraphStr.replaceAll("\r\n", "");
+                while (paragraphStr.length() > 0) {
+                    int size = mPaint.breakText(paragraphStr, true, mPageWidth, null);
+                    String line = paragraphStr.substring(0, size);
+                    page.getContent().add(line);
+                    contentHeight += mLineSpace + mFontSize;
+                    if (line.length() == paragraphStr.length() && mPageHeight > contentHeight + mParagraphSpace) {
+                        page.getContent().add("");
+                        contentHeight += mParagraphSpace;
+//                        BubbleLog.e(TAG, "换段落  contentHeight  ==   " + contentHeight + "   ");
+                    }
+                    paragraphStr = paragraphStr.substring(size);
+                    // 如果再加上一行就超过总高度 就不要加上了 结束这个页面
+                    if (contentHeight + mLineSpace + mFontSize > mPageHeight) {
+                        break;
+                    }
+                }
+                if (!TextUtils.isEmpty(paragraphStr)) {
+                    try {
+                        // 这里要注意一定要按文本的编码获取段落剩余内容的长度 否则下标会出错
+                        start += paragraph.length - paragraphStr.getBytes(getEncoding()).length;
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    end += paragraph.length;
+                }
+            }
+            pageNum++;
+        }
+        if (start == 0) {
+            page.setBookStart(true);
+        }
+        page.setChapterPage(pageNum);
+        page.setPageEnd(end);
+        page.setPageStart(start);
         return page;
     }
 
@@ -185,17 +247,17 @@ public class OfflinePageCreator extends PageCreator {
             index--;
             lastB = b;
         }
-
-        mMapFile.get();
-
-        int len = index - end;
+        // 这里是段落内容的总长度（不包括换行符 eg： aaaaa\n   这里的长度 为5）
+        int len = end - index;
         if (len == 0) {
-
+            return readPreParagraph(index - 1);
         }
+        //加上\n 的长度
+        len++;
         byte[] paragraphByte = new byte[len];
 
         for (int i = 0; i < len; i++) {
-            paragraphByte[i] = mMapFile.get(index + i);
+            paragraphByte[i] = mMapFile.get(index + i + 1);
         }
         return paragraphByte;
     }
@@ -207,14 +269,14 @@ public class OfflinePageCreator extends PageCreator {
      * @return
      */
     private PageBean getNextPageContent(int start) {
-        Log.e(TAG, "========================\n\n===================================");
+        BubbleLog.e(TAG, "========================\n\n===================================");
         // 创建一个页面
         PageBean page = new PageBean();
         page.setPageStart(start);
         // 结束位置
         int end = start;
         int contentHeight = mLineSpace;
-        Log.e(TAG, "mFontSize  ==  " + mFontSize + "  mLineSpace  ===   " + mLineSpace + "   mParagraphSpace ==  " + mParagraphSpace + "  mPageHeight === " + mPageHeight);
+//        BubbleLog.e(TAG, "mFontSize  ==  " + mFontSize + "  mLineSpace  ===   " + mLineSpace + "   mParagraphSpace ==  " + mParagraphSpace + "  mPageHeight === " + mPageHeight);
         // 当开始位置不超过文件长度 并且新增一行的高度不超过页面高度时 获取页面内容
         while (end < mFileLength && contentHeight + mFontSize + mLineSpace < mPageHeight) {
             // 读取一个段落
@@ -227,10 +289,13 @@ public class OfflinePageCreator extends PageCreator {
                 e.printStackTrace();
             }
             if (BookUtils.checkArticle(paragraphStr)) {
+                // 第一段 是章节名称 就设置为页面的章节名称 和章节页码 为1
                 if (end == start) {
-                    // 第一段 是章节名称 就设置为页面的章节名称 否则结束这个页面（因为到了另外一章）
                     page.setChapterName(paragraphStr);
+                    // 设置章节页码
+                    page.setChapterPage(1);
                 } else {
+//                    否则结束这个页面（因为到了另外一章）
                     break;
                 }
             }
@@ -247,13 +312,13 @@ public class OfflinePageCreator extends PageCreator {
                     page.getContent().add(line);
                     // 记录当前高度
                     contentHeight += mLineSpace + mFontSize;
-                    Log.e(TAG, "换行  contentHeight  ==   " + contentHeight + "   " + line);
+//                    BubbleLog.e(TAG, "换行  contentHeight  ==   " + contentHeight + "   " + line);
 
                     // 当前行和剩余段落长度一样 说明这行就是段落结尾 并且 当前内容的高度+段间距的高度 不能超过总高度
                     if (line.length() == paragraphStr.length() && mPageHeight > contentHeight + mParagraphSpace) {
                         page.getContent().add("");
                         contentHeight += mParagraphSpace;
-                        Log.e(TAG, "换段落  contentHeight  ==   " + contentHeight + "   ");
+//                        BubbleLog.e(TAG, "换段落  contentHeight  ==   " + contentHeight + "   ");
                     }
 
                     // 获取剩下的内容
@@ -274,6 +339,9 @@ public class OfflinePageCreator extends PageCreator {
             } else {
                 end += paragraph.length;
             }
+        }
+        if (page.getChapterPage() > 1) {// 如果当前页面不是章节首页，设置+1 页
+            page.setChapterPage(page.getChapterPage() + 1);
         }
         page.setBookStart(start == 0);
         page.setBookEnd(end == mFileLength);
@@ -324,20 +392,20 @@ public class OfflinePageCreator extends PageCreator {
 
 
     private void drawPage(PageBitmap pageBitmap, PageBean pageBean) {
-        Log.e(TAG, "========================\n\n===================================");
+//        BubbleLog.e(TAG, "========================\n\n===================================");
         Canvas canvas = new Canvas(pageBitmap.getBitmap());
         canvas.drawColor(mBackgroundColor);
         int y = mFontSize + mLineSpace;
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
             if (line.trim().length() > 0) {
-                BubbleLog.e(TAG, "换行 " + y + "    " + line);
+//                BubbleLog.e(TAG, "换行 " + y + "    " + line);
                 mPaint.setColor(Color.RED);
                 canvas.drawText(line, mPadding, y, mPaint);
                 y += mFontSize + mLineSpace;
             } else {
                 y += mParagraphSpace;
-                BubbleLog.e(TAG, "换段落 " + y + "   " + line);
+//                BubbleLog.e(TAG, "换段落 " + y + "   " + line);
             }
         }
         mPaint.setColor(Color.GREEN);

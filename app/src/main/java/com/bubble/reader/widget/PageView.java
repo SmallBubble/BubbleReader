@@ -6,12 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.creator.PageCreator;
 import com.bubble.reader.page.PageBitmap;
 import com.bubble.reader.widget.draw.DrawHelper;
@@ -65,12 +65,11 @@ public class PageView extends View {
         }
 
         @Override
-        public boolean onPrePager() {
-            return true;
-//            if (mPageCreator != null) {
-//                return mPageCreator.onPrePage();
-//            }
-//            return false;
+        public boolean onPrePage() {
+            if (mPageCreator != null) {
+                return mPageCreator.onPrePage();
+            }
+            return false;
         }
 
         @Override
@@ -122,7 +121,7 @@ public class PageView extends View {
     }
 
     private void initBitmap() {
-        Log.e(TAG, "initBitmap");
+        BubbleLog.e(TAG, "initBitmap");
         mCurrentPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
         mNextPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
     }
@@ -236,13 +235,13 @@ public class PageView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.e(TAG, "onDraw");
+        BubbleLog.e(TAG, "onDraw");
         if (mInitialized) {
             if (mDrawHelper.isRunning()) {
-                Log.e(TAG, "onDrawPage");
+                BubbleLog.e(TAG, "onDrawPage");
                 mDrawHelper.onDrawPage(canvas);
             } else {
-                Log.e(TAG, "onDrawStatic");
+                BubbleLog.e(TAG, "onDrawStatic");
                 mDrawHelper.onDrawStatic(canvas);
             }
         }

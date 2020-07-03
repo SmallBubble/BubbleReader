@@ -2,12 +2,12 @@ package com.bubble.reader.widget.draw;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
+import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.widget.PageView;
 
 /**
@@ -57,7 +57,7 @@ public class HSDrawHelper extends DrawHelper {
         mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator() {
             @Override
             public float getInterpolation(float input) {
-                Log.e(TAG, "inpput" + input);
+                BubbleLog.e(TAG, "inpput" + input);
                 return super.getInterpolation(input);
             }
         });
@@ -91,7 +91,7 @@ public class HSDrawHelper extends DrawHelper {
                     if (event.getX() - mStartPoint.x > 0) {
                         // 往右边滑动，翻上一页
                         mNext = false;
-                        mHasNext = mOnReadListener.onPrePager();
+                        mHasNext = mOnReadListener.onPrePage();
                     } else {
                         // 往左边滑动，翻下一页
                         mNext = true;
@@ -119,7 +119,7 @@ public class HSDrawHelper extends DrawHelper {
                     // 计算滑动速度
                     mVelocityTracker.computeCurrentVelocity(1, 10f);
                     float xVelocity = mVelocityTracker.getXVelocity();
-                    Log.e(TAG, "xVelocity ====  " + xVelocity);
+                    BubbleLog.e(TAG, "xVelocity ====  " + xVelocity);
                     int moveX = (int) (mTouchPoint.x - mStartPoint.x);
                     if (Math.abs(xVelocity) > 2) {
                         // 滑动速度大于5 翻页
@@ -147,19 +147,19 @@ public class HSDrawHelper extends DrawHelper {
                         }
                         mRunning = true;
                     }
-                    Log.e(TAG, "moveX：" + moveX + "   滑动距离" + dx);
+                    BubbleLog.e(TAG, "moveX：" + moveX + "   滑动距离" + dx);
                     mScroller.startScroll((int) mTouchPoint.x, 0, dx, 0, 200);
                     // 通知绘制新内容
                     view.postInvalidate();
                 }
-                Log.e(TAG, "\n\n\n开始：\n\n\n");
+                BubbleLog.e(TAG, "\n\n\n开始：\n\n\n");
                 break;
         }
     }
 
     @Override
     public void onDrawPage(Canvas canvas) {
-        Log.e(TAG, "onDrawPage" + mTouchPoint.x);
+        BubbleLog.e(TAG, "onDrawPage" + mTouchPoint.x);
         if (!mMove) {
             return;
         }
@@ -167,7 +167,7 @@ public class HSDrawHelper extends DrawHelper {
 
         if (mNext) {
             int moveX = (int) (mTouchPoint.x - mStartPoint.x);
-            Log.e(TAG, "onDrawPage moveX" + moveX);
+            BubbleLog.e(TAG, "onDrawPage moveX" + moveX);
             if (moveX > 0) {
                 return;
             }
@@ -176,10 +176,10 @@ public class HSDrawHelper extends DrawHelper {
             // 画当前页
             mSrcRect.set(moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(0, 0, mPageWidth - moveX, mPageHeight);
-            Log.e(TAG, "onDrawPage mSrcRect" + mSrcRect.toShortString());
-            Log.e(TAG, "onDrawPage mDestRect" + mDestRect.toShortString());
-            Log.e(TAG, "onDrawPage -----------------------------------------------------------------\n\n");
-            Log.e(TAG, "onDrawPage -----------------------------------------------------------------");
+            BubbleLog.e(TAG, "onDrawPage mSrcRect" + mSrcRect.toShortString());
+            BubbleLog.e(TAG, "onDrawPage mDestRect" + mDestRect.toShortString());
+            BubbleLog.e(TAG, "onDrawPage -----------------------------------------------------------------\n\n");
+            BubbleLog.e(TAG, "onDrawPage -----------------------------------------------------------------");
 
             canvas.drawBitmap(mCurrentPage.getBitmap(), mSrcRect, mDestRect, null);
             // 画下一页

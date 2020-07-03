@@ -1,5 +1,9 @@
 package com.bubble.reader.page.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +14,7 @@ import java.util.List;
  * email：jiaxiang6595@foxmail.com
  * Desc：
  */
-public class PageBean {
+public class PageBean implements Parcelable, Serializable {
     /**
      * 章节名称
      */
@@ -93,4 +97,42 @@ public class PageBean {
     public void setContent(List<String> content) {
         mContent = content;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mChapterName);
+        dest.writeByte(this.mBookStart ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.mBookEnd ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.mPageStart);
+        dest.writeLong(this.mPageEnd);
+        dest.writeInt(this.mChapterPage);
+        dest.writeStringList(this.mContent);
+    }
+
+    protected PageBean(Parcel in) {
+        this.mChapterName = in.readString();
+        this.mBookStart = in.readByte() != 0;
+        this.mBookEnd = in.readByte() != 0;
+        this.mPageStart = in.readLong();
+        this.mPageEnd = in.readLong();
+        this.mChapterPage = in.readInt();
+        this.mContent = in.createStringArrayList();
+    }
+
+    public static final Parcelable.Creator<PageBean> CREATOR = new Parcelable.Creator<PageBean>() {
+        @Override
+        public PageBean createFromParcel(Parcel source) {
+            return new PageBean(source);
+        }
+
+        @Override
+        public PageBean[] newArray(int size) {
+            return new PageBean[size];
+        }
+    };
 }

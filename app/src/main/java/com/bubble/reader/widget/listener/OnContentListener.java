@@ -18,7 +18,7 @@ public interface OnContentListener {
     /**
      * 上一页
      */
-    boolean onPrePager();
+    boolean onPrePage();
 
     /**
      * 取消翻页
