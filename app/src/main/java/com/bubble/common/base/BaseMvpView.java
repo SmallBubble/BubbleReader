@@ -10,7 +10,7 @@ import android.view.ViewGroup;
  * packger：com.bubble.common.base
  * auther：Bubble
  * date：2020/6/20
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：
  */
 public abstract class BaseMvpView {

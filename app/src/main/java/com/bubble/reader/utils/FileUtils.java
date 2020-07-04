@@ -8,7 +8,7 @@ import java.io.FileInputStream;
  * packger：com.bubble.reader.utils
  * auther：Bubble
  * date：2020/6/21
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：
  */
 public class FileUtils {

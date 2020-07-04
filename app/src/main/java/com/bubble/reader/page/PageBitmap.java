@@ -8,7 +8,7 @@ import java.util.List;
  * packger：com.bubble.reader.page
  * auther：Bubble
  * date：2020/6/20
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：
  */
 public class PageBitmap {

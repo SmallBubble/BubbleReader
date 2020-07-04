@@ -8,7 +8,7 @@ import android.view.View;
  * packger：com.bubble.common.base
  * auther：Bubble
  * date：2020/6/19
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：
  */
 public abstract class BaseActivity extends BaseMvpActivity<BaseView> {

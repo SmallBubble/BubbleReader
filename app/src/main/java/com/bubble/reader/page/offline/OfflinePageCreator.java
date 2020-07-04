@@ -37,7 +37,7 @@ import io.reactivex.schedulers.Schedulers;
  * packger：com.bubble.reader.page.offline
  * auther：Bubble
  * date：2020/6/21
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：
  */
 public class OfflinePageCreator extends PageCreator {
@@ -78,7 +78,7 @@ public class OfflinePageCreator extends PageCreator {
      */
     private int mParagraphSpace = Dp2PxUtil.dip2px(30);
 
-    private int mBackgroundColor = Color.WHITE;
+    private int mBackgroundColor = Color.BLUE;
 
     private File mBookFile;
     private String mEncoding;
@@ -147,8 +147,8 @@ public class OfflinePageCreator extends PageCreator {
     @Override
     public void onCancel() {
         super.onCancel();
-//        drawStatic();
         mVisiblePage = mCancelPage;
+        BubbleLog.e(TAG, "mCancel ====  drawStatic");
     }
 
     public void getNextPage() {
@@ -200,6 +200,15 @@ public class OfflinePageCreator extends PageCreator {
 
     @Override
     public boolean onNextPage() {
+        //如果已经是书籍末尾 就结束了  没有下一页内容了
+        if (mVisiblePage.isBookEnd()) return false;
+        // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
+        mCancelPage = mVisiblePage;
+        drawPage(mReadView.getCurrentPage(), mVisiblePage);
+        // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
+        mVisiblePage = getNextPageContent((int) mVisiblePage.getPageEnd());
+        // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
+        drawPage(mReadView.getNextPage(), mVisiblePage);
         return true;
     }
 

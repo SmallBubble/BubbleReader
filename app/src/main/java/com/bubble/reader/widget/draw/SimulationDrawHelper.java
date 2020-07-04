@@ -9,7 +9,7 @@ import com.bubble.reader.widget.PageView;
  * packger：com.bubble.reader.widget.draw
  * auther：Bubble
  * date：2020/6/21
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：仿真翻页
  */
 public class SimulationDrawHelper extends DrawHelper {

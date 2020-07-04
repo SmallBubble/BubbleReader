@@ -6,7 +6,7 @@ import android.util.Log;
  * packger：com.bubble.common.log
  * auther：Bubble
  * date：2020/6/20
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：
  */
 public class BubbleLog {

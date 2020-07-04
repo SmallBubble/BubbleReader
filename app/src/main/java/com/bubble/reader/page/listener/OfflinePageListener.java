@@ -4,7 +4,7 @@ package com.bubble.reader.page.listener;
  * packger：com.bubble.reader.page.event
  * auther：Bubble
  * date：2020/6/30
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：
  */
 public abstract class OfflinePageListener extends PageListener {

@@ -14,13 +14,19 @@ import com.bubble.reader.widget.PageView;
  * packger：com.bubble.reader.widget.draw
  * auther：Bubble
  * date：2020/6/21
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc：水平滑动
  */
 public class HorizontalScrollDrawHelper extends DrawHelper {
 
     private static final String TAG = HorizontalScrollDrawHelper.class.getSimpleName();
+    /**
+     * 阴影
+     */
     private GradientDrawable mShadow;
+    /**
+     * 阴影渐变色
+     */
     private int[] mShadowColor = new int[]{0x66666600, 0x00000000};
     /**
      * 滑动处理
@@ -70,11 +76,10 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
                 mRunning = false;
                 mMove = false;
                 mTouchPoint.set(0, 0);
-                mStartPoint.x = event.getX();
-                mStartPoint.y = event.getY();
+                mStartPoint.set(event.getX(), event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mOnReadListener == null) {
+                if (mOnContentListener == null) {
                     //没设置监听 也就获取不了内容  直接返回
                     return;
                 }
@@ -84,11 +89,11 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
                     if (event.getX() - mStartPoint.x > 0) {
                         // 往右边滑动，翻上一页
                         mNext = false;
-                        mHasNext = mOnReadListener.onPrePage();
+                        mHasNext = mOnContentListener.onPrePage();
                     } else {
                         // 往左边滑动，翻下一页
                         mNext = true;
-                        mHasNext = mOnReadListener.onNextPage();
+                        mHasNext = mOnContentListener.onNextPage();
                     }
                 }
                 // 没有内容了
@@ -96,8 +101,7 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
                     return;
                 }
                 // 设置当前位置
-                mTouchPoint.x = event.getX();
-                mTouchPoint.y = event.getY();
+                mTouchPoint.set(event.getX(), event.getY());
                 mRunning = true;
                 // 通知绘制新内容
                 view.postInvalidate();
@@ -141,11 +145,11 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
                             mCancel = true;
                             // 滑动距离未到一半 取消翻页
                             dx = -moveX;
-                            if (mOnReadListener != null) {
-                                mOnReadListener.onCancel();
-                            }
                         }
                         mRunning = true;
+                    }
+                    if (mOnContentListener != null && mCancel) {
+                        mOnContentListener.onCancel();
                     }
                     BubbleLog.e(TAG, "moveX：" + moveX + "   滑动距离" + dx);
                     mScroller.startScroll((int) mTouchPoint.x, 0, dx, 0, 200);
@@ -221,13 +225,7 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
 
     @Override
     public void onDrawStatic(Canvas canvas) {
-        if (mCancel) {
-            // 取消翻页（绘制原来的页）
-            canvas.drawBitmap(mCurrentPage.getBitmap(), 0, 0, null);
-        } else {
-            // 没取消翻页 绘制新的一页（上一页或者下一页 根据滑动方向决定）
-            canvas.drawBitmap(mNextPage.getBitmap(), 0, 0, null);
-        }
+        super.onDrawStatic(canvas);
     }
 
     @Override

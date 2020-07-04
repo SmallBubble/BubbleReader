@@ -31,7 +31,7 @@ import java.lang.ref.WeakReference;
  * packger：com.bubble.reader.reader
  * auther：Bubble
  * date：2020/6/20
- * email：jiaxiang6595@foxmail.com
+ * email：1337986595@qq.com
  * Desc： 阅读视图
  */
 public class PageView extends View {
@@ -121,7 +121,7 @@ public class PageView extends View {
         @Override
         public void onNextPage(boolean hasNext) {
             mLoading = false;
-            mOnReadListener.onNextPage();
+            mOnContentListener.onNextPage();
         }
 
         @Override
@@ -129,23 +129,14 @@ public class PageView extends View {
             mLoading = false;
         }
     };
-    private OnContentListener mOnReadListener = new OnContentListener() {
+    private OnContentListener mOnContentListener = new OnContentListener() {
         @Override
         public boolean onNextPage() {
-            mLoading = true;
-            invalidate();
-//            if (mPageCreator != null) {
-//                boolean hasNext = mPageCreator.onNextPage();
-//                try {
-//                    Thread.sleep(3000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                mLoading = false;
-//                return hasNext;
-//            }
-
-
+            if (mPageCreator != null) {
+                boolean hasNext = mPageCreator.onNextPage();
+                mLoading = false;
+                return hasNext;
+            }
             return false;
         }
 
@@ -284,7 +275,7 @@ public class PageView extends View {
     }
 
     private void initListener() {
-        mDrawHelper.setOnReadListener(mOnReadListener);
+        mDrawHelper.setOnContentListener(mOnContentListener);
         mPageCreator.addPageListener(mPageListener);
     }
 
@@ -398,12 +389,12 @@ public class PageView extends View {
         }
     }
 
-    public OnContentListener getOnReadListener() {
-        return mOnReadListener;
+    public OnContentListener getOnContentListener() {
+        return mOnContentListener;
     }
 
-    public void setOnReadListener(OnContentListener onReadListener) {
-        mOnReadListener = onReadListener;
+    public void setOnContentListener(OnContentListener onContentListener) {
+        mOnContentListener = onContentListener;
     }
 
     private OnPageCenterListener mOnPageCenterListener;

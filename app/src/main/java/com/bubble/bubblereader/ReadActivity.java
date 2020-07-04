@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat;
 import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.page.offline.OfflinePageCreator;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.HorizontalScrollDrawHelper;
+import com.bubble.reader.widget.draw.HorizontalMoveDrawHelper;
 
 import java.io.File;
 
@@ -51,21 +51,20 @@ public class ReadActivity extends AppCompatActivity {
         mPageCreator = new OfflinePageCreator.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-        mReadView.setDrawHelper(new HorizontalScrollDrawHelper(mReadView));
+        mReadView.setDrawHelper(new HorizontalMoveDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);
         mPageCreator.addPageListener(new OfflinePageListener() {
             @Override
             public void onFileNotFound() {
-
             }
 
             @Override
-            protected void onError(String message) {
+            public void onError(String message) {
                 super.onError(message);
             }
 
             @Override
-            protected void onSuccess() {
+            public void onSuccess() {
                 super.onSuccess();
             }
         });
