@@ -81,6 +81,13 @@ public abstract class DrawHelper {
 
     protected abstract void initData();
 
+    /**
+     * 事件监听
+     *
+     * @param view
+     * @param event
+     */
+    public abstract void onTouchEvent(PageView view, MotionEvent event);
 
     /**
      * 绘制页面
@@ -88,8 +95,6 @@ public abstract class DrawHelper {
      * @param canvas
      */
     public abstract void onDrawPage(Canvas canvas);
-
-    public abstract void onTouchEvent(PageView view, MotionEvent event);
 
     /**
      * 绘制静止时的页面

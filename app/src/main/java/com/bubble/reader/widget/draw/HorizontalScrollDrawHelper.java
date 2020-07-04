@@ -17,9 +17,9 @@ import com.bubble.reader.widget.PageView;
  * email：jiaxiang6595@foxmail.com
  * Desc：水平滑动
  */
-public class HSDrawHelper extends DrawHelper {
+public class HorizontalScrollDrawHelper extends DrawHelper {
 
-    private static final String TAG = HSDrawHelper.class.getSimpleName();
+    private static final String TAG = HorizontalScrollDrawHelper.class.getSimpleName();
     private GradientDrawable mShadow;
     private int[] mShadowColor = new int[]{0x66666600, 0x00000000};
     /**
@@ -47,21 +47,14 @@ public class HSDrawHelper extends DrawHelper {
      */
     private VelocityTracker mVelocityTracker;
 
-    public HSDrawHelper(PageView pageView) {
+    public HorizontalScrollDrawHelper(PageView pageView) {
         super(pageView);
     }
 
     @Override
     protected void initData() {
         mShadow = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, mShadowColor);
-        mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator() {
-            @Override
-            public float getInterpolation(float input) {
-                BubbleLog.e(TAG, "inpput" + input);
-                return super.getInterpolation(input);
-            }
-        });
-
+        mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator());
     }
 
     @Override
@@ -110,18 +103,20 @@ public class HSDrawHelper extends DrawHelper {
                 view.postInvalidate();
                 break;
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
                 // 设置当前位置
                 mTouchPoint.x = event.getX();
                 mTouchPoint.y = event.getY();
 
                 if (mMove) {
-                    int dx = 0;
+                    int dx;
                     // 计算滑动速度
                     mVelocityTracker.computeCurrentVelocity(1, 10f);
                     float xVelocity = mVelocityTracker.getXVelocity();
                     BubbleLog.e(TAG, "xVelocity ====  " + xVelocity);
                     int moveX = (int) (mTouchPoint.x - mStartPoint.x);
-                    if (Math.abs(xVelocity) > 2) {
+                    if (Math.abs(xVelocity) > 1) {
+                        mCancel = false;
                         // 滑动速度大于5 翻页
                         if (mNext) {
                             // 翻到下一页
@@ -131,6 +126,7 @@ public class HSDrawHelper extends DrawHelper {
                             dx = mPageWidth - moveX;
                         }
                     } else {
+                        mCancel = false;
                         // 不大于5 根据滑动距离判断是否翻页
                         if (Math.abs(moveX) > mPageWidth / 2) {
                             // 滑动距离超过一半 正常翻页
@@ -142,8 +138,12 @@ public class HSDrawHelper extends DrawHelper {
                                 dx = mPageWidth - moveX;
                             }
                         } else {
+                            mCancel = true;
                             // 滑动距离未到一半 取消翻页
                             dx = -moveX;
+                            if (mOnReadListener != null) {
+                                mOnReadListener.onCancel();
+                            }
                         }
                         mRunning = true;
                     }

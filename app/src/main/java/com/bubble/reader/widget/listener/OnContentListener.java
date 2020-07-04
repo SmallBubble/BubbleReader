@@ -25,5 +25,4 @@ public interface OnContentListener {
      */
     void onCancel();
 
-
 }

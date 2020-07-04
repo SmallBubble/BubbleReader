@@ -1,4 +1,4 @@
-package com.bubble.reader.page.event;
+package com.bubble.reader.page.listener;
 
 /**
  * packger：com.bubble.reader.page.event
@@ -7,9 +7,10 @@ package com.bubble.reader.page.event;
  * email：jiaxiang6595@foxmail.com
  * Desc：
  */
-public interface OfflinePageListener extends PageListener {
+public abstract class OfflinePageListener extends PageListener {
     /**
      * 找不到文件
      */
-    void onFileNotFound();
+    public abstract void onFileNotFound();
+
 }

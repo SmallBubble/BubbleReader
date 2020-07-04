@@ -27,4 +27,14 @@ public class BookUtils {
         p = Pattern.compile("(Chapter)(\\s*.*\\s*)(\n|\r|)*");
         return p.matcher(str).find();
     }
+
+    public static boolean checkEqual(String s1, String s2) {
+        if (TextUtils.isEmpty(s1) && TextUtils.isEmpty(s2)) {
+            return true;
+        }
+        if (!TextUtils.isEmpty(s1) && s1.equals(s2)) {
+            return true;
+        }
+        return false;
+    }
 }

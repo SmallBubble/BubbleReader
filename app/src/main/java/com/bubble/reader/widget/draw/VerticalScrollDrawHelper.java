@@ -5,7 +5,8 @@ package com.bubble.reader.widget.draw;
  * auther：Bubble
  * date：2020/6/21
  * email：jiaxiang6595@foxmail.com
- * Desc：水平平移
+ * Desc：上下滑动
  */
-public class HMDrawHelper {
+public class VerticalScrollDrawHelper {
+
 }

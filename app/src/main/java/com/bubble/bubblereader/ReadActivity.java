@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bubble.reader.creator.PageCreator;
+import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.page.offline.OfflinePageCreator;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.HSDrawHelper;
+import com.bubble.reader.widget.draw.HorizontalScrollDrawHelper;
 
 import java.io.File;
 
@@ -20,7 +20,7 @@ public class ReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
-    private PageCreator mPageCreator;
+    private OfflinePageCreator mPageCreator;
 
 
     @Override
@@ -33,6 +33,8 @@ public class ReadActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
+
+
     }
 
     @Override
@@ -41,6 +43,7 @@ public class ReadActivity extends AppCompatActivity {
         if (requestCode == 1) {
             initRead();
         }
+
     }
 
     private void initRead() {
@@ -48,7 +51,23 @@ public class ReadActivity extends AppCompatActivity {
         mPageCreator = new OfflinePageCreator.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-        mReadView.setDrawHelper(new HSDrawHelper(mReadView));
+        mReadView.setDrawHelper(new HorizontalScrollDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);
+        mPageCreator.addPageListener(new OfflinePageListener() {
+            @Override
+            public void onFileNotFound() {
+
+            }
+
+            @Override
+            protected void onError(String message) {
+                super.onError(message);
+            }
+
+            @Override
+            protected void onSuccess() {
+                super.onSuccess();
+            }
+        });
     }
 }

@@ -1,7 +1,11 @@
 package com.bubble.reader.creator;
 
 import com.bubble.common.log.BubbleLog;
+import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.PageView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packger：com.bubble.reader.page.offline
@@ -46,6 +50,8 @@ public abstract class PageCreator {
      * 页边距
      */
     protected int mPadding = 100;
+
+    protected List<PageListener> mPageListeners = new ArrayList<>();
 
     /**
      * 获取下一页
@@ -105,4 +111,11 @@ public abstract class PageCreator {
         public abstract <C extends PageCreator> C build();
     }
 
+    public <T extends PageListener> void removePageListener(T listener) {
+        mPageListeners.remove(listener);
+    }
+
+    public <T extends PageListener> void addPageListener(T pageListener) {
+        mPageListeners.add(pageListener);
+    }
 }
