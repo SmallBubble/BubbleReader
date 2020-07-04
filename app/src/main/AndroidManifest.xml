@@ -13,8 +13,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ReadActivity"
+            android:name=".HorizontalMoveReadActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HorizontalScrollReadActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".VerticalScrollReadActivity"
+            android:theme="@style/AppTheme" />
+        <!--        <activity-->
+        <!--            android:name=".SimulationReadActivity"-->
+        <!--            android:theme="@style/AppTheme" />-->
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme">

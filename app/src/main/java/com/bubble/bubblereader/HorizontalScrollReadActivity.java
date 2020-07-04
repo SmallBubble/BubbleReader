@@ -12,11 +12,11 @@ import androidx.core.app.ActivityCompat;
 import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.page.offline.OfflinePageCreator;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.HorizontalMoveDrawHelper;
+import com.bubble.reader.widget.draw.HorizontalScrollDrawHelper;
 
 import java.io.File;
 
-public class ReadActivity extends AppCompatActivity {
+public class HorizontalScrollReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
@@ -51,7 +51,8 @@ public class ReadActivity extends AppCompatActivity {
         mPageCreator = new OfflinePageCreator.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-        mReadView.setDrawHelper(new HorizontalMoveDrawHelper(mReadView));
+        mPageCreator.setChapterPage(false);
+        mReadView.setDrawHelper(new HorizontalScrollDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);
         mPageCreator.addPageListener(new OfflinePageListener() {
             @Override

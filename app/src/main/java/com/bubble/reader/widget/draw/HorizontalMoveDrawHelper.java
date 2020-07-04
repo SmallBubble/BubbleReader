@@ -89,11 +89,11 @@ public class HorizontalMoveDrawHelper extends DrawHelper {
                     if (event.getX() - mStartPoint.x > 0) {
                         // 往右边滑动，翻上一页
                         mNext = false;
-                        mHasNext = mOnContentListener.onPrePage();
+                        mHasNext = mOnContentListener.onPrePage(0);
                     } else {
                         // 往左边滑动，翻下一页
                         mNext = true;
-                        mHasNext = mOnContentListener.onNextPage();
+                        mHasNext = mOnContentListener.onNextPage(0);
                     }
                 }
                 if (!mHasNext) {
@@ -150,6 +150,9 @@ public class HorizontalMoveDrawHelper extends DrawHelper {
 
     @Override
     public void onDrawPage(Canvas canvas) {
+        if (!mMove) {
+            return;
+        }
         int moveX = Math.abs((int) (mTouchPoint.x - mStartPoint.x));
         if (mNext) {
             // 翻下一页

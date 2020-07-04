@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/btnRead"
+        android:id="@+id/btnRead1"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="阅读" />
+        android:text="水平平移阅读" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/btnRead2"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="水平滑动阅读" />
+
+    <Button
+        android:id="@+id/btnRead3"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="垂直滑动阅读" />
+
+    <Button
+        android:id="@+id/btnRead4"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="仿真阅读" />
+
+</LinearLayout>

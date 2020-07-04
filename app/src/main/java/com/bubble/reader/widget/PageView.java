@@ -121,7 +121,6 @@ public class PageView extends View {
         @Override
         public void onNextPage(boolean hasNext) {
             mLoading = false;
-            mOnContentListener.onNextPage();
         }
 
         @Override
@@ -131,9 +130,9 @@ public class PageView extends View {
     };
     private OnContentListener mOnContentListener = new OnContentListener() {
         @Override
-        public boolean onNextPage() {
+        public boolean onNextPage(int scroll) {
             if (mPageCreator != null) {
-                boolean hasNext = mPageCreator.onNextPage();
+                boolean hasNext = mPageCreator.onNextPage(scroll);
                 mLoading = false;
                 return hasNext;
             }
@@ -141,9 +140,9 @@ public class PageView extends View {
         }
 
         @Override
-        public boolean onPrePage() {
+        public boolean onPrePage(int scroll) {
             if (mPageCreator != null) {
-                return mPageCreator.onPrePage();
+                return mPageCreator.onPrePage(scroll);
             }
             return false;
         }
@@ -209,7 +208,9 @@ public class PageView extends View {
     private void initBitmap() {
         BubbleLog.e(TAG, "initBitmap");
         mCurrentPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
+        mCurrentPage.setType(1);
         mNextPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
+        mNextPage.setType(2);
     }
 
     /**
@@ -265,6 +266,8 @@ public class PageView extends View {
         if (mDrawHelper == null) {
             mDrawHelper = new HorizontalScrollDrawHelper(this);
         }
+
+
         mDrawHelper.init();
         if (mPageCreator != null) {
             mPageCreator.init();
@@ -369,7 +372,7 @@ public class PageView extends View {
         if (mLoading) {// 绘制加载中
             canvas.drawText("加载中", mWidth / 2, mHeight / 2, mPaint);
         } else {
-            if (mInitialized) {
+            if (mInitialized && checkPageInit()) {
                 if (mDrawHelper.isRunning()) {
                     BubbleLog.e(TAG, "onDrawPage");
                     mDrawHelper.onDrawPage(canvas);
@@ -379,6 +382,15 @@ public class PageView extends View {
                 }
             }
         }
+    }
+
+    /**
+     * 页面不为空
+     *
+     * @return
+     */
+    private boolean checkPageInit() {
+        return mCurrentPage.getBitmap() != null && mNextPage != null;
     }
 
     @Override

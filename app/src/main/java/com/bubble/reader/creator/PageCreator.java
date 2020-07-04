@@ -26,9 +26,11 @@ public abstract class PageCreator {
      * 通用數據初始化
      */
     public final void init() {
-        mPageWidth = mReadView.getMeasuredWidth() - mPadding * 2;
-        mPageHeight = mReadView.getMeasuredHeight() - mPadding * 2;
-        BubbleLog.e(TAG, mPageWidth + "   " + mPageHeight);
+        mPageWidth = mReadView.getMeasuredWidth();
+        mPageHeight = mReadView.getMeasuredHeight();
+        mContentWidth = mPageWidth - mPadding * 2;
+        mContentHeight = mPageHeight - mPadding * 2;
+        BubbleLog.e(TAG, mContentWidth + "   " + mContentHeight);
         initData();
     }
 
@@ -40,11 +42,14 @@ public abstract class PageCreator {
     /**
      * 可绘制高度
      */
-    protected int mPageHeight;
+    protected int mContentHeight;
     /**
      * 可绘制宽度
      */
+    protected int mContentWidth;
+
     protected int mPageWidth;
+    protected int mPageHeight;
 
     /**
      * 页边距
@@ -56,16 +61,18 @@ public abstract class PageCreator {
     /**
      * 获取下一页
      *
+     * @param scroll
      * @return
      */
-    public abstract boolean onNextPage();
+    public abstract boolean onNextPage(int scroll);
 
     /**
      * 获取下一页
      *
+     * @param scroll
      * @return
      */
-    public abstract boolean onPrePage();
+    public abstract boolean onPrePage(int scroll);
 
     public PageView getReadView() {
         return mReadView;
@@ -75,20 +82,20 @@ public abstract class PageCreator {
         mReadView = readView;
     }
 
-    public int getPageHeight() {
-        return mPageHeight;
+    public int getContentHeight() {
+        return mContentHeight;
     }
 
-    public void setPageHeight(int pageHeight) {
-        mPageHeight = pageHeight;
+    public void setContentHeight(int contentHeight) {
+        mContentHeight = contentHeight;
     }
 
-    public int getPageWidth() {
-        return mPageWidth;
+    public int getContentWidth() {
+        return mContentWidth;
     }
 
-    public void setPageWidth(int pageWidth) {
-        mPageWidth = pageWidth;
+    public void setContentWidth(int contentWidth) {
+        mContentWidth = contentWidth;
     }
 
     public void onCancel() {

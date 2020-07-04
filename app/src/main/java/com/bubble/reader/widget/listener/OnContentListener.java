@@ -13,12 +13,12 @@ public interface OnContentListener {
     /**
      * 下一页
      */
-    boolean onNextPage();
+    boolean onNextPage(int scroll);
 
     /**
      * 上一页
      */
-    boolean onPrePage();
+    boolean onPrePage(int scroll);
 
     /**
      * 取消翻页

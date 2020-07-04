@@ -19,10 +19,28 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initListener() {
-        findViewById(R.id.btnRead).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btnRead1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, ReadActivity.class));
+                startActivity(new Intent(MainActivity.this, HorizontalMoveReadActivity.class));
+            }
+        });
+        findViewById(R.id.btnRead2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, HorizontalScrollReadActivity.class));
+            }
+        });
+        findViewById(R.id.btnRead3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, VerticalScrollReadActivity.class));
+            }
+        });
+        findViewById(R.id.btnRead4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, HorizontalMoveReadActivity.class));
             }
         });
     }

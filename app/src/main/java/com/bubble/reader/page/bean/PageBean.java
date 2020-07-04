@@ -38,6 +38,16 @@ public class PageBean implements Parcelable, Serializable {
      */
     private List<String> mContent;
 
+    private int mPageCount;
+
+    public int getPageCount() {
+        return mPageCount;
+    }
+
+    public void setPageCount(int pageCount) {
+        mPageCount = pageCount;
+    }
+
     public PageBean() {
         mContent = new ArrayList<>();
     }
@@ -112,6 +122,7 @@ public class PageBean implements Parcelable, Serializable {
         dest.writeLong(this.mPageEnd);
         dest.writeInt(this.mChapterPage);
         dest.writeStringList(this.mContent);
+        dest.writeInt(this.mPageCount);
     }
 
     protected PageBean(Parcel in) {
@@ -122,9 +133,10 @@ public class PageBean implements Parcelable, Serializable {
         this.mPageEnd = in.readLong();
         this.mChapterPage = in.readInt();
         this.mContent = in.createStringArrayList();
+        this.mPageCount = in.readInt();
     }
 
-    public static final Parcelable.Creator<PageBean> CREATOR = new Parcelable.Creator<PageBean>() {
+    public static final Creator<PageBean> CREATOR = new Creator<PageBean>() {
         @Override
         public PageBean createFromParcel(Parcel source) {
             return new PageBean(source);
