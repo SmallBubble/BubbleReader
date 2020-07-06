@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.reader.page.PageBitmap;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.listener.OnContentListener;
 
@@ -45,11 +44,6 @@ public abstract class DrawHelper {
      * 页面高度
      */
     protected int mPageHeight;
-    /**
-     * 绘制内容的bitmap 当前页、 下一页
-     */
-    protected PageBitmap mCurrentPage;
-    protected PageBitmap mNextPage;
 
     protected OnContentListener mOnContentListener;
 
@@ -75,8 +69,6 @@ public abstract class DrawHelper {
         mPageWidth = mPageView.getMeasuredWidth();
         mPageHeight = mPageView.getMeasuredHeight();
 
-        mCurrentPage = mPageView.getCurrentPage();
-        mNextPage = mPageView.getNextPage();
         initData();
     }
 
@@ -109,10 +101,11 @@ public abstract class DrawHelper {
         BubbleLog.e(TAG, "mCancel ====  " + mCancel);
         if (mCancel) {
             // 取消翻页（绘制原来的页）
-            canvas.drawBitmap(mCurrentPage.getBitmap(), 0, 0, null);
+            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), 0, 0, null);
+            mCancel = false;
         } else {
             // 没取消翻页 绘制新的一页（上一页或者下一页 根据滑动方向决定）
-            canvas.drawBitmap(mNextPage.getBitmap(), 0, 0, null);
+            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), 0, 0, null);
         }
 //        mCancel = false;
     }
@@ -142,8 +135,6 @@ public abstract class DrawHelper {
     }
 
     public void recycle() {
-        mNextPage = null;
-        mCurrentPage = null;
 
     }
 

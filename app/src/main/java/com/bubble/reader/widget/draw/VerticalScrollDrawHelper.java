@@ -75,8 +75,8 @@ public class VerticalScrollDrawHelper extends DrawHelper {
         mVelocityTracker.addMovement(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mScroller.abortAnimation();
                 mRunning = false;
+                mScroller.abortAnimation();
                 mStartPoint.set(event.getX(), event.getY());
                 mTouchPoint.set(0, 0);
                 mMove = false;
@@ -93,13 +93,16 @@ public class VerticalScrollDrawHelper extends DrawHelper {
                 BubbleLog.e(TAG, "ACTION_CANCEL===  " + mLastY);
 
             case MotionEvent.ACTION_UP:
-                mTouchPoint.set(event.getX(), event.getY());
-                mVelocityTracker.computeCurrentVelocity(1000, 10000);
-                float yVelocity = mVelocityTracker.getYVelocity();
-                BubbleLog.e(TAG, "速度 yVelocity：  " + yVelocity);
-                mScroller.fling(0, (int) mTouchPoint.y, 0, (int) yVelocity, 0, 0, -mPageHeight * 5, 5 * mPageHeight);
-//                mVelocityTracker.recycle();
-                mPageView.invalidate();
+                if (mMove) {
+                    mTouchPoint.set(event.getX(), event.getY());
+                    mVelocityTracker.computeCurrentVelocity(1000, 10000);
+                    float yVelocity = mVelocityTracker.getYVelocity();
+                    BubbleLog.e(TAG, "速度 yVelocity：  " + yVelocity);
+                    mScroller.fling(0, (int) mTouchPoint.y, 0, (int) yVelocity, 0, 0, -mPageHeight * 5, 5 * mPageHeight);
+                    mPageView.invalidate();
+                    if (mVelocityTracker != null)
+                        mVelocityTracker.clear();
+                }
                 break;
         }
     }
@@ -107,14 +110,10 @@ public class VerticalScrollDrawHelper extends DrawHelper {
     private void scroll(float dy) {
         mLastY -= dy;
         BubbleLog.e(TAG, "mLastY  ---- " + mLastY);
-        int pageHeight = mCurrentPage.getBitmap().getHeight();
-        BubbleLog.e(TAG, "pageHeight  ---- " + pageHeight);
-        pageHeight = mCurrentPage.getPageBean().getPageCount() * mPageHeight;
-        BubbleLog.e(TAG, "pageHeight  ---- " + pageHeight);
+        int pageHeight = mPageView.getCurrentPage().getBitmap().getHeight();
         if (mLastY > 0) {
             // 往上滑 下一页
             if (mState == State.IDLE && pageHeight - mLastY < mPageHeight) {
-                BubbleLog.e(TAG, "获取内容  ---- " + mLastY + "   dy   " + dy);
                 if (mLastY >= pageHeight) {
                     mLastY -= pageHeight;
                     mLastY += dy + 1;
@@ -139,40 +138,37 @@ public class VerticalScrollDrawHelper extends DrawHelper {
             //没有产生移动
             return;
         }
-
+        BubbleLog.e(TAG, "\n-----\n\n\n---------");
         if (mNext) {
             // 当前页高度
-            int pageHeight = mCurrentPage.getBitmap().getHeight();
+            int pageHeight = mPageView.getCurrentPage().getBitmap().getHeight();
             if (mLastY > pageHeight) {
                 //滑动高度 大于当前页高度  只显示下一页内容
                 int top = mLastY - pageHeight;
-                int height = mNextPage.getBitmap().getHeight();
+                int height = mPageView.getCurrentPage().getBitmap().getHeight();
 
                 mSrcRect.set(0, 0, mPageWidth, height);
                 mDestRect.set(0, -top, mPageWidth, height - top);
 
-                canvas.drawBitmap(mCurrentPage.getBitmap(), null, mDestRect, null);
-                BubbleLog.e(TAG, mLastY + "mCurrentPage  mDestRect.top  ---- " + mDestRect.top);
+                canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), null, mDestRect, null);
+                BubbleLog.e(TAG, "mLastY  " + mLastY + "  mCurrentPage  mDestRect.top  ---- " + mDestRect.top + "   mPageView" + mPageView.getNextPage());
 
-                canvas.drawBitmap(mNextPage.getBitmap(), mSrcRect, mDestRect, null);
-                BubbleLog.e(TAG, mLastY + "mNextPage  mDestRect.top  ---- " + mDestRect.top);
+                canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
+                BubbleLog.e(TAG, "mLastY  " + mLastY + "  mNextPage  mDestRect.top  ---- " + mDestRect.top + "   mPageView" + mPageView.getNextPage());
             } else {
                 // 最大显示高度 就是屏幕高度
                 int maxShowHeight = Math.min(mPageHeight, pageHeight - mLastY);
-                int bottom = mLastY + maxShowHeight;
 
                 mSrcRect.set(0, 0, mPageWidth, pageHeight);
                 mDestRect.set(0, -mLastY, mPageWidth, pageHeight - mLastY);
-                BubbleLog.e(TAG, mLastY + "   " + maxShowHeight + "   " + bottom);
-                canvas.drawBitmap(mCurrentPage.getBitmap(), mSrcRect, mDestRect, null);
-                BubbleLog.e(TAG, mLastY + "mCurrentPage  mDestRect.top  ---- " + mDestRect.top);
+                canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
+                BubbleLog.e(TAG, "mLastY  " + mLastY + "  mCurrentPage  mDestRect.top  ---- " + mDestRect.top + "   mPageView" + mPageView.getNextPage());
 
-
-                int height = mNextPage.getBitmap().getHeight();
+                int height = mPageView.getNextPage().getBitmap().getHeight();
                 mSrcRect.set(0, 0, mPageWidth, height);
                 mDestRect.set(0, mDestRect.bottom, mPageWidth, height + mDestRect.bottom);
-                canvas.drawBitmap(mNextPage.getBitmap(), mSrcRect, mDestRect, null);
-                BubbleLog.e(TAG, mLastY + "mNextPage  mDestRect.top  ---- " + mDestRect.top);
+                canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
+                BubbleLog.e(TAG, "mLastY  " + mLastY + "  mNextPage  mDestRect.top  ---- " + mDestRect.top + "   mPageView" + mPageView.getNextPage());
             }
             if (mLastY >= pageHeight) {
                 BubbleLog.e(TAG, mLastY + "  IDLE  ---- " + pageHeight);
@@ -189,7 +185,7 @@ public class VerticalScrollDrawHelper extends DrawHelper {
                 mRunning = false;
             }
             int dy = (int) (mScroller.getCurrY() - mTouchPoint.y);
-            BubbleLog.e(TAG, mTouchPoint + "  computeScroll  ---- " + mScroller.getCurrY() + "    " + dy);
+//            BubbleLog.e(TAG, mTouchPoint + "  computeScroll  ---- " + mScroller.getCurrY() + "    " + dy);
             scroll(dy);
             mTouchPoint.set(mScroller.getCurrX(), mScroller.getCurrY());
         }

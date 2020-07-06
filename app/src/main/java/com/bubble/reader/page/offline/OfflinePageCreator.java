@@ -1,9 +1,8 @@
 package com.bubble.reader.page.offline;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.RectF;
+import android.graphics.PorterDuff;
 import android.text.TextPaint;
 import android.text.TextUtils;
 
@@ -12,7 +11,6 @@ import com.bubble.common.utils.Dp2PxUtil;
 import com.bubble.reader.creator.PageCreator;
 import com.bubble.reader.page.PageBitmap;
 import com.bubble.reader.page.bean.PageBean;
-import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.utils.BookUtils;
 import com.bubble.reader.utils.FileUtils;
 import com.bubble.reader.widget.PageView;
@@ -25,14 +23,6 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * packger：com.bubble.reader.page.offline
@@ -164,64 +154,12 @@ public class OfflinePageCreator extends PageCreator {
         BubbleLog.e(TAG, "mCancel ====  drawStatic");
     }
 
-    public void getNextPage() {
-        Observable.create(new ObservableOnSubscribe<Boolean>() {
-            @Override
-            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                //如果已经是书籍末尾 就结束了  没有下一页内容了
-                if (mVisiblePage.isBookEnd()) emitter.onNext(false);
-                // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-                mCancelPage = mVisiblePage;
-                drawPage(mReadView.getCurrentPage(), mVisiblePage);
-                // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
-                mVisiblePage = getNextPageContent((int) mVisiblePage.getPageEnd(), mChapterPage);
-                // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
-                drawPage(mReadView.getNextPage(), mVisiblePage);
-                emitter.onNext(true);
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Boolean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Boolean hasNext) {
-                        for (PageListener listener : mPageListeners) {
-                            listener.onNextPage(hasNext);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
     @Override
     public boolean onNextPage(int scroll) {
         if (mChapterPage) {
             if (mVisiblePage.isBookEnd()) return false;
-
-            //最大高度
-            int maxHeight = mVisiblePage.getPageCount() * mContentHeight;
             BubbleLog.e(TAG, "獲取下一頁");
-            if (mVisiblePage.getChapterPage() != mVisiblePage.getPageCount()) return false;
             // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-            mCancelPage = mVisiblePage;
             drawPage(mReadView.getCurrentPage(), mVisiblePage);
             // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
             mVisiblePage = getNextPageContent((int) mVisiblePage.getPageEnd(), mChapterPage);
@@ -229,11 +167,11 @@ public class OfflinePageCreator extends PageCreator {
             drawPage(mReadView.getNextPage(), mVisiblePage);
             return true;
         } else {
+            mCancelPage = mVisiblePage;
             //如果已经是书籍末尾 就结束了  没有下一页内容了
             if (mVisiblePage.isBookEnd()) return false;
             // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-//            mCancelPage = mVisiblePage;
-//            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            drawPage(mReadView.getCurrentPage(), mVisiblePage);
             // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
             mVisiblePage = getNextPageContent((int) mVisiblePage.getPageEnd());
             // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
@@ -386,7 +324,7 @@ public class OfflinePageCreator extends PageCreator {
      * @return
      */
     private PageBean getNextPageContent(int start, boolean chapterPage) {
-        if (!chapterPage) {
+        if (true) {
             //不是整章作为一页 返回分页获取内容
             return getNextPageContent(start);
         }
@@ -623,30 +561,34 @@ public class OfflinePageCreator extends PageCreator {
 
     private void drawPage(PageBitmap pageBitmap, PageBean pageBean) {
 //        BubbleLog.e(TAG, "========================\n\n===================================");
-        if (mChapterPage) {
-            // 回收原页面
-            pageBitmap.getBitmap().recycle();
-            // 创建新页面 根据章节占据页面高度*页数 获取新页面高度
-            int height = pageBean.getPageCount() * mPageHeight;
-            BubbleLog.e(TAG, "height" + height + "  getPageCount" + pageBean.getPageCount());
-            pageBitmap.setBitmap(Bitmap.createBitmap(mPageWidth, height, Bitmap.Config.ARGB_8888));
-        }
+//        if (mChapterPage && pageBitmap.getType() == 1) {
+//            // 当前页（已经划出屏幕）才需要回收 原来的下一页（目前的当前页不需要回收 因为内容不变）
+//            // 回收原页面
+//            pageBitmap.getBitmap().recycle();
+//            // 创建新页面 根据章节占据页面高度*页数 获取新页面高度
+//            int height = pageBean.getPageCount() * mPageHeight;
+//            BubbleLog.e(TAG, "height" + height + "  getPageCount" + pageBean.getPageCount());
+//            pageBitmap.setBitmap(Bitmap.createBitmap(mPageWidth, height, Bitmap.Config.ARGB_8888));
+//        }
         BubbleLog.e(TAG, "contentHeight" + pageBitmap.getBitmap().getHeight());
         pageBitmap.setPageBean(pageBean);
         Canvas canvas = new Canvas(pageBitmap.getBitmap());
+
+//        canvas.drawColor(mBackgroundColor);
+        // 清除原来内容
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
         if (pageBitmap.getType() == 1) {
             canvas.drawColor(Color.YELLOW);
         } else {
             canvas.drawColor(Color.GREEN);
         }
 
-//        canvas.drawColor(mBackgroundColor);
         int y = mFontSize + mPadding;
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
             if (line.length() > 0) {
 //                BubbleLog.e(TAG, "换行 " + y + "    " + line);
-                mPaint.setColor(Color.RED);
                 canvas.drawText(line, mPadding, y, mPaint);
                 y += mFontSize + mLineSpace;
             } else {
@@ -654,9 +596,9 @@ public class OfflinePageCreator extends PageCreator {
 //                BubbleLog.e(TAG, "换段落 " + y + "   " + line);
             }
         }
-        BubbleLog.e(TAG, "换段落 drawPage" + y);
-        mPaint.setColor(Color.GREEN);
-        mPaint.setAlpha(20);
-        canvas.drawRect(new RectF(mPadding, mPadding, mContentWidth + mPadding, mContentHeight + mPadding), mPaint);
+//        BubbleLog.e(TAG, "换段落 drawPage" + y);
+//        mPaint.setColor(Color.GREEN);
+//        mPaint.setAlpha(20);
+//        canvas.drawRect(new RectF(mPadding, mPadding, mContentWidth + mPadding, mContentHeight + mPadding), mPaint);
     }
 }

@@ -26,6 +26,8 @@ import com.bubble.reader.widget.draw.SimulationDrawHelper;
 import com.bubble.reader.widget.listener.OnContentListener;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packger：com.bubble.reader.reader
@@ -52,8 +54,9 @@ public class PageView extends View {
     /**
      * 绘制内容的bitmap 当前页、 下一页
      */
-    protected PageBitmap mCurrentPage;
-    protected PageBitmap mNextPage;
+//    protected PageBitmap mCurrentPage;
+//    protected PageBitmap mNextPage;
+    protected List<PageBitmap> mPageBitmaps = new ArrayList<>();
     /**
      * 宽度
      */
@@ -132,6 +135,7 @@ public class PageView extends View {
         @Override
         public boolean onNextPage(int scroll) {
             if (mPageCreator != null) {
+                exchangePage(true);
                 boolean hasNext = mPageCreator.onNextPage(scroll);
                 mLoading = false;
                 return hasNext;
@@ -142,6 +146,7 @@ public class PageView extends View {
         @Override
         public boolean onPrePage(int scroll) {
             if (mPageCreator != null) {
+                exchangePage(false);
                 return mPageCreator.onPrePage(scroll);
             }
             return false;
@@ -154,6 +159,18 @@ public class PageView extends View {
             }
         }
     };
+
+    /**
+     * 改变bitmap 位置
+     *
+     * @param next
+     */
+    private void exchangePage(boolean next) {
+        PageBitmap bitmap = mPageBitmaps.get(0);
+        mPageBitmaps.remove(0);
+        mPageBitmaps.add(bitmap);
+    }
+
     private boolean mLoading;
     private Paint mPaint;
 
@@ -189,10 +206,15 @@ public class PageView extends View {
     }
 
     private void recycle() {
-        mCurrentPage.getBitmap().recycle();
-        mNextPage.getBitmap().recycle();
-        mCurrentPage = null;
-        mNextPage = null;
+        for (PageBitmap bitmap : mPageBitmaps) {
+            bitmap.getBitmap().recycle();
+            bitmap = null;
+        }
+        mPageBitmaps.clear();
+//        mCurrentPage.getBitmap().recycle();
+//        mNextPage.getBitmap().recycle();
+//        mCurrentPage = null;
+//        mNextPage = null;
     }
 
     private void delayedInit() {
@@ -207,10 +229,12 @@ public class PageView extends View {
 
     private void initBitmap() {
         BubbleLog.e(TAG, "initBitmap");
-        mCurrentPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
-        mCurrentPage.setType(1);
-        mNextPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
-        mNextPage.setType(2);
+//        mCurrentPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
+//        mCurrentPage.setType(1);
+//        mNextPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
+//        mNextPage.setType(2);
+        mPageBitmaps.add(new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)));
+        mPageBitmaps.add(new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)));
     }
 
     /**
@@ -303,11 +327,11 @@ public class PageView extends View {
     }
 
     public PageBitmap getCurrentPage() {
-        return mCurrentPage;
+        return mPageBitmaps.get(0);
     }
 
     public PageBitmap getNextPage() {
-        return mNextPage;
+        return mPageBitmaps.get(1);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -390,7 +414,8 @@ public class PageView extends View {
      * @return
      */
     private boolean checkPageInit() {
-        return mCurrentPage.getBitmap() != null && mNextPage != null;
+        return mPageBitmaps != null && mPageBitmaps.size() >= 2;
+//        return mCurrentPage.getBitmap() != null && mNextPage != null;
     }
 
     @Override

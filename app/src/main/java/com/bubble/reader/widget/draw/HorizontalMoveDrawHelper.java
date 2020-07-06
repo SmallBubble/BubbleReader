@@ -139,11 +139,9 @@ public class HorizontalMoveDrawHelper extends DrawHelper {
                     if (mOnContentListener != null && mCancel) {
                         mOnContentListener.onCancel();
                     }
-
-
                     mScroller.startScroll((int) mTouchPoint.x, 0, dx, mPageHeight, 300);
+                    mPageView.postInvalidate();
                 }
-                mPageView.postInvalidate();
                 break;
         }
     }
@@ -158,22 +156,22 @@ public class HorizontalMoveDrawHelper extends DrawHelper {
             // 翻下一页
             mSrcRect.set(moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(0, 0, mPageWidth - moveX, mPageHeight);
-            canvas.drawBitmap(mCurrentPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
 
             mSrcRect.set(0, 0, moveX, mPageHeight);
             mDestRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
-            canvas.drawBitmap(mNextPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
             drawLine(canvas, mPageWidth - moveX);
         } else {
             // 翻上一页
             mSrcRect.set(0, 0, mPageWidth - moveX, mPageHeight);
             mDestRect.set(moveX, 0, mPageWidth, mPageHeight);
-            canvas.drawBitmap(mCurrentPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
 
 
             mSrcRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(0, 0, moveX, mPageHeight);
-            canvas.drawBitmap(mNextPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
             drawLine(canvas, moveX);
         }
     }
@@ -194,6 +192,7 @@ public class HorizontalMoveDrawHelper extends DrawHelper {
         if (mScroller != null && mScroller.computeScrollOffset()) {
             if (mScroller.getCurrX() == mScroller.getFinalX()) {
                 mRunning = false;
+                return;
             }
             mTouchPoint.set(mScroller.getCurrX(), mScroller.getCurrY());
             mPageView.postInvalidate();

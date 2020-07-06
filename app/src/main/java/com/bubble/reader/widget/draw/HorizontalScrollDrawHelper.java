@@ -185,11 +185,11 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
             BubbleLog.e(TAG, "onDrawPage -----------------------------------------------------------------\n\n");
             BubbleLog.e(TAG, "onDrawPage -----------------------------------------------------------------");
 
-            canvas.drawBitmap(mCurrentPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
             // 画下一页
             mSrcRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
-            canvas.drawBitmap(mNextPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
             //绘制阴影
             drawShadow(mPageWidth - moveX, canvas);
         } else {
@@ -202,11 +202,11 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
             // 上一页
             mSrcRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(0, 0, moveX, mPageHeight);
-            canvas.drawBitmap(mNextPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
             //当前页
             mSrcRect.set(moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(moveX, 0, mPageWidth, mPageHeight);
-            canvas.drawBitmap(mCurrentPage.getBitmap(), mSrcRect, mDestRect, null);
+            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
             //绘制阴影
             drawShadow(moveX, canvas);
         }
@@ -236,6 +236,7 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
 //            Log.e(TAG, "起点：" + mTouchPoint.x + "   滑动距离" + mScroller.getCurrX());
             if (mScroller.getCurrX() == mScroller.getFinalX()) {
                 mRunning = false;
+                return;
             }
             mTouchPoint.set(mScroller.getCurrX(), mScroller.getCurrY());
             mPageView.postInvalidate();
