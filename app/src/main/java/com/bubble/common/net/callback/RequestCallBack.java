@@ -1,7 +1,8 @@
-package com.bubble.common.net;
+package com.bubble.common.net.callback;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import com.bubble.common.net.JsonResult;
+
+import io.reactivex.observers.DisposableObserver;
 import retrofit2.HttpException;
 
 /**
@@ -9,18 +10,14 @@ import retrofit2.HttpException;
  * Date：2020/7/8
  * Desc：
  */
-public abstract class RequestCallBack<T> implements Observer<JsonResult<T>> {
+public abstract class RequestCallBack<T> extends DisposableObserver<JsonResult<T>> implements ICallBack<T> {
 
-    @Override
-    public void onSubscribe(Disposable d) {
-
-    }
 
     @Override
     public void onNext(JsonResult<T> result) {
-//        if (isDisposed()) {
-//            return;
-//        }
+        if (isDisposed()) {
+            return;
+        }
         if (result == null) {
             onFailure(-1, "网络请求失败!");
         } else {
@@ -47,19 +44,4 @@ public abstract class RequestCallBack<T> implements Observer<JsonResult<T>> {
     public void onComplete() {
 
     }
-
-    /**
-     * 请求成功
-     *
-     * @param data
-     */
-    public abstract void onSuccess(T data);
-
-    /**
-     * 请求失败
-     *
-     * @param code    錯誤碼
-     * @param message 返回消息
-     */
-    public abstract void onFailure(int code, String message);
 }

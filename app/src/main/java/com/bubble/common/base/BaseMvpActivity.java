@@ -8,7 +8,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.bubble.common.net.RequestCallBack;
+import com.bubble.common.net.callback.EmptyCallBack;
+import com.bubble.common.net.callback.RequestCallBack;
 import com.trello.rxlifecycle3.RxLifecycle;
 import com.trello.rxlifecycle3.android.ActivityEvent;
 import com.trello.rxlifecycle3.components.support.RxAppCompatActivity;
@@ -30,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
  * @Gitte https://gitee.com/SmallCatBubble
  * Desc：
  */
-public abstract class BaseMvpActivity<V extends BaseMvpView> extends RxAppCompatActivity {
+public abstract class BaseMvpActivity<V extends BaseMvpView> extends RxAppCompatActivity implements EmptyCallBack<Object> {
     protected V mView;
     protected Context mContext;
     private Activity mActivity;
@@ -154,5 +155,16 @@ public abstract class BaseMvpActivity<V extends BaseMvpView> extends RxAppCompat
 
             }
         };
+    }
+
+
+    @Override
+    public void onSuccess(Object data) {
+
+    }
+
+    @Override
+    public void onFailure(int code, String message) {
+
     }
 }

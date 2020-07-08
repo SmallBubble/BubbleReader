@@ -4,12 +4,6 @@ import android.content.Intent;
 import android.view.View;
 
 import com.bubble.common.base.BaseActivity;
-import com.bubble.common.net.RequestCallBack;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.observers.DefaultObserver;
 
 /**
  * @author Bubble
@@ -62,48 +56,11 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        RequestCallBack<String> manager = new RequestCallBack<String>() {
-            @Override
-            public void onSuccess(String data) {
+//        CallBackManager<String> callBackManager = ;
+//        NetManager.createApi(BubbleApi.class)
+//                .get()
+//                .compose(apply())
+//                .subscribe(callBackManager.onSubscribe(););
 
-            }
-
-            @Override
-            public void onFailure(int code, String message) {
-
-            }
-        };
-
-//        manager.addCallBack(new RequestCallBack<String>() {
-//            @Override
-//            public void onSuccess(String data) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(int code, String message) {
-//
-//            }
-//        });
-
-
-        Observable.create(new ObservableOnSubscribe<String>() {
-            @Override
-            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                emitter.onNext("");
-            }
-        })
-                .compose(apply())
-                .subscribe(new RequestCallBack<String>() {
-                    @Override
-                    public void onSuccess(String data) {
-
-                    }
-
-                    @Override
-                    public void onFailure(int code, String message) {
-
-                    }
-                });
     }
 }

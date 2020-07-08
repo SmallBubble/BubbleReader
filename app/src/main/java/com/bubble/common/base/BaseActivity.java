@@ -13,7 +13,7 @@ import android.view.View;
  * <p>
  * Desc：Activity基类 继承自{@link BaseMvpActivity} 创建一个默认的View层
  */
-public abstract class BaseActivity extends BaseMvpActivity<BaseView> {
+public abstract class BaseActivity extends BaseMvpActivity<BaseView>  {
     @Override
     public Class<BaseView> getViewClass() {
         return BaseView.class;
