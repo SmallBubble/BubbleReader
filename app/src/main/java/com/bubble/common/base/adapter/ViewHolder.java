@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * @author Bubble
  * @date 2020/7/7
- * @email jiaxiang6595@foxmail.com
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
  * @Desc
  */
 public class ViewHolder extends RecyclerView.ViewHolder {

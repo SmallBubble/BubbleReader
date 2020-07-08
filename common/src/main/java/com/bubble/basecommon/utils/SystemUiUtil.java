@@ -6,9 +6,9 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 /**
- * 尺寸转化
+ * 系統個
  */
-public class Dp2PxUtil {
+public class SystemUiUtil {
 
     public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -57,9 +57,12 @@ public class Dp2PxUtil {
      *
      * @return
      */
-    public static int getScreenWidth(Activity activity) {
+    public static int getScreenWidth(Context context) {
         DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        WindowManager vm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (vm != null) {
+            vm.getDefaultDisplay().getMetrics(dm);
+        }
         return dm.widthPixels;
     }
 
@@ -68,9 +71,12 @@ public class Dp2PxUtil {
      *
      * @return
      */
-    public static int getScreenHeight(Activity activity) {
+    public static int getScreenHeight(Context context) {
         DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        WindowManager vm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (vm != null) {
+            vm.getDefaultDisplay().getMetrics(dm);
+        }
         return dm.heightPixels;
     }
 
@@ -79,7 +85,7 @@ public class Dp2PxUtil {
      *
      * @param pFullScreen
      */
-    protected void setfullScreen(Activity activity, boolean pFullScreen) {
+    protected void setFullScreen(Activity activity, boolean pFullScreen) {
         WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
         if (pFullScreen) {
             attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;

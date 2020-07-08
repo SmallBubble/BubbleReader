@@ -19,6 +19,7 @@ public class BaseApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        sContext = sInstance = this;
     }
 
     public static Application getInstance() {

@@ -7,11 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * packger：com.bubble.common.base
- * author：Bubble
- * date：2020/6/20
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/20
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc
  */
 public abstract class BaseMvpView {
     protected Context mContext;
@@ -30,8 +31,18 @@ public abstract class BaseMvpView {
 
     }
 
+    /**
+     * 获取布局id
+     *
+     * @return
+     */
     protected abstract int getLayoutId();
 
+    /**
+     * 获取布局
+     *
+     * @return
+     */
     protected View getContentView() {
         return mContentView;
     }
