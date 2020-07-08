@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 
 /**
  * packger：com.bubble.reader.utils
- * auther：Bubble
+ * author：Bubble
  * date：2020/6/21
  * email：1337986595@qq.com
  * Desc：

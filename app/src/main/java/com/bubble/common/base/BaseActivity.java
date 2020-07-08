@@ -6,7 +6,7 @@ import android.view.View;
 
 /**
  * packger：com.bubble.common.base
- * auther：Bubble
+ * author：Bubble
  * date：2020/6/19
  * email：1337986595@qq.com
  * Desc：

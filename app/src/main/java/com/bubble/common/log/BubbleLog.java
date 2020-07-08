@@ -4,7 +4,7 @@ import android.util.Log;
 
 /**
  * packger：com.bubble.common.log
- * auther：Bubble
+ * author：Bubble
  * date：2020/6/20
  * email：1337986595@qq.com
  * Desc：

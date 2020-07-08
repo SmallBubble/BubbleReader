@@ -2,7 +2,7 @@ package com.bubble.common.base;
 
 /**
  * packger：com.bubble.common.base
- * auther：Bubble
+ * author：Bubble
  * date：2020/6/27
  * email：1337986595@qq.com
  * Desc：

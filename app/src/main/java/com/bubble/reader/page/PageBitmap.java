@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 /**
  * packger：com.bubble.reader.page
- * auther：Bubble
+ * author：Bubble
  * date：2020/6/20
  * email：1337986595@qq.com
  * Desc：

@@ -7,7 +7,7 @@ import androidx.multidex.MultiDexApplication;
 
 /**
  * packger：com.bubble.common.base
- * auther：Bubble
+ * author：Bubble
  * date：2020/6/29
  * email：1337986595@qq.com
  * Desc：
