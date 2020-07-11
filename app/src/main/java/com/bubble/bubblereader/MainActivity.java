@@ -56,11 +56,5 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-//        CallBackManager<String> callBackManager = ;
-//        NetManager.createApi(BubbleApi.class)
-//                .get()
-//                .compose(apply())
-//                .subscribe(callBackManager.onSubscribe(););
-
     }
 }

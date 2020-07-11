@@ -30,15 +30,17 @@ public class PageBean implements Parcelable, Serializable {
     private long mPageStart;
     private long mPageEnd;
     /**
-     * 章节中的页码
-     */
-    private int mChapterPage;
-    /**
      * 章节内容
      */
     private List<String> mContent;
-
+    /**
+     * 当前章节的阅读页数量
+     */
     private int mPageCount;
+    /**
+     * 章节中的页码
+     */
+    private int mPageNum;
 
     public int getPageCount() {
         return mPageCount;
@@ -92,12 +94,12 @@ public class PageBean implements Parcelable, Serializable {
         mPageEnd = pageEnd;
     }
 
-    public int getChapterPage() {
-        return mChapterPage;
+    public int getPageNum() {
+        return mPageNum;
     }
 
-    public void setChapterPage(int chapterPage) {
-        mChapterPage = chapterPage;
+    public void setPageNum(int pageNum) {
+        mPageNum = pageNum;
     }
 
     public List<String> getContent() {
@@ -120,7 +122,7 @@ public class PageBean implements Parcelable, Serializable {
         dest.writeByte(this.mBookEnd ? (byte) 1 : (byte) 0);
         dest.writeLong(this.mPageStart);
         dest.writeLong(this.mPageEnd);
-        dest.writeInt(this.mChapterPage);
+        dest.writeInt(this.mPageNum);
         dest.writeStringList(this.mContent);
         dest.writeInt(this.mPageCount);
     }
@@ -131,7 +133,7 @@ public class PageBean implements Parcelable, Serializable {
         this.mBookEnd = in.readByte() != 0;
         this.mPageStart = in.readLong();
         this.mPageEnd = in.readLong();
-        this.mChapterPage = in.readInt();
+        this.mPageNum = in.readInt();
         this.mContent = in.createStringArrayList();
         this.mPageCount = in.readInt();
     }

@@ -11,6 +11,7 @@ import com.bubble.common.utils.Dp2PxUtil;
 import com.bubble.reader.creator.PageCreator;
 import com.bubble.reader.page.PageBitmap;
 import com.bubble.reader.page.bean.PageBean;
+import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.utils.BookUtils;
 import com.bubble.reader.utils.FileUtils;
 import com.bubble.reader.widget.PageView;
@@ -109,100 +110,7 @@ public class OfflinePageCreator extends PageCreator {
         openBook(mBookFile);
     }
 
-    /**
-     * 打开书籍
-     *
-     * @param file 文件
-     */
-    private void openBook(File file) {
-        if (!file.exists()) {
-            // 文件不存在
-            return;
-        }
-        try {
-            mRandomFile = new RandomAccessFile(mBookFile, "r");
-            mEncoding = FileUtils.getFileEncoding(mBookFile);
-            mMapFile = mRandomFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, mBookFile.length());
-            mFileLength = mMapFile.limit();
-            mVisiblePage = getNextPageContent(0, mChapterPage);
-            drawStatic();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (mRandomFile != null) {
-                    mRandomFile.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public boolean isChapterPage() {
-        return mChapterPage;
-    }
-
-    public void setChapterPage(boolean chapterPage) {
-        mChapterPage = chapterPage;
-    }
-
-    @Override
-    public void onCancel() {
-        super.onCancel();
-        mVisiblePage = mCancelPage;
-        BubbleLog.e(TAG, "mCancel ====  drawStatic");
-    }
-
-    @Override
-    public boolean onNextPage(int scroll) {
-        if (mChapterPage) {
-            if (mVisiblePage.isBookEnd()) return false;
-            BubbleLog.e(TAG, "獲取下一頁");
-            // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
-            // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
-            mVisiblePage = getNextPageContent((int) mVisiblePage.getPageEnd(), mChapterPage);
-            // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
-            drawPage(mReadView.getNextPage(), mVisiblePage);
-            return true;
-        } else {
-            mCancelPage = mVisiblePage;
-            //如果已经是书籍末尾 就结束了  没有下一页内容了
-            if (mVisiblePage.isBookEnd()) return false;
-            // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
-            // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
-            mVisiblePage = getNextPageContent((int) mVisiblePage.getPageEnd());
-            // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
-            drawPage(mReadView.getNextPage(), mVisiblePage);
-            return true;
-        }
-    }
-
-    @Override
-    public boolean onPrePage(int scroll) {
-        if (mVisiblePage.isBookStart()) return false;
-        if (mChapterPage) {
-            if (mVisiblePage.getChapterPage() != 0) return false;
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
-            mVisiblePage = getPrePageContent((int) mVisiblePage.getPageStart());
-            drawPage(mReadView.getNextPage(), mVisiblePage);
-            return true;
-        } else {
-            mCancelPage = mVisiblePage;
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
-            mVisiblePage = getPrePageContent((int) mVisiblePage.getPageStart());
-            drawPage(mReadView.getNextPage(), mVisiblePage);
-            return true;
-        }
-    }
-
-    private void drawStatic() {
-        drawPage(mReadView.getCurrentPage(), mVisiblePage);
-        drawPage(mReadView.getNextPage(), mVisiblePage);
-    }
-
+    /*=======================================建造者=========================================*/
     public static class Builder extends PageCreator.Builder<Builder> {
         private File mFile;
 
@@ -228,13 +136,133 @@ public class OfflinePageCreator extends PageCreator {
 
     }
 
+    /*=======================================私有方法阅读=========================================*/
+
+    /**
+     * 设置要阅读的文件
+     *
+     * @param bookFile
+     * @version v1 只支持txt
+     */
     private void setBookFile(File bookFile) {
         mBookFile = bookFile;
     }
 
+    /**
+     * 打开书籍
+     *
+     * @param file 文件
+     */
+    private void openBook(File file) {
+        if (!file.exists()) {
+            // 文件不存在
+            return;
+        }
+        try {
+            mRandomFile = new RandomAccessFile(mBookFile, "r");
+            mEncoding = FileUtils.getFileEncoding(mBookFile);
+            mMapFile = mRandomFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, mBookFile.length());
+            mFileLength = mMapFile.limit();
+            mVisiblePage = getPage(0);
+            drawStatic();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (mRandomFile != null) {
+                    mRandomFile.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /*=======================================对外方法阅读=========================================*/
     public String getEncoding() {
         return mEncoding;
     }
+
+    public boolean isChapterPage() {
+        return mChapterPage;
+    }
+
+    public void setChapterPage(boolean chapterPage) {
+        mChapterPage = chapterPage;
+    }
+
+    /**
+     * 取消翻页
+     * 回复原来的页面
+     * 以下两个帮助类中 会通过{@link PageView#mDrawHelper }中的监听回调 调用该方法
+     * <p>
+     * {@link com.bubble.reader.widget.draw.HorizontalMoveDrawHelper }
+     * <p>
+     * {@link com.bubble.reader.widget.draw.HorizontalScrollDrawHelper}
+     */
+    @Override
+    public void onCancel() {
+        super.onCancel();
+        mVisiblePage = mCancelPage;
+        BubbleLog.e(TAG, "mCancel ====  drawStatic");
+    }
+
+
+    @Override
+    public PageResult onNextPage() {
+        if (mChapterPage) {
+            if (mVisiblePage.isBookEnd()) {
+                return mPageResult.set(false, false);
+            }
+            BubbleLog.e(TAG, "獲取下一頁");
+            // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
+            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
+            mVisiblePage = getPage((int) mVisiblePage.getPageEnd());
+            // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
+            drawPage(mReadView.getNextPage(), mVisiblePage);
+            return mPageResult.set(true, true);
+        } else {
+            mCancelPage = mVisiblePage;
+            //如果已经是书籍末尾 就结束了  没有下一页内容了
+            if (mVisiblePage.isBookEnd()) {
+                return mPageResult.set(false, false);
+            }
+            // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
+            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
+            mVisiblePage = getPage((int) mVisiblePage.getPageEnd());
+            // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
+            drawPage(mReadView.getNextPage(), mVisiblePage);
+
+            return mPageResult.set(true, true);
+        }
+    }
+
+    @Override
+    public PageResult onPrePage() {
+        if (mVisiblePage.isBookStart()) {
+            // 如果当前页是书籍开始
+            return mPageResult.set(false, false);
+        }
+        if (mChapterPage) {
+            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            mVisiblePage = getPrePageContent((int) mVisiblePage.getPageStart());
+            drawPage(mReadView.getNextPage(), mVisiblePage);
+            return mPageResult.set(false, false);
+        } else {
+            mCancelPage = mVisiblePage;
+            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            mVisiblePage = getPrePageContent((int) mVisiblePage.getPageStart());
+            drawPage(mReadView.getNextPage(), mVisiblePage);
+            return mPageResult.set(false, false);
+        }
+    }
+
+
+
+
+    /*=======================================往前阅读=========================================*/
 
     /**
      * 获取上一页内容
@@ -243,14 +271,11 @@ public class OfflinePageCreator extends PageCreator {
      * @return
      */
     private PageBean getPrePageContent(int end) {
-        PageBean page = new PageBean();
-        page.setPageEnd(end - 1);
         // 新页的开始位置
         int start = end;
         String paragraphStr = "";
-        /*********************************找出章节名称和下标*********************************/
-
-        // 当没有到开头位置 段落不是章节 就一直往前读 知道读到章节名称
+        /*------------------找出章节名称和下标------------------*/
+        // 当没有到书籍开头&&段落不是章节，就一直往前读，直到找到前面一章的开头为止。
         while (start > 0 && !BookUtils.checkArticle(paragraphStr)) {
             byte[] paragraph = readPreParagraph(start);
             try {
@@ -260,26 +285,41 @@ public class OfflinePageCreator extends PageCreator {
             }
             start -= paragraph.length;
         }
+        // 这个是找到的章节名称
         BubbleLog.e(TAG, paragraphStr);
-        int pageNum = 0;
-        /*********************************找出章节名称和下标*********************************/
+        /*------------------找出章节名称和下标------------------*/
+        /*------------------下面才是正式找出页面内容------------------*/
+        // 页号为0 每当找到一页 加一
+        int pageCount = 0;
 
-        /*********************************下面才是正式找出页面内容*********************************/
+        /* start 为上面找到章节的位置 和0比较 取大的那个
+         * pageEnd是 上一页的开始位置 这里默认是当前章节的开始位置（上一个章节最后一页的结束位置）
+         */
         int pageEnd = start = Math.max(start, 0);
+        /*
+         *  循环找出需要的阅读页(就是当前显示的阅读页的上一页 end为当前页的开始位置 )
+         *  就是说当我们while获取到的page 结束位置 等于我们传过来的end位置时 page就是 mVisiblePage 的上一页
+         */
+        PageBean page = new PageBean();
+        page.setPageEnd(end - 1);
         while (pageEnd != end) {
-            page = getNextPageContent(pageEnd, mChapterPage);
+            page = getPage(pageEnd);
             pageEnd = (int) page.getPageEnd();
-            pageNum++;
+            pageCount++;
         }
-        /*********************************上面才是正式找出页面内容*********************************/
+        /*------------------上面才是正式找出页面内容------------------*/
+
+        // 设置章节名称
         if (!TextUtils.isEmpty(paragraphStr)) {
             // 找到章节了 设置章节名称
             page.setChapterName(paragraphStr);
         }
+        // 如果下标为0 设置为书籍开始页
         if (start == 0) {
             page.setBookStart(true);
         }
-        page.setChapterPage(pageNum);
+        // 设置页号
+        page.setPageCount(pageCount);
         return page;
     }
 
@@ -291,7 +331,6 @@ public class OfflinePageCreator extends PageCreator {
      */
     private byte[] readPreParagraph(int end) {
         int index = end;
-
         while (index >= 0) {
             byte b = mMapFile.get(index);
             if (b == 10) {
@@ -316,127 +355,76 @@ public class OfflinePageCreator extends PageCreator {
     }
 
 
-    /**
-     * 获取下一页内容
-     *
-     * @param start       开始读取的位置
-     * @param chapterPage 是否整张作为一页
-     * @return
-     */
-    private PageBean getNextPageContent(int start, boolean chapterPage) {
-        if (true) {
-            //不是整章作为一页 返回分页获取内容
-            return getNextPageContent(start);
-        }
-
-        BubbleLog.e(TAG, "========================\n\n===================================");
-        // 创建一个页面
-        PageBean page = new PageBean();
-        page.setPageStart(start);
-        // 结束位置
-        int end = start;
-        int y = mPadding;
-        int contentHeight = mPadding;
-//        BubbleLog.e(TAG, "mFontSize  ==  " + mFontSize + "  mLineSpace  ===   " + mLineSpace + "   mParagraphSpace ==  " + mParagraphSpace + "  mPageHeight === " + mPageHeight);
-        // 当开始位置不超过文件长度 并且新增一行的高度不超过页面高度时 获取页面内容
-        while (end < mFileLength) {
-            // 读取一个段落
-            byte[] paragraph = readNextParagraph(end);
-            String paragraphStr = null;
-
-            try {
-                paragraphStr = new String(paragraph, getEncoding());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            if (BookUtils.checkArticle(paragraphStr)) {
-                // 第一段 是章节名称 就设置为页面的章节名称 和章节页码 为1
-                if (end == start) {
-                    page.setChapterName(paragraphStr);
-                    // 设置章节页码
-                    page.setChapterPage(1);
-                } else {
-                    // 页数加1
-                    page.setPageCount(page.getPageCount() + 1);
-//                    page.setChapterPage(page.getChapterPage() + 1);
-//                    否则结束这个页面（因为到了另外一章）
-                    break;
-                }
-            }
-            if (!TextUtils.isEmpty(paragraphStr)) {
-                //去掉空字符
-                paragraphStr = paragraphStr.replaceAll("[\r\n]", "");
-                // 分割段落 到页码中
-                while (paragraphStr.length() > 0) {
-                    // 获取一行的文字个数
-                    int size = mPaint.breakText(paragraphStr, true, mContentWidth, mMeasureLineWidth);
-
-                    String line = paragraphStr.substring(0, size);
-                    // 添加到页码
-                    page.getContent().add(line);
-                    // 记录当前高度
-                    contentHeight += mLineSpace + mFontSize;
-//                    BubbleLog.e(TAG, "换行  contentHeight  ==   " + contentHeight + "   " + line);
-
-                    // 当前行和剩余段落长度一样 说明这行就是段落结尾 并且 当前内容的高度+段间距的高度 不能超过总高度
-                    if (line.length() == paragraphStr.length() && mContentHeight > contentHeight + mParagraphSpace) {
-                        page.getContent().add("");
-                        contentHeight += mParagraphSpace;
-
-//                        BubbleLog.e(TAG, "换段落  contentHeight  ==   " + contentHeight + "   ");
-                    }
-                    // 获取剩下的内容
-                    paragraphStr = paragraphStr.substring(size);
-                    // 如果再加上一行就超过总高度 就不要加上了 结束这个页面
-                    if (contentHeight + mLineSpace + mFontSize > mContentHeight) {
-                        // 页数加1
-                        page.setPageCount(page.getPageCount() + 1);
-                        page.setChapterPage(page.getChapterPage() + 1);
-                        if (line.length() == paragraphStr.length()) {
-                            page.getContent().add("");
-                            contentHeight += mParagraphSpace;
-                        } else {
-                            contentHeight += mLineSpace;
-                        }
-                        y += contentHeight;
-                        contentHeight = contentHeight - mContentHeight;
-                        break;
-                    }
-                }
-            }
-            if (!TextUtils.isEmpty(paragraphStr)) {
-                try {
-                    // 这里要注意一定要按文本的编码获取段落剩余内容的长度 否则下标会出错
-                    end += paragraph.length - paragraphStr.getBytes(getEncoding()).length;
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                end += paragraph.length;
-            }
-        }
-        y += contentHeight;
-        BubbleLog.e(TAG, "换段落  getContent" + y);
-        if (page.getPageCount() == 1) {
-            page.setChapterPage(1);
-        }
-//        if (page.getChapterPage() > 1) {// 如果当前页面不是章节首页，设置+1 页
-//            page.setChapterPage(page.getChapterPage() + 1);
-//        }
-        page.setBookStart(start == 0);
-        page.setBookEnd(end == mFileLength);
-        page.setPageEnd(end);
-        return page;
-    }
-
+    /*=======================================往后阅读=========================================*/
 
     /**
      * 获取下一页内容
      *
      * @param start 开始读取的位置
-     * @return
+     * @return 返回阅读页
      */
     private PageBean getNextPageContent(int start) {
+        // 新页的开始位置
+        int end = start;
+        String paragraphStr = "";
+        /*------------------找出章节名称和下标------------------*/
+        // 没有到书籍结尾 直到找到下一章节 这里只要找出end 当前章节的结束位置
+        while (end < mFileLength && !BookUtils.checkArticle(paragraphStr)) {
+            byte[] paragraph = readPreParagraph(end);
+            try {
+                paragraphStr = new String(paragraph, getEncoding());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            end -= paragraph.length;
+        }
+        // 这个是下一个章节名称
+        BubbleLog.e(TAG, paragraphStr);
+        /*------------------找出章节名称和下标------------------*/
+        /*------------------下面才是正式找出页面内容------------------*/
+        // 当前章节的页数
+        int pageCount = 0;
+        /* end 为上面找到章节的位置 和文件长度比较 取小的那个
+         * pageEnd 是 上一页的开始位置 这里默认是当前章节的开始位置（上一个章节最后一页的结束位置）
+         */
+        end = Math.min(end, mFileLength);
+        /*
+         *  循环找出需要的阅读页(就是当前显示的阅读页的上一页 end为当前页的开始位置 )
+         *  就是说当我们while获取到的page 结束位置 等于我们传过来的end位置时 page就是 mVisiblePage 的上一页
+         */
+        PageBean page = new PageBean();
+        page.setPageStart(start);
+        int pageEnd = start;
+        // 这里主要是获取页数
+        while (pageEnd != end) {
+            page = getPage(pageEnd);
+            pageEnd = (int) page.getPageEnd();
+            pageCount++;
+        }
+        /*------------------上面才是正式找出页面内容------------------*/
+
+        // 设置章节名称
+        if (!TextUtils.isEmpty(paragraphStr)) {
+            // 找到章节了 设置章节名称
+            page.setChapterName(paragraphStr);
+        }
+        // 如果下标为0 设置为书籍开始页
+        if (end == 0) {
+            page.setBookEnd(true);
+        }
+        // 设置页号
+        page.setPageCount(pageCount);
+        return page;
+
+    }
+
+    /**
+     * 获取阅读页
+     *
+     * @param start 开始读取位置
+     * @return
+     */
+    private PageBean getPage(int start) {
         BubbleLog.e(TAG, "========================\n\n===================================");
         // 创建一个页面
         PageBean page = new PageBean();
@@ -461,7 +449,7 @@ public class OfflinePageCreator extends PageCreator {
                 if (end == start) {
                     page.setChapterName(paragraphStr);
                     // 设置章节页码
-                    page.setChapterPage(1);
+                    page.setPageNum(1);
                 } else {
 //                    否则结束这个页面（因为到了另外一章）
                     break;
@@ -508,8 +496,8 @@ public class OfflinePageCreator extends PageCreator {
                 end += paragraph.length;
             }
         }
-        if (page.getChapterPage() > 1) {// 如果当前页面不是章节首页，设置+1 页
-            page.setChapterPage(page.getChapterPage() + 1);
+        if (page.getPageNum() > 1) {// 如果当前页面不是章节首页，设置+1 页
+            page.setPageNum(page.getPageNum() + 1);
         }
         page.setBookStart(start == 0);
         page.setBookEnd(end == mFileLength);
@@ -558,7 +546,22 @@ public class OfflinePageCreator extends PageCreator {
         return paragraph;
     }
 
+    /*=======================================绘制内容=========================================*/
 
+    /**
+     * 绘制静止状态下的页面
+     */
+    private void drawStatic() {
+        drawPage(mReadView.getCurrentPage(), mVisiblePage);
+        drawPage(mReadView.getNextPage(), mVisiblePage);
+    }
+
+    /**
+     * 绘制页面
+     *
+     * @param pageBitmap 要绘制的bitmap 通过{@link PageBitmap#getBitmap()}获取
+     * @param pageBean   要绘制的内容
+     */
     private void drawPage(PageBitmap pageBitmap, PageBean pageBean) {
 //        BubbleLog.e(TAG, "========================\n\n===================================");
 //        if (mChapterPage && pageBitmap.getType() == 1) {
@@ -583,6 +586,8 @@ public class OfflinePageCreator extends PageCreator {
         } else {
             canvas.drawColor(Color.GREEN);
         }
+
+//        canvas.drawColor(mBackgroundColor);
 
         int y = mFontSize + mPadding;
         for (int i = 0; i < pageBean.getContent().size(); i++) {

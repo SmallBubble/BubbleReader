@@ -5,10 +5,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import com.bubble.bubblereader.R;
+import com.bubble.common.base.bean.MultipleType;
 import com.bubble.common.listener.OnAdapterTipsClickListener;
 import com.bubble.common.listener.SingleListener;
 
@@ -23,11 +23,10 @@ import java.util.List;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 带有tips 的通用Adapter
  */
-public abstract class TipsAdapter<T> extends BaseAdapter<MultipleType> {
+public abstract class TipsAdapter<T extends MultipleType> extends BaseAdapter<T> {
     public final static int TYPE_EMPTY = 0x10000000;
     public final static int TYPE_NETWORK_ERROR = 0x20000000;
     private OnAdapterTipsClickListener mTipsClickListener;
-    private int[] mTipIds;
     private int mTipsIcon;
     private String mTips;
 
@@ -35,12 +34,6 @@ public abstract class TipsAdapter<T> extends BaseAdapter<MultipleType> {
         super(context);
     }
 
-    public void addAll(List<T> data) {
-        List<MultipleType<T>> types = new ArrayList<>();
-        for (T t : data) {
-            types.add(new MultipleType<>());
-        }
-    }
 
     @NonNull
     @Override
@@ -87,6 +80,9 @@ public abstract class TipsAdapter<T> extends BaseAdapter<MultipleType> {
         return R.layout.item_empty;
     }
 
+
+
+
     /*============================子类重写方法=========================*/
 
     /**
@@ -116,7 +112,8 @@ public abstract class TipsAdapter<T> extends BaseAdapter<MultipleType> {
     public void showEmptyData(@DrawableRes int resId, String tips) {
         mTips = tips;
         mTipsIcon = resId;
-        mData.add(new MultipleType<>(TYPE_EMPTY, null));
+        mData.clear();
+        mData.add((T) new MultipleType(TYPE_EMPTY));
     }
 
     public void showNetworkError() {
@@ -125,17 +122,28 @@ public abstract class TipsAdapter<T> extends BaseAdapter<MultipleType> {
 
     public void showNetworkError(String tips) {
         mTips = tips;
-        mData.add(new MultipleType<>(TYPE_NETWORK_ERROR, null));
+        mData.clear();
+        mData.add((T) new MultipleType(TYPE_NETWORK_ERROR));
     }
 
+    /*============================set/get方法区=========================*/
+    public void addAll(List<T> data) {
+        List<MultipleType> types = new ArrayList<>();
+        for (T t : data) {
+            types.add(new MultipleType());
+        }
+//        mData.addAll(types);
+        notifyDataSetChanged();
+    }
 
     /*============================set/get方法区=========================*/
     public OnAdapterTipsClickListener getTipsClickListener() {
         return mTipsClickListener;
     }
 
-    public void setTipsClickListener(OnAdapterTipsClickListener tipsClickListener, @IdRes int... ids) {
-        mTipIds = ids;
+    public void setTipsClickListener(OnAdapterTipsClickListener tipsClickListener) {
         mTipsClickListener = tipsClickListener;
     }
+
+
 }

@@ -12,5 +12,5 @@ import retrofit2.http.POST;
  */
 public interface BubbleApi {
     @POST("")
-    Observable<JsonResult<String>> get();
+    Observable<JsonResult<BookBean>> get();
 }

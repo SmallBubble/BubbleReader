@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat;
 import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.page.offline.OfflinePageCreator;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.VerticalScrollDrawHelper;
+import com.bubble.reader.widget.draw.VerticalScrollDrawHelperV2;
 
 import java.io.File;
 
@@ -52,7 +52,7 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
         mPageCreator.setChapterPage(true);
-        mReadView.setDrawHelper(new VerticalScrollDrawHelper(mReadView));
+        mReadView.setDrawHelper(new VerticalScrollDrawHelperV2(mReadView));
         mReadView.setPageCreator(mPageCreator);
         mPageCreator.addPageListener(new OfflinePageListener() {
             @Override

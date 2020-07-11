@@ -98,7 +98,7 @@ public abstract class DrawHelper {
      * @param canvas 画布
      */
     public void onDrawStatic(Canvas canvas) {
-        BubbleLog.e(TAG, "mCancel ====  " + mCancel);
+        BubbleLog.e(TAG, "onDrawStatic mCancel ====  " + mCancel);
         if (mCancel) {
             // 取消翻页（绘制原来的页）
             canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), 0, 0, null);

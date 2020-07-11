@@ -10,7 +10,7 @@ import retrofit2.HttpException;
  * Date：2020/7/8
  * Desc：
  */
-public abstract class RequestCallBack<T> extends DisposableObserver<JsonResult<T>> implements ICallBack<T> {
+public abstract class RequestCallBack<T> extends DisposableObserver<JsonResult<T>> {
 
 
     @Override
@@ -40,8 +40,13 @@ public abstract class RequestCallBack<T> extends DisposableObserver<JsonResult<T
         }
     }
 
+    protected abstract void onSuccess(T data);
+
+    protected abstract void onFailure(int code, String message);
+
     @Override
     public void onComplete() {
 
     }
+
 }

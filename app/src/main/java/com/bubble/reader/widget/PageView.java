@@ -169,6 +169,8 @@ public class PageView extends View {
         PageBitmap bitmap = mPageBitmaps.get(0);
         mPageBitmaps.remove(0);
         mPageBitmaps.add(bitmap);
+        mPageBitmaps.get(0).setType(1);
+        mPageBitmaps.get(1).setType(2);
     }
 
     private boolean mLoading;
@@ -232,9 +234,10 @@ public class PageView extends View {
 //        mCurrentPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
 //        mCurrentPage.setType(1);
 //        mNextPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
-//        mNextPage.setType(2);
         mPageBitmaps.add(new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)));
+        mPageBitmaps.get(0).setType(1);
         mPageBitmaps.add(new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)));
+        mPageBitmaps.get(1).setType(2);
     }
 
     /**
