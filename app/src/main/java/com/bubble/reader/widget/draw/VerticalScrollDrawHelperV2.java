@@ -9,6 +9,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.OverScroller;
 
 import com.bubble.common.log.BubbleLog;
+import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.widget.PageView;
 
 /**
@@ -36,7 +37,7 @@ public class VerticalScrollDrawHelperV2 extends DrawHelper {
     /**
      * 是否还有内容
      */
-    private boolean mHasNext;
+    private PageResult mHasNext;
     /**
      * 是否在滑动
      */
@@ -98,7 +99,7 @@ public class VerticalScrollDrawHelperV2 extends DrawHelper {
                         if (mLastY >= mPageHeight) {
                             mLastY -= mPageHeight;
                         }
-                        mHasNext = mOnContentListener.onPrePage(0);
+                        mHasNext = mOnContentListener.onPrePage();
                         mState = State.DOWN_FINISHED;
                     }
                     mNext = false;
@@ -114,13 +115,13 @@ public class VerticalScrollDrawHelperV2 extends DrawHelper {
                             mLastY += mPageHeight;
                         }
                         mState = State.UP_FINISHED;
-                        mHasNext = mOnContentListener.onNextPage(0);
+                        mHasNext = mOnContentListener.onNextPage();
                     }
                     mNext = true;
 
                 }
                 // 没有内容 不处理了
-                if (!mHasNext) {
+                if (mHasNext == null || !mHasNext.isHasNext()) {
                     return;
                 }
                 mRunning = true;

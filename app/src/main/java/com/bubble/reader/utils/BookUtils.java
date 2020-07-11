@@ -28,6 +28,13 @@ public class BookUtils {
         return p.matcher(str).find();
     }
 
+    /**
+     * 检查两个字符串是否相等
+     *
+     * @param s1
+     * @param s2
+     * @return
+     */
     public static boolean checkEqual(String s1, String s2) {
         if (TextUtils.isEmpty(s1) && TextUtils.isEmpty(s2)) {
             return true;

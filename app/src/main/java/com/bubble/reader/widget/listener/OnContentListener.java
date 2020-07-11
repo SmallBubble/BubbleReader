@@ -1,5 +1,7 @@
 package com.bubble.reader.widget.listener;
 
+import com.bubble.reader.page.bean.PageResult;
+
 /**
  * packger：com.bubble.reader.widget
  * author：Bubble
@@ -13,12 +15,12 @@ public interface OnContentListener {
     /**
      * 下一页
      */
-    boolean onNextPage(int scroll);
+    PageResult onNextPage();
 
     /**
      * 上一页
      */
-    boolean onPrePage(int scroll);
+    PageResult onPrePage();
 
     /**
      * 取消翻页

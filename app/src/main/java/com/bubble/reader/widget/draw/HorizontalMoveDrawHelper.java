@@ -8,6 +8,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
 import com.bubble.common.log.BubbleLog;
+import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.widget.PageView;
 
 /**
@@ -43,7 +44,7 @@ public class HorizontalMoveDrawHelper extends DrawHelper {
     /**
      * 是否还有内容
      */
-    private boolean mHasNext;
+    private PageResult mHasNext;
     /**
      * 是否在滑动
      */
@@ -89,14 +90,14 @@ public class HorizontalMoveDrawHelper extends DrawHelper {
                     if (event.getX() - mStartPoint.x > 0) {
                         // 往右边滑动，翻上一页
                         mNext = false;
-                        mHasNext = mOnContentListener.onPrePage(0);
+                        mHasNext = mOnContentListener.onPrePage();
                     } else {
                         // 往左边滑动，翻下一页
                         mNext = true;
-                        mHasNext = mOnContentListener.onNextPage(0);
+                        mHasNext = mOnContentListener.onNextPage();
                     }
                 }
-                if (!mHasNext) {
+                if (mHasNext == null || !mHasNext.isHasNext()) {
                     return;
                 }
                 mRunning = true;

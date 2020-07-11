@@ -19,6 +19,7 @@ import androidx.collection.ArrayMap;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.creator.PageCreator;
 import com.bubble.reader.page.PageBitmap;
+import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.draw.DrawHelper;
 import com.bubble.reader.widget.draw.HorizontalScrollDrawHelper;
@@ -133,23 +134,23 @@ public class PageView extends View {
     };
     private OnContentListener mOnContentListener = new OnContentListener() {
         @Override
-        public boolean onNextPage(int scroll) {
+        public PageResult onNextPage() {
             if (mPageCreator != null) {
                 exchangePage(true);
-                boolean hasNext = mPageCreator.onNextPage(scroll);
+                PageResult hasNext = mPageCreator.onNextPage();
                 mLoading = false;
                 return hasNext;
             }
-            return false;
+            return new PageResult();
         }
 
         @Override
-        public boolean onPrePage(int scroll) {
+        public PageResult onPrePage() {
             if (mPageCreator != null) {
                 exchangePage(false);
-                return mPageCreator.onPrePage(scroll);
+                return mPageCreator.onPrePage();
             }
-            return false;
+            return new PageResult();
         }
 
         @Override
