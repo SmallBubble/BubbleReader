@@ -44,6 +44,13 @@ public abstract class PageCreator {
      */
     private List<PageListener> mPageListeners = new ArrayList<>();
 
+
+
+    /**
+     * 初始化 数据 子类重写
+     */
+    protected abstract void initData();
+
     /**
      * 获取下一页
      *
@@ -79,11 +86,6 @@ public abstract class PageCreator {
         BubbleLog.e(TAG, mContentWidth + "   " + mContentHeight);
         initData();
     }
-
-    /**
-     * 初始化 数据 子类重写
-     */
-    protected abstract void initData();
 
     public PageView getReadView() {
         return mReadView;

@@ -1,4 +1,4 @@
-package com.bubble.reader.widget.draw;
+package com.bubble.reader.widget.draw.base;
 
 import android.graphics.Canvas;
 import android.graphics.PointF;
@@ -16,7 +16,7 @@ import com.bubble.reader.widget.listener.OnContentListener;
  * email：1337986595@qq.com
  * Desc：绘制内容帮助类  实现不同的滑动效果  继承该类 绘制不同区域
  */
-public abstract class DrawHelper {
+public abstract class DrawHelper implements IDrawHelper {
     private static final String TAG = DrawHelper.class.getSimpleName();
     protected PageView mPageView;
     /**
@@ -52,10 +52,15 @@ public abstract class DrawHelper {
      */
     protected boolean mCancel;
 
-    public void setOnContentListener(OnContentListener onContentListener) {
-        mOnContentListener = onContentListener;
-    }
+    private int mFontSize;
+    private int mLineSpace;
+    private int mChapterFontSize;
+    private int mParagraphSpace;
 
+    private int mTopArea;
+    private int mBottomArea;
+
+    /*=======================================初始化=========================================*/
     public DrawHelper(PageView pageView) {
         mPageView = pageView;
         mStartPoint = new PointF();
@@ -65,13 +70,14 @@ public abstract class DrawHelper {
     }
 
     public final void init() {
-
         mPageWidth = mPageView.getMeasuredWidth();
         mPageHeight = mPageView.getMeasuredHeight();
 
         initData();
     }
 
+
+    /*=======================================必须重写方法区=========================================*/
     protected abstract void initData();
 
     /**
@@ -88,6 +94,8 @@ public abstract class DrawHelper {
      * @param canvas
      */
     public abstract void onDrawPage(Canvas canvas);
+
+    /*=======================================默认操作/子类可以重写进行自己的实现=========================================*/
 
     /**
      * 绘制静止时的页面
@@ -107,33 +115,12 @@ public abstract class DrawHelper {
             // 没取消翻页 绘制新的一页（上一页或者下一页 根据滑动方向决定）
             canvas.drawBitmap(mPageView.getNextPage().getBitmap(), 0, 0, null);
         }
-//        mCancel = false;
     }
 
-    public PointF getStartPoint() {
-        return mStartPoint;
-    }
 
-    public void setStartPoint(float x, float y) {
-        if (mStartPoint == null) {
-            mStartPoint = new PointF();
-        }
-        mStartPoint.x = x;
-        mStartPoint.y = y;
-    }
-
-    public PointF getTouchPoint() {
-        return mTouchPoint;
-    }
-
-    public void setTouchPoint(float x, float y) {
-        if (mTouchPoint == null) {
-            mTouchPoint = new PointF();
-        }
-        mTouchPoint.x = x;
-        mTouchPoint.y = y;
-    }
-
+    /**
+     * 回收资源 子类有需要回收的资源重写该方法
+     */
     public void recycle() {
 
     }
@@ -144,7 +131,48 @@ public abstract class DrawHelper {
     public void computeScroll() {
     }
 
+    /**
+     * 是否在进行滑动或者其他操作（不是静止状态下的操作）
+     *
+     * @return
+     */
     public boolean isRunning() {
         return false;
+    }
+
+    /*=======================================set/get方法区=========================================*/
+    public void setOnContentListener(OnContentListener onContentListener) {
+        mOnContentListener = onContentListener;
+    }
+
+    /*=======================================通用的一些设置=========================================*/
+    @Override
+    public void setFontSize(int fontSize) {
+        mFontSize = fontSize;
+    }
+
+    @Override
+    public void setLineSpace(int lineSpace) {
+        mLineSpace = lineSpace;
+    }
+
+    @Override
+    public void setChapterFontSize(int fontSize) {
+        mChapterFontSize = fontSize;
+    }
+
+    @Override
+    public void setParagraphSpace(int paragraphSpace) {
+        mParagraphSpace = paragraphSpace;
+    }
+
+    @Override
+    public void setTopArea(int topArea) {
+        mTopArea = topArea;
+    }
+
+    @Override
+    public void setBottomArea(int bottomArea) {
+        mBottomArea = bottomArea;
     }
 }

@@ -1,10 +1,8 @@
-package com.bubble.reader.page;
+package com.bubble.reader.page.bean;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.bubble.reader.page.bean.PageBean;
 
 import java.io.Serializable;
 

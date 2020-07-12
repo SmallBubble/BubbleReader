@@ -10,9 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.bubble.reader.page.listener.OfflinePageListener;
-import com.bubble.reader.page.offline.OfflinePageCreator;
+import com.bubble.reader.page.OfflinePageCreator;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.HorizontalScrollDrawHelper;
+import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
 
 import java.io.File;
 

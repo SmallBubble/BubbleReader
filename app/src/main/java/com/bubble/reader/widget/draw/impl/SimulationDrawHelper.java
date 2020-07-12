@@ -1,9 +1,10 @@
-package com.bubble.reader.widget.draw;
+package com.bubble.reader.widget.draw.impl;
 
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
 import com.bubble.reader.widget.PageView;
+import com.bubble.reader.widget.draw.base.DrawHelper;
 
 /**
  * packger：com.bubble.reader.widget.draw

@@ -9,14 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.bubble.reader.page.OfflinePageCreator;
+import com.bubble.reader.page.OnlinePageCreator;
 import com.bubble.reader.page.listener.OfflinePageListener;
-import com.bubble.reader.page.offline.OfflinePageCreator;
+import com.bubble.reader.page.listener.OnlineChapterListener;
+import com.bubble.reader.page.listener.OnlineRequestListener;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.HorizontalMoveDrawHelper;
+import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 
 import java.io.File;
 
-public class HorizontalMoveReadActivity extends AppCompatActivity {
+public class HorizontalMoveReadActivity extends AppCompatActivity implements OnlineRequestListener {
 
     PageView mReadView;
 
@@ -48,10 +51,15 @@ public class HorizontalMoveReadActivity extends AppCompatActivity {
 
     private void initRead() {
         File directory = Environment.getExternalStorageDirectory();
-        mPageCreator = new OfflinePageCreator.Builder(mReadView)
+//        mPageCreator = new OfflinePageCreator.Builder(mReadView)
+//                .file(directory.getAbsoluteFile() + "/test.txt")
+//                .build();
+//        mPageCreator.setChapterPage(false);
+        mPageCreator = new OnlinePageCreator.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-        mPageCreator.setChapterPage(false);
+
+
         mReadView.setDrawHelper(new HorizontalMoveDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);
         mPageCreator.addPageListener(new OfflinePageListener() {
@@ -69,5 +77,15 @@ public class HorizontalMoveReadActivity extends AppCompatActivity {
                 super.onSuccess();
             }
         });
+    }
+
+    @Override
+    public void getNextChapter(int currentIndex, OnlineChapterListener listener) {
+
+    }
+
+    @Override
+    public void getPreChapter(int currentIndex, OnlineChapterListener listener) {
+
     }
 }

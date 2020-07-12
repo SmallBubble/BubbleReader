@@ -1,4 +1,4 @@
-package com.bubble.reader.page.offline;
+package com.bubble.reader.page;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,12 +9,14 @@ import android.text.TextUtils;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.common.utils.Dp2PxUtil;
 import com.bubble.reader.creator.PageCreator;
-import com.bubble.reader.page.PageBitmap;
+import com.bubble.reader.page.bean.PageBitmap;
 import com.bubble.reader.page.bean.PageBean;
 import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.utils.BookUtils;
 import com.bubble.reader.utils.FileUtils;
 import com.bubble.reader.widget.PageView;
+import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
+import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -208,9 +210,9 @@ public class OfflinePageCreator extends PageCreator {
      * 回复原来的页面
      * 以下两个帮助类中 会通过{@link PageView#mDrawHelper }中的监听回调 调用该方法
      * <p>
-     * {@link com.bubble.reader.widget.draw.HorizontalMoveDrawHelper }
+     * {@link HorizontalMoveDrawHelper }
      * <p>
-     * {@link com.bubble.reader.widget.draw.HorizontalScrollDrawHelper}
+     * {@link HorizontalScrollDrawHelper}
      */
     @Override
     public void onCancel() {
@@ -654,11 +656,11 @@ public class OfflinePageCreator extends PageCreator {
         // 清除原来内容
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
-        if (pageBitmap.getType() == 1) {
-            canvas.drawColor(Color.YELLOW);
-        } else {
-            canvas.drawColor(Color.GREEN);
-        }
+//        if (pageBitmap.getType() == 1) {
+//            canvas.drawColor(Color.YELLOW);
+//        } else {
+//            canvas.drawColor(Color.GREEN);
+//        }
 
 //        canvas.drawColor(mBackgroundColor);
 

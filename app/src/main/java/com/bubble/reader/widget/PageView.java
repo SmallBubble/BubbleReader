@@ -18,12 +18,14 @@ import androidx.collection.ArrayMap;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.creator.PageCreator;
-import com.bubble.reader.page.PageBitmap;
+import com.bubble.reader.page.bean.PageBitmap;
 import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.page.listener.PageListener;
-import com.bubble.reader.widget.draw.DrawHelper;
-import com.bubble.reader.widget.draw.HorizontalScrollDrawHelper;
-import com.bubble.reader.widget.draw.SimulationDrawHelper;
+import com.bubble.reader.widget.draw.base.DrawHelper;
+import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
+import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
+import com.bubble.reader.widget.draw.impl.SimulationDrawHelper;
+import com.bubble.reader.widget.draw.impl.VerticalScrollDrawHelperV2;
 import com.bubble.reader.widget.listener.OnContentListener;
 
 import java.lang.ref.WeakReference;
@@ -260,7 +262,7 @@ public class PageView extends View {
                 break;
             case HORIZONTAL_MOVE:
                 if (mDrawHelpers.get("HORIZONTAL_MOVE") == null) {
-                    mDrawHelper = new SimulationDrawHelper(this);
+                    mDrawHelper = new HorizontalMoveDrawHelper(this);
                     initData();
                 } else {
                     mDrawHelper = mDrawHelpers.get("HORIZONTAL_MOVE");
@@ -268,7 +270,7 @@ public class PageView extends View {
                 break;
             case HORIZONTAL_SCROLL:
                 if (mDrawHelpers.get("HORIZONTAL_SCROLL") == null) {
-                    mDrawHelper = new SimulationDrawHelper(this);
+                    mDrawHelper = new HorizontalScrollDrawHelper(this);
                     initData();
                 } else {
                     mDrawHelper = mDrawHelpers.get("HORIZONTAL_SCROLL");
@@ -276,7 +278,7 @@ public class PageView extends View {
                 break;
             case VERTICAL_SCROLL:
                 if (mDrawHelpers.get("VERTICAL_SCROLL") == null) {
-                    mDrawHelper = new SimulationDrawHelper(this);
+                    mDrawHelper = new VerticalScrollDrawHelperV2(this);
                     initData();
                 } else {
                     mDrawHelper = mDrawHelpers.get("VERTICAL_SCROLL");
@@ -347,7 +349,6 @@ public class PageView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // 设置起始点
-                mDrawHelper.setStartPoint(event.getX(), event.getY());
                 mDownPoint.x = (int) event.getX();
                 mDownPoint.y = (int) event.getY();
                 break;

@@ -1,4 +1,4 @@
-package com.bubble.reader.widget.draw;
+package com.bubble.reader.widget.draw.impl;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +11,7 @@ import android.widget.OverScroller;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.widget.PageView;
+import com.bubble.reader.widget.draw.base.DrawHelper;
 
 /**
  * packger：com.bubble.reader.widget.draw

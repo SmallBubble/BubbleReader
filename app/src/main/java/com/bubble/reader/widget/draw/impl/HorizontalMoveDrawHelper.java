@@ -1,4 +1,4 @@
-package com.bubble.reader.widget.draw;
+package com.bubble.reader.widget.draw.impl;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
@@ -10,17 +10,18 @@ import android.widget.Scroller;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.widget.PageView;
+import com.bubble.reader.widget.draw.base.DrawHelper;
 
 /**
  * packger：com.bubble.reader.widget.draw
- * author：Bubble
+ *
+ * @author Bubble
  * date：2020/6/21
  * email：1337986595@qq.com
- * Desc：水平滑动
+ * @Desc 水平平移
  */
-public class HorizontalScrollDrawHelper extends DrawHelper {
-
-    private static final String TAG = HorizontalScrollDrawHelper.class.getSimpleName();
+public class HorizontalMoveDrawHelper extends DrawHelper {
+    private final static String TAG = HorizontalMoveDrawHelper.class.getSimpleName();
     /**
      * 阴影
      */
@@ -28,7 +29,7 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
     /**
      * 阴影渐变色
      */
-    private int[] mShadowColor = new int[]{0x66666600, 0x00000000};
+    private int[] mShadowColor = new int[]{0xffff0000, 0xffff0000};
     /**
      * 滑动处理
      */
@@ -54,7 +55,7 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
      */
     private VelocityTracker mVelocityTracker;
 
-    public HorizontalScrollDrawHelper(PageView pageView) {
+    public HorizontalMoveDrawHelper(PageView pageView) {
         super(pageView);
     }
 
@@ -72,10 +73,10 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
         mVelocityTracker.addMovement(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                // 结束滑动
                 mScroller.abortAnimation();
-                mRunning = false;
+                mCancel = false;
                 mMove = false;
+                mRunning = false;
                 mTouchPoint.set(0, 0);
                 mStartPoint.set(event.getX(), event.getY());
                 break;
@@ -97,130 +98,88 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
                         mHasNext = mOnContentListener.onNextPage();
                     }
                 }
-                // 没有内容了
                 if (mHasNext == null || !mHasNext.isHasNext()) {
                     return;
                 }
-                // 设置当前位置
-                mTouchPoint.set(event.getX(), event.getY());
                 mRunning = true;
+                //设置当前坐标
+                mTouchPoint.set(event.getX(), event.getY());
                 // 通知绘制新内容
-                view.postInvalidate();
+                mPageView.postInvalidate();
                 break;
-            case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                // 设置当前位置
-                mTouchPoint.x = event.getX();
-                mTouchPoint.y = event.getY();
-
+            case MotionEvent.ACTION_UP:
                 if (mMove) {
                     int dx;
-                    // 计算滑动速度
                     mVelocityTracker.computeCurrentVelocity(1, 10f);
                     float xVelocity = mVelocityTracker.getXVelocity();
                     BubbleLog.e(TAG, "xVelocity ====  " + xVelocity);
                     int moveX = (int) (mTouchPoint.x - mStartPoint.x);
-                    if (Math.abs(xVelocity) > 1) {
+                    if (Math.abs(xVelocity) > 1f) {
                         mCancel = false;
-                        // 滑动速度大于5 翻页
+                        //速度大于1 翻页
                         if (mNext) {
-                            // 翻到下一页
                             dx = -(mPageWidth - Math.abs(moveX));
                         } else {
-                            // 翻到上一页
-                            dx = mPageWidth - moveX;
+                            dx = mPageWidth - Math.abs(moveX);
                         }
+
                     } else {
-                        mCancel = false;
-                        // 不大于5 根据滑动距离判断是否翻页
+                        // 不大于一 根据滑动距离判断是否翻页
                         if (Math.abs(moveX) > mPageWidth / 2) {
-                            // 滑动距离超过一半 正常翻页
+                            mCancel = false;
                             if (mNext) {
-                                // 翻到下一页
                                 dx = -(mPageWidth - Math.abs(moveX));
                             } else {
-                                // 翻到上一页
-                                dx = mPageWidth - moveX;
+                                dx = mPageWidth - Math.abs(moveX);
                             }
                         } else {
                             mCancel = true;
-                            // 滑动距离未到一半 取消翻页
                             dx = -moveX;
                         }
-                        mRunning = true;
                     }
                     if (mOnContentListener != null && mCancel) {
                         mOnContentListener.onCancel();
                     }
-                    BubbleLog.e(TAG, "moveX：" + moveX + "   滑动距离" + dx);
-                    mScroller.startScroll((int) mTouchPoint.x, 0, dx, 0, 200);
-                    // 通知绘制新内容
-                    view.postInvalidate();
+                    mScroller.startScroll((int) mTouchPoint.x, 0, dx, mPageHeight, 300);
+                    mPageView.postInvalidate();
                 }
-                BubbleLog.e(TAG, "\n\n\n开始：\n\n\n");
                 break;
         }
     }
 
     @Override
     public void onDrawPage(Canvas canvas) {
-        BubbleLog.e(TAG, "onDrawPage" + mTouchPoint.x);
         if (!mMove) {
             return;
         }
-        // 滑动的距离
-
+        int moveX = Math.abs((int) (mTouchPoint.x - mStartPoint.x));
         if (mNext) {
-            int moveX = (int) (mTouchPoint.x - mStartPoint.x);
-            BubbleLog.e(TAG, "onDrawPage moveX" + moveX);
-            if (moveX > 0) {
-                return;
-            }
-            // 往左滑 翻下一页
-            moveX = Math.abs(moveX);
-            // 画当前页
+            // 翻下一页
             mSrcRect.set(moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(0, 0, mPageWidth - moveX, mPageHeight);
-            BubbleLog.e(TAG, "onDrawPage mSrcRect" + mSrcRect.toShortString());
-            BubbleLog.e(TAG, "onDrawPage mDestRect" + mDestRect.toShortString());
-            BubbleLog.e(TAG, "onDrawPage -----------------------------------------------------------------\n\n");
-            BubbleLog.e(TAG, "onDrawPage -----------------------------------------------------------------");
-
             canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
-            // 画下一页
-            mSrcRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
+
+            mSrcRect.set(0, 0, moveX, mPageHeight);
             mDestRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
             canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
-            //绘制阴影
-            drawShadow(mPageWidth - moveX, canvas);
+            drawLine(canvas, mPageWidth - moveX);
         } else {
-            int moveX = (int) (mTouchPoint.x - mStartPoint.x);
-            if (moveX < 0) {
-                return;
-            }
+            // 翻上一页
+            mSrcRect.set(0, 0, mPageWidth - moveX, mPageHeight);
+            mDestRect.set(moveX, 0, mPageWidth, mPageHeight);
+            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
 
-            // 往右滑 翻上一页
-            // 上一页
+
             mSrcRect.set(mPageWidth - moveX, 0, mPageWidth, mPageHeight);
             mDestRect.set(0, 0, moveX, mPageHeight);
             canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
-            //当前页
-            mSrcRect.set(moveX, 0, mPageWidth, mPageHeight);
-            mDestRect.set(moveX, 0, mPageWidth, mPageHeight);
-            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
-            //绘制阴影
-            drawShadow(moveX, canvas);
+            drawLine(canvas, moveX);
         }
     }
 
-    /**
-     * 绘制阴影
-     *
-     * @param x      阴影x坐标
-     * @param canvas 画布
-     */
-    private void drawShadow(int x, Canvas canvas) {
-        mShadow.setBounds(x, 0, x + 50, mPageHeight);
+    private void drawLine(Canvas canvas, int moveX) {
+        mShadow.setBounds(moveX - 1, 0, moveX + 1, mPageHeight);
         mShadow.draw(canvas);
     }
 
@@ -233,8 +192,6 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
     public void computeScroll() {
         super.computeScroll();
         if (mScroller != null && mScroller.computeScrollOffset()) {
-            // 动画未完成
-//            Log.e(TAG, "起点：" + mTouchPoint.x + "   滑动距离" + mScroller.getCurrX());
             if (mScroller.getCurrX() == mScroller.getFinalX()) {
                 mRunning = false;
                 return;
@@ -247,14 +204,5 @@ public class HorizontalScrollDrawHelper extends DrawHelper {
     @Override
     public boolean isRunning() {
         return mRunning;
-    }
-
-    @Override
-    public void recycle() {
-        super.recycle();
-        if (mVelocityTracker != null) {
-            mVelocityTracker.recycle();
-            mVelocityTracker = null;
-        }
     }
 }

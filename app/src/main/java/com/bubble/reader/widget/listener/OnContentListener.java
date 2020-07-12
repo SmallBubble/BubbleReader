@@ -7,7 +7,7 @@ import com.bubble.reader.page.bean.PageResult;
  * author：Bubble
  * date：2020/6/21
  * email：1337986595@qq.com
- * Desc：
+ * Desc：内容监听
  */
 public interface OnContentListener {
 
