@@ -1,5 +1,9 @@
 package com.bubble.reader.page.helper;
 
+import android.graphics.Canvas;
+
+import com.bubble.reader.page.bean.PageBean;
+
 /**
  * @author Bubble
  * @date 2020/7/11
@@ -9,5 +13,5 @@ package com.bubble.reader.page.helper;
  * @Desc
  */
 public abstract class PageHelper {
-
+    abstract void onDraw(Canvas canvas, PageBean pageBean);
 }

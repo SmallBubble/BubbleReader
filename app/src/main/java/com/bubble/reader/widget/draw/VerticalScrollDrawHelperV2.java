@@ -43,19 +43,28 @@ public class VerticalScrollDrawHelperV2 extends DrawHelper {
      */
     private boolean mRunning;
     /**
-     * 上次滑动的距离
+     * 相对正常情况下的偏移量
      */
-    private int mLastY = 0;
+    private int mOffsetY = 0;
     private Paint mPaint;
-    private boolean mInited;
+    private boolean mInitialized;
 
     public VerticalScrollDrawHelperV2(PageView pageView) {
         super(pageView);
     }
 
     enum State {
-        UP_FINISHED,
-        DOWN_FINISHED,
+        /**
+         * 获取下一页结束
+         */
+        NEXT_FINISHED,
+        /**
+         * 获取上一页结束
+         */
+        PRE_FINISHED,
+        /**
+         * 空闲
+         */
         IDLE
     }
 
@@ -88,71 +97,96 @@ public class VerticalScrollDrawHelperV2 extends DrawHelper {
                     return;
                 }
                 int moveY = (int) (event.getY() - mStartPoint.y);
-                mLastY += moveY;
-                if (moveY > 0) {
-                    // 往下滑 获取上一页内容
-                    if (mLastY >= 0) {
-                        mState = State.IDLE;
-                    }
-                    if (mState == State.IDLE) {
-                        BubbleLog.e(TAG, "==============================获取上一页============================");
-                        if (mLastY >= mPageHeight) {
-                            mLastY -= mPageHeight;
-                        }
-                        mHasNext = mOnContentListener.onPrePage();
-                        mState = State.DOWN_FINISHED;
-                    }
-                    mNext = false;
-                } else {
-                    // 往下滑 获取下一页内容
-                    if (mLastY <= -mPageHeight) {
-                        mState = State.IDLE;
-                    }
-                    // 状态为 空闲并且需要获取下一页内容
-                    if (mState == State.IDLE) {
-                        BubbleLog.e(TAG, "==============================获取下一页============================");
-                        if (mLastY <= -mPageHeight) {
-                            mLastY += mPageHeight;
-                        }
-                        mState = State.UP_FINISHED;
-                        mHasNext = mOnContentListener.onNextPage();
-                    }
-                    mNext = true;
 
-                }
+                scroll(moveY, true);
                 // 没有内容 不处理了
-                if (mHasNext == null || !mHasNext.isHasNext()) {
-                    return;
-                }
+//                if (mHasNext == null || !mHasNext.isHasNext()) {
+//                    return;
+//                }
                 mRunning = true;
                 mMove = true;
-                BubbleLog.e(TAG, "==============================" + mLastY + "============================");
+
                 mStartPoint.set(event.getX(), event.getY());
                 mPageView.invalidate();
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-//                if (mMove) {
-//                    mTouchPoint.set(event.getX(), event.getY());
-//                    mVelocityTracker.computeCurrentVelocity(1000, 10000);
-//                    float yVelocity = mVelocityTracker.getYVelocity();
-//                    mScroller.fling(0, (int) mTouchPoint.y, 0, (int) yVelocity, 0, 0, -mPageHeight * 10, 10 * mPageHeight);
-//                    mPageView.invalidate();
-//                    if (mVelocityTracker != null)
-//                        mVelocityTracker.clear();
-//                }
+                if (mMove) {
+                    mTouchPoint.set(event.getX(), event.getY());
+                    mVelocityTracker.computeCurrentVelocity(1000, 10000);
+                    float yVelocity = mVelocityTracker.getYVelocity();
+
+                    BubbleLog.e(TAG, "==============================yVelocity" + yVelocity);
+                    mScroller.fling(0, (int) mTouchPoint.y, 0, (int) yVelocity, 0, 0, -mPageHeight * 10, 10 * mPageHeight);
+                    mPageView.invalidate();
+                    if (mVelocityTracker != null)
+                        mVelocityTracker.clear();
+                }
                 break;
+        }
+    }
+
+    private void scroll(int moveY, boolean move) {
+        mOffsetY += moveY;
+        if (moveY == 0) return;
+        BubbleLog.e(TAG, "==============================" + mOffsetY + "============================" + move);
+        if (moveY > 0) {
+            // 往下滑 获取上一页内容
+            if (mState == State.NEXT_FINISHED) {
+                mOnContentListener.onCancel();
+                mState = State.IDLE;
+            }
+
+            if (mOffsetY >= mPageHeight) {
+                mState = State.IDLE;
+            }
+            if (mState == State.IDLE) {
+                BubbleLog.e(TAG, "==============================获取上一页============================");
+                if (mOffsetY >= mPageHeight) {
+                    mOffsetY -= mPageHeight;
+                }
+                mHasNext = mOnContentListener.onPrePage();
+                mState = State.PRE_FINISHED;
+            }
+            if (mNext) {
+//                mOnContentListener.onCancel();
+            }
+            mNext = false;
+        } else {
+            // 往下滑 获取下一页内容
+            if (mState == State.PRE_FINISHED) {
+                // 上次的操作是获取上一页
+                mOnContentListener.onCancel();
+                mState = State.IDLE;
+            }
+            if (mOffsetY <= -mPageHeight) {
+                mState = State.IDLE;
+            }
+
+            // 状态为 空闲并且需要获取下一页内容
+            if (mState == State.IDLE) {
+                BubbleLog.e(TAG, "==============================获取下一页============================");
+                if (mOffsetY <= -mPageHeight) {
+                    mOffsetY += mPageHeight;
+                }
+                mState = State.NEXT_FINISHED;
+                mHasNext = mOnContentListener.onNextPage();
+            }
+            if (!mNext) {
+//                mOnContentListener.onCancel();
+            }
+            mNext = true;
         }
     }
 
     private boolean isNeedGetPrePage() {
         // 移动的距离 大于0 并且小于一页的时候 获取上一页
-        return mLastY >= 0 && mLastY <= mPageHeight;
+        return mOffsetY >= 0 && mOffsetY <= mPageHeight;
     }
 
     private boolean isNeedGetNextPage() {
         // 移动的距离 大于0 并且小于一页的时候 获取上一页
-        return Math.abs(mLastY) <= mPageHeight;
+        return Math.abs(mOffsetY) <= mPageHeight;
     }
 
 
@@ -162,26 +196,42 @@ public class VerticalScrollDrawHelperV2 extends DrawHelper {
             //没有产生移动
             return;
         }
+        drawPage(canvas);
 
+    }
+
+    private void drawPage(Canvas canvas) {
         if (mNext) {
-            int top = mLastY;
             mSrcRect.set(0, 0, mPageWidth, mPageHeight);
-            mDestRect.set(0, top, mPageWidth, top + mPageHeight);
+            mDestRect.set(0, mOffsetY, mPageWidth, mOffsetY + mPageHeight);
             canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
-
-            mSrcRect.set(0, 0, mPageWidth, mPageHeight);
-            mDestRect.set(0, mDestRect.bottom, mPageWidth, mDestRect.bottom + mPageHeight);
+            if (mOffsetY > 0) {
+                // 大于0 说明之前有向下翻页，此时向下翻页的情况摆放（下一页在上，当前页在下）
+                int top = mDestRect.top - mPageHeight;
+                mSrcRect.set(0, 0, mPageWidth, mPageHeight);
+                mDestRect.set(0, top, mPageWidth, mDestRect.top);
+            } else {
+                // 小于0 按照下一页跟着当前页的位置摆放（当前页在上，下一页在下）
+                mSrcRect.set(0, 0, mPageWidth, mPageHeight);
+                mDestRect.set(0, mDestRect.bottom, mPageWidth, mDestRect.bottom + mPageHeight);
+            }
             canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
         } else {
             mSrcRect.set(0, 0, mPageWidth, mPageHeight);
-            mDestRect.set(0, mLastY, mPageWidth, mPageHeight + mLastY);
+            mDestRect.set(0, mOffsetY, mPageWidth, mPageHeight + mOffsetY);
             canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
-
-            mSrcRect.set(0, 0, mPageWidth, mPageHeight);
-            mDestRect.set(0, mDestRect.bottom, mPageWidth, mDestRect.bottom + mPageHeight);
+            if (mOffsetY < 0) {
+                // 小于0 说明之前有往上滑动过 按照下一页跟着当前页的位置摆放（当前页在上，下一页在下）
+                mSrcRect.set(0, 0, mPageWidth, mPageHeight);
+                mDestRect.set(0, mDestRect.bottom, mPageWidth, mDestRect.bottom + mPageHeight);
+            } else {
+                // 大于0 按照正常向下翻页的情况摆放（下一页在上，当前页在下）
+                int top = mDestRect.top - mPageHeight;
+                mSrcRect.set(0, 0, mPageWidth, mPageHeight);
+                mDestRect.set(0, top, mPageWidth, mDestRect.top);
+            }
             canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
         }
-
     }
 
     @Override
@@ -190,33 +240,27 @@ public class VerticalScrollDrawHelperV2 extends DrawHelper {
         if (mScroller != null && mScroller.computeScrollOffset()) {
             if (mScroller.getCurrY() == mScroller.getFinalY()) {
                 mRunning = false;
+                mMove = false;
+                return;
             }
             int dy = (int) (mScroller.getCurrY() - mTouchPoint.y);
-//            BubbleLog.e(TAG, mTouchPoint + "  computeScroll  ---- " + mScroller.getCurrY() + "    " + dy);
-//            scroll(dy, false);
+            BubbleLog.e(TAG, mTouchPoint + "  computeScroll  ---- " + mScroller.getCurrY() + "    " + dy);
+            scroll(dy, false);
             mTouchPoint.set(mScroller.getCurrX(), mScroller.getCurrY());
+            mPageView.invalidate();
         }
     }
 
     @Override
     public void onDrawStatic(Canvas canvas) {
-        if (!mInited) {
-            mInited = true;
+        if (!mInitialized) {
+            BubbleLog.e(TAG, "onDrawStatic 11111");
+            mInitialized = true;
             super.onDrawStatic(canvas);
         } else {
-            int top = mPageView.getCurrentPage().getTranslationY();
-            int pageHeight = mPageView.getCurrentPage().getBitmap().getHeight();
-            mSrcRect.set(0, 0, mPageWidth, pageHeight);
-            mDestRect.set(0, top, mPageWidth, pageHeight - top);
-            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), mSrcRect, mDestRect, null);
-            mPageView.getCurrentPage().setTranslationY(mDestRect.top);
-
-            mSrcRect.set(0, 0, mPageWidth, pageHeight);
-            mDestRect.set(0, mDestRect.bottom, mPageWidth, pageHeight + mDestRect.bottom);
-            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), mSrcRect, mDestRect, null);
-            mPageView.getNextPage().setTranslationY(mDestRect.top);
+            BubbleLog.e(TAG, "onDrawStatic 22222");
+            drawPage(canvas);
         }
-
     }
 
     @Override

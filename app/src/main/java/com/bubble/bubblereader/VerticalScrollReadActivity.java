@@ -51,7 +51,7 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
         mPageCreator = new OfflinePageCreator.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-        mPageCreator.setChapterPage(true);
+        mPageCreator.setChapterPage(false);
         mReadView.setDrawHelper(new VerticalScrollDrawHelperV2(mReadView));
         mReadView.setPageCreator(mPageCreator);
         mPageCreator.addPageListener(new OfflinePageListener() {

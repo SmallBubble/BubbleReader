@@ -149,6 +149,7 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(false);
                 return mPageCreator.onPrePage();
+//                return new PageResult(true, false);
             }
             return new PageResult();
         }
