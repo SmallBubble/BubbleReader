@@ -2,6 +2,7 @@ package com.bubble.reader.page;
 
 import com.bubble.reader.creator.PageCreator;
 import com.bubble.reader.page.bean.ChapterBean;
+import com.bubble.reader.page.bean.IChapter;
 import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.page.listener.OnlineChapterListener;
 import com.bubble.reader.page.listener.OnlineRequestListener;
@@ -20,7 +21,7 @@ import java.util.Map;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc
  */
-public class OnlinePageCreator extends PageCreator {
+public class OnlinePageCreator<T extends IChapter> extends PageCreator {
 
     /**
      * 默认预读一章
@@ -30,7 +31,7 @@ public class OnlinePageCreator extends PageCreator {
     /**
      * 章节
      */
-    private Map<String, ChapterBean> mChapters = new HashMap<>();
+    private Map<String, IChapter> mChapters = new HashMap<>();
     /**
      * 当前章节
      */
@@ -46,10 +47,10 @@ public class OnlinePageCreator extends PageCreator {
     /**
      * 在线请求结果回调
      */
-    private OnlineChapterListener mOnlineChapterListener = new OnlineChapterListener() {
+    private OnlineChapterListener<T> mOnlineChapterListener = new OnlineChapterListener<T>() {
         @Override
-        public void onGetChapterSuccess(boolean isPrepare, ChapterBean chapter) {
-            mChapters.put("chapter" + chapter.getChapterIndex(), chapter);
+        public void onGetChapterSuccess(boolean isPrepare, T chapter) {
+            mChapters.put("chapter" + chapter.getChapterNo(), chapter);
             if (!isPrepare) {
                 notifyPage(PageListener.TYPE_BOOK_FINISHED);
             }
@@ -108,7 +109,7 @@ public class OnlinePageCreator extends PageCreator {
     @Override
     public PageResult onNextPage() {
         // 从缓存中获取下一章
-        ChapterBean chapter = mChapters.get("chapter" + mCurrentChapter.getChapterIndex() + 1);
+        IChapter chapter = mChapters.get("chapter" + mCurrentChapter.getChapterNo() + 1);
         // 如果下一章不为空
         if (chapter != null) {
             mPageResult.set(false, true);
@@ -118,7 +119,7 @@ public class OnlinePageCreator extends PageCreator {
             mOnlineRequestListener.onRequest(false, mCurrentIndex, mOnlineChapterListener);
             mPageResult.set(true, false);
         }
-        int startIndex = chapter == null ? mCurrentChapter.getChapterIndex() + 1 : chapter.getChapterIndex();
+        int startIndex = chapter == null ? mCurrentChapter.getChapterNo() + 1 : chapter.getChapterNo();
         // 预获取指定数量的章节
         for (int i = startIndex; i < startIndex + mPrepareCount; i++) {
             if (i < mTotalChapterCount && mChapters.get("chapter" + i) == null) {// 如果要获取的章节为空才获取

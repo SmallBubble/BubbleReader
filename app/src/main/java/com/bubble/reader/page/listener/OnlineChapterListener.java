@@ -1,6 +1,6 @@
 package com.bubble.reader.page.listener;
 
-import com.bubble.reader.page.bean.ChapterBean;
+import com.bubble.reader.page.bean.IChapter;
 
 /**
  * @author Bubble
@@ -10,8 +10,8 @@ import com.bubble.reader.page.bean.ChapterBean;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc
  */
-public interface OnlineChapterListener {
-    void onGetChapterSuccess(boolean isPrepare, ChapterBean chapter);
+public interface OnlineChapterListener<T extends IChapter> {
+    void onGetChapterSuccess(boolean isPrepare, T chapter);
 
     void onGetChapterFailure(String message);
 }
