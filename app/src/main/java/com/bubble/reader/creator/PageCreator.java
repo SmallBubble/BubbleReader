@@ -42,9 +42,7 @@ public abstract class PageCreator {
     /**
      * 页面监听
      */
-    private List<PageListener> mPageListeners = new ArrayList<>();
-
-
+    protected List<PageListener> mPageListeners = new ArrayList<>();
 
     /**
      * 初始化 数据 子类重写
@@ -137,5 +135,27 @@ public abstract class PageCreator {
 
     public <T extends PageListener> void addPageListener(T pageListener) {
         mPageListeners.add(pageListener);
+    }
+
+    protected void notifyPage(int type) {
+        for (PageListener listener : mPageListeners) {
+            switch (type) {
+                case PageListener.TYPE_PAGE_LOAD_FINISHED:
+                    listener.onPageLoadFinished();
+                    break;
+                case PageListener.TYPE_BOOK_START:
+                    listener.onBookStart();
+                    break;
+                case PageListener.TYPE_BOOK_FINISHED:
+                    listener.onBookFinished();
+                    break;
+                case PageListener.TYPE_ERROR:
+                    listener.onError("加载失败");
+                    break;
+                case PageListener.TYPE_SUCCESS:
+                    listener.onSuccess();
+                    break;
+            }
+        }
     }
 }

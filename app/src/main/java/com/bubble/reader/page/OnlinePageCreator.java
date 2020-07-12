@@ -5,6 +5,7 @@ import com.bubble.reader.page.bean.ChapterBean;
 import com.bubble.reader.page.bean.PageResult;
 import com.bubble.reader.page.listener.OnlineChapterListener;
 import com.bubble.reader.page.listener.OnlineRequestListener;
+import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.PageView;
 
 import java.io.File;
@@ -20,29 +21,53 @@ import java.util.Map;
  * @Desc
  */
 public class OnlinePageCreator extends PageCreator {
-    //    private List<ChapterBean> mChapters = new ArrayList<>();
+
+    /**
+     * 默认预读一章
+     */
+    private static final int DEFAULT_PREPARE_CHAPTER_COUNT = 1;
+
+    /**
+     * 章节
+     */
     private Map<String, ChapterBean> mChapters = new HashMap<>();
-
+    /**
+     * 当前章节
+     */
     protected ChapterBean mCurrentChapter;
-
+    /**
+     * 在线阅读请求
+     */
     private OnlineRequestListener mOnlineRequestListener;
-
+    /**
+     * 当前下标
+     */
     private int mCurrentIndex = 0;
+    /**
+     * 在线请求结果回调
+     */
     private OnlineChapterListener mOnlineChapterListener = new OnlineChapterListener() {
         @Override
-        public void onNextChapter(ChapterBean chapter) {
+        public void onGetChapterSuccess(boolean isPrepare, ChapterBean chapter) {
             mChapters.put("chapter" + chapter.getChapterIndex(), chapter);
+            if (!isPrepare) {
+                notifyPage(PageListener.TYPE_BOOK_FINISHED);
+            }
         }
 
         @Override
-        public void onPreChapter(ChapterBean chapter) {
-            mChapters.put("chapter" + chapter.getChapterIndex(), chapter);
+        public void onGetChapterFailure(String message) {
+
         }
     };
     /**
      * 预读章节数量
      */
-    private int mPrepareCount = 1;
+    private int mPrepareCount = DEFAULT_PREPARE_CHAPTER_COUNT;
+    /**
+     * 章节总数量
+     */
+    private int mTotalChapterCount;
 
     protected OnlinePageCreator(PageView readView) {
         super(readView);
@@ -51,6 +76,7 @@ public class OnlinePageCreator extends PageCreator {
     /*=======================================建造者=========================================*/
     public static class Builder extends PageCreator.Builder<OnlinePageCreator.Builder> {
         private File mFile;
+        OnlineRequestListener mOnlineRequestListener;
 
         public Builder(PageView view) {
             super(view);
@@ -59,11 +85,17 @@ public class OnlinePageCreator extends PageCreator {
         @Override
         public <C extends PageCreator> C build() {
             OnlinePageCreator creator = new OnlinePageCreator(mReadView);
+            creator.setOnlineRequestListener(mOnlineRequestListener);
             return (C) creator;
         }
 
         public OnlinePageCreator.Builder file(String path) {
             return file(new File(path));
+        }
+
+        public OnlinePageCreator.Builder setOnlineRequestListener(OnlineRequestListener onlineRequestListener) {
+            mOnlineRequestListener = onlineRequestListener;
+            return this;
         }
 
         public OnlinePageCreator.Builder file(File file) {
@@ -83,15 +115,15 @@ public class OnlinePageCreator extends PageCreator {
         } else {
             // 下一章为空直接获取内容
             // 让外部获取内容 再通过mOnlineChapterListener 回调给自己
-            mOnlineRequestListener.getNextChapter(mCurrentIndex, mOnlineChapterListener);
+            mOnlineRequestListener.onRequest(false, mCurrentIndex, mOnlineChapterListener);
             mPageResult.set(true, false);
         }
         int startIndex = chapter == null ? mCurrentChapter.getChapterIndex() + 1 : chapter.getChapterIndex();
         // 预获取指定数量的章节
         for (int i = startIndex; i < startIndex + mPrepareCount; i++) {
-            if (mChapters.get("chapter" + i) == null) {// 如果要获取的章节为空才获取
+            if (i < mTotalChapterCount && mChapters.get("chapter" + i) == null) {// 如果要获取的章节为空才获取
                 // 让外部获取内容 再通过mOnlineChapterListener 回调给自己
-                mOnlineRequestListener.getNextChapter(mCurrentIndex, mOnlineChapterListener);
+                mOnlineRequestListener.onRequest(true, mCurrentIndex, mOnlineChapterListener);
             }
         }
         return mPageResult;
@@ -100,10 +132,8 @@ public class OnlinePageCreator extends PageCreator {
 
     @Override
     public PageResult onPrePage() {
-
-
         // 让外部获取内容 再通过mOnlineChapterListener 回调给自己
-        mOnlineRequestListener.getPreChapter(mCurrentIndex, mOnlineChapterListener);
+        mOnlineRequestListener.onRequest(false, mCurrentIndex, mOnlineChapterListener);
         return mPageResult.set(false, false);
     }
 

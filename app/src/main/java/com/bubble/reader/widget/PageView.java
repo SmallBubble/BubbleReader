@@ -125,13 +125,10 @@ public class PageView extends View {
 
     private PageListener mPageListener = new PageListener() {
         @Override
-        public void onNextPage(boolean hasNext) {
-            mLoading = false;
-        }
+        public void onPageLoadFinished() {
+            super.onPageLoadFinished();
 
-        @Override
-        public void onPrePage(boolean hasPre) {
-            mLoading = false;
+
         }
     };
     private OnContentListener mOnContentListener = new OnContentListener() {
@@ -344,7 +341,7 @@ public class PageView extends View {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // 设置当前触摸的点
+        // 让DrawHelper 接管事件 所有的翻页效果都通过helper类来实现
         mDrawHelper.onTouchEvent(this, event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:

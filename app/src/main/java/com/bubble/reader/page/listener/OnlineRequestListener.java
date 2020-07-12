@@ -9,7 +9,12 @@ package com.bubble.reader.page.listener;
  * @Desc
  */
 public interface OnlineRequestListener {
-    void getNextChapter(int currentIndex, OnlineChapterListener listener);
-
-    void getPreChapter(int currentIndex, OnlineChapterListener listener);
+    /**
+     * 请求数据
+     *
+     * @param isPrepare    是否预加载章节 true 是 false 否
+     * @param currentIndex 当前章节的下标
+     * @param listener     结果回调 回调给{@link com.bubble.reader.page.OnlinePageCreator} 进行处理
+     */
+    void onRequest(boolean isPrepare, int currentIndex, OnlineChapterListener listener);
 }

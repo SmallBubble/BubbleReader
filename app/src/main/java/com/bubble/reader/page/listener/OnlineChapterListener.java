@@ -11,7 +11,7 @@ import com.bubble.reader.page.bean.ChapterBean;
  * @Desc
  */
 public interface OnlineChapterListener {
-    void onNextChapter(ChapterBean chapter);
+    void onGetChapterSuccess(boolean isPrepare, ChapterBean chapter);
 
-    void onPreChapter(ChapterBean chapter);
+    void onGetChapterFailure(String message);
 }

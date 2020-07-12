@@ -57,8 +57,8 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements Onl
 //        mPageCreator.setChapterPage(false);
         mPageCreator = new OnlinePageCreator.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
+                .setOnlineRequestListener(this)
                 .build();
-
 
         mReadView.setDrawHelper(new HorizontalMoveDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);
@@ -80,12 +80,6 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements Onl
     }
 
     @Override
-    public void getNextChapter(int currentIndex, OnlineChapterListener listener) {
-
-    }
-
-    @Override
-    public void getPreChapter(int currentIndex, OnlineChapterListener listener) {
-
+    public void onRequest(boolean isPrepare, int currentIndex, OnlineChapterListener listener) {
     }
 }
