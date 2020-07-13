@@ -1,6 +1,6 @@
 package com.bubble.reader.widget.listener;
 
-import com.bubble.reader.page.bean.PageResult;
+import com.bubble.reader.bean.PageResult;
 
 /**
  * @author Bubble

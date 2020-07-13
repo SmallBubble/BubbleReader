@@ -1,4 +1,4 @@
-package com.bubble.reader.page.bean;
+package com.bubble.reader.bean;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;

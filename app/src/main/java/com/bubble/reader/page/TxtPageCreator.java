@@ -8,10 +8,9 @@ import android.text.TextUtils;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.common.utils.Dp2PxUtil;
-import com.bubble.reader.creator.PageCreator;
-import com.bubble.reader.page.bean.PageBitmap;
-import com.bubble.reader.page.bean.PageBean;
-import com.bubble.reader.page.bean.PageResult;
+import com.bubble.reader.bean.PageBitmap;
+import com.bubble.reader.bean.PageBean;
+import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.utils.BookUtils;
 import com.bubble.reader.utils.FileUtils;
 import com.bubble.reader.widget.PageView;
@@ -35,8 +34,8 @@ import java.util.List;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc
  */
-public class OfflinePageCreator extends PageCreator {
-    private static final String TAG = OfflinePageCreator.class.getSimpleName();
+public class TxtPageCreator extends PageCreator {
+    private static final String TAG = TxtPageCreator.class.getSimpleName();
     /**
      * 文件长度
      */
@@ -97,7 +96,7 @@ public class OfflinePageCreator extends PageCreator {
      */
     private boolean mChapterPage;
 
-    public OfflinePageCreator(PageView readView) {
+    public TxtPageCreator(PageView readView) {
         super(readView);
     }
 
@@ -123,7 +122,7 @@ public class OfflinePageCreator extends PageCreator {
 
         @Override
         public <C extends PageCreator> C build() {
-            OfflinePageCreator creator = new OfflinePageCreator(mReadView);
+            TxtPageCreator creator = new TxtPageCreator(mReadView);
             creator.setBookFile(mFile);
             return (C) creator;
         }

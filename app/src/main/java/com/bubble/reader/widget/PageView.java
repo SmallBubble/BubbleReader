@@ -17,9 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.reader.creator.PageCreator;
-import com.bubble.reader.page.bean.PageBitmap;
-import com.bubble.reader.page.bean.PageResult;
+import com.bubble.reader.page.PageCreator;
+import com.bubble.reader.bean.PageBitmap;
+import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.draw.base.DrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;

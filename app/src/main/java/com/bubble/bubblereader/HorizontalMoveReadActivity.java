@@ -9,21 +9,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bubble.reader.page.OfflinePageCreator;
+import com.bubble.reader.page.TxtPageCreator;
 import com.bubble.reader.page.OnlinePageCreator;
 import com.bubble.reader.page.listener.OfflinePageListener;
-import com.bubble.reader.page.listener.OnlineChapterListener;
-import com.bubble.reader.page.listener.OnlineRequestListener;
+import com.bubble.reader.chapter.listener.OnChapterResultListener;
+import com.bubble.reader.chapter.listener.OnChapterRequestListener;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 
 import java.io.File;
 
-public class HorizontalMoveReadActivity extends AppCompatActivity implements OnlineRequestListener {
+public class HorizontalMoveReadActivity extends AppCompatActivity implements OnChapterRequestListener {
 
     PageView mReadView;
 
-    private OfflinePageCreator mPageCreator;
+    private TxtPageCreator mPageCreator;
 
 
     @Override
@@ -80,6 +80,6 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements Onl
     }
 
     @Override
-    public void onRequest(boolean isPrepare, int currentIndex, OnlineChapterListener listener) {
+    public void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener listener) {
     }
 }

@@ -1,4 +1,4 @@
-package com.bubble.reader.page.listener;
+package com.bubble.reader.chapter.listener;
 
 /**
  * @author Bubble
@@ -6,9 +6,9 @@ package com.bubble.reader.page.listener;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc
+ * @Desc 章节请求接口 由外部实现 再通过{@link OnChapterResultListener}回调给章节工程内部
  */
-public interface OnlineRequestListener {
+public interface OnChapterRequestListener {
     /**
      * 请求数据
      *
@@ -16,5 +16,5 @@ public interface OnlineRequestListener {
      * @param currentIndex 当前章节的下标
      * @param listener     结果回调 回调给{@link com.bubble.reader.page.OnlinePageCreator} 进行处理
      */
-    void onRequest(boolean isPrepare, int currentIndex, OnlineChapterListener listener);
+    void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener listener);
 }

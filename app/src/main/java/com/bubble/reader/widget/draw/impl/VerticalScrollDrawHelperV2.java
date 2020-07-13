@@ -9,7 +9,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.OverScroller;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.reader.page.bean.PageResult;
+import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.base.DrawHelper;
 

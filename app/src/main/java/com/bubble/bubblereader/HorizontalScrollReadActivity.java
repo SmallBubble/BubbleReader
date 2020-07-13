@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.bubble.reader.page.listener.OfflinePageListener;
-import com.bubble.reader.page.OfflinePageCreator;
+import com.bubble.reader.page.TxtPageCreator;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
 
@@ -20,7 +20,7 @@ public class HorizontalScrollReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
-    private OfflinePageCreator mPageCreator;
+    private TxtPageCreator mPageCreator;
 
 
     @Override
@@ -48,7 +48,7 @@ public class HorizontalScrollReadActivity extends AppCompatActivity {
 
     private void initRead() {
         File directory = Environment.getExternalStorageDirectory();
-        mPageCreator = new OfflinePageCreator.Builder(mReadView)
+        mPageCreator = new TxtPageCreator.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
         mPageCreator.setChapterPage(false);

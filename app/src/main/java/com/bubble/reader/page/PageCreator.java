@@ -1,7 +1,7 @@
-package com.bubble.reader.creator;
+package com.bubble.reader.page;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.reader.page.bean.PageResult;
+import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.PageView;
 

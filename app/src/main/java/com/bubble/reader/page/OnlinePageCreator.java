@@ -1,15 +1,13 @@
 package com.bubble.reader.page;
 
-import com.bubble.reader.creator.PageCreator;
-import com.bubble.reader.page.bean.ChapterBean;
-import com.bubble.reader.page.bean.IChapter;
-import com.bubble.reader.page.bean.PageResult;
-import com.bubble.reader.page.listener.OnlineChapterListener;
-import com.bubble.reader.page.listener.OnlineRequestListener;
+import com.bubble.reader.bean.ChapterBean;
+import com.bubble.reader.bean.IChapter;
+import com.bubble.reader.bean.PageResult;
+import com.bubble.reader.chapter.listener.OnChapterResultListener;
+import com.bubble.reader.chapter.listener.OnChapterRequestListener;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.PageView;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +37,7 @@ public class OnlinePageCreator<T extends IChapter> extends PageCreator {
     /**
      * 在线阅读请求
      */
-    private OnlineRequestListener mOnlineRequestListener;
+    private OnChapterRequestListener mOnlineRequestListener;
     /**
      * 当前下标
      */
@@ -47,7 +45,7 @@ public class OnlinePageCreator<T extends IChapter> extends PageCreator {
     /**
      * 在线请求结果回调
      */
-    private OnlineChapterListener<T> mOnlineChapterListener = new OnlineChapterListener<T>() {
+    private OnChapterResultListener<T> mOnlineChapterListener = new OnChapterResultListener<T>() {
         @Override
         public void onGetChapterSuccess(boolean isPrepare, T chapter) {
             mChapters.put("chapter" + chapter.getChapterNo(), chapter);
@@ -76,8 +74,7 @@ public class OnlinePageCreator<T extends IChapter> extends PageCreator {
 
     /*=======================================建造者=========================================*/
     public static class Builder extends PageCreator.Builder<OnlinePageCreator.Builder> {
-        private File mFile;
-        OnlineRequestListener mOnlineRequestListener;
+        OnChapterRequestListener mOnlineRequestListener;
 
         public Builder(PageView view) {
             super(view);
@@ -90,20 +87,10 @@ public class OnlinePageCreator<T extends IChapter> extends PageCreator {
             return (C) creator;
         }
 
-        public OnlinePageCreator.Builder file(String path) {
-            return file(new File(path));
-        }
-
-        public OnlinePageCreator.Builder setOnlineRequestListener(OnlineRequestListener onlineRequestListener) {
+        public OnlinePageCreator.Builder setOnlineRequestListener(OnChapterRequestListener onlineRequestListener) {
             mOnlineRequestListener = onlineRequestListener;
             return this;
         }
-
-        public OnlinePageCreator.Builder file(File file) {
-            mFile = file;
-            return this;
-        }
-
     }
 
     @Override
@@ -143,11 +130,11 @@ public class OnlinePageCreator<T extends IChapter> extends PageCreator {
 
     }
 
-    public OnlineRequestListener getOnlineRequestListener() {
+    public OnChapterRequestListener getOnlineRequestListener() {
         return mOnlineRequestListener;
     }
 
-    public void setOnlineRequestListener(OnlineRequestListener onlineRequestListener) {
+    public void setOnlineRequestListener(OnChapterRequestListener onlineRequestListener) {
         mOnlineRequestListener = onlineRequestListener;
     }
 }

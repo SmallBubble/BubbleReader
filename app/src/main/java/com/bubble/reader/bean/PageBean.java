@@ -1,4 +1,4 @@
-package com.bubble.reader.page.bean;
+package com.bubble.reader.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;

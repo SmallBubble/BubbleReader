@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
 
-import com.bubble.reader.page.bean.PageBean;
+import com.bubble.reader.bean.PageBean;
 
 /**
  * @author Bubble

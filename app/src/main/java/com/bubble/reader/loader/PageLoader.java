@@ -1,6 +1,6 @@
 package com.bubble.reader.loader;
 
-import com.bubble.reader.page.bean.PageBean;
+import com.bubble.reader.bean.PageBean;
 
 /**
  * @author Bubble
