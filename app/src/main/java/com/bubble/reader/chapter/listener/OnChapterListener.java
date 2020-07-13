@@ -19,4 +19,16 @@ public interface OnChapterListener {
      * 章节加载完成
      */
     void onChapterLoaded();
+
+    /**
+     * 解析完成
+     */
+    void onComplete();
+
+    /**
+     * 解析错误
+     *
+     * @param e
+     */
+    void onError(Throwable e);
 }

@@ -56,7 +56,6 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
 //                .build();
 //        mPageCreator.setChapterPage(false);
         mPageCreator = new OnlinePageCreator.Builder(mReadView)
-                .file(directory.getAbsoluteFile() + "/test.txt")
                 .setOnlineRequestListener(this)
                 .build();
 

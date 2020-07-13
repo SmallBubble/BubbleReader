@@ -1,6 +1,8 @@
 package com.bubble.reader.chapter;
 
 import com.bubble.reader.bean.TxtChapter;
+import com.bubble.reader.chapter.listener.OnChapterRequestListener;
+import com.bubble.reader.chapter.listener.OnChapterResultListener;
 import com.bubble.reader.utils.BookUtils;
 import com.bubble.reader.utils.FileUtils;
 
@@ -27,6 +29,9 @@ import io.reactivex.schedulers.Schedulers;
  * @Desc Txt文件章节工厂
  */
 public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
+    /**
+     * 要读取得txt文件
+     */
     private File mBookFile;
     /**
      * 随机流
@@ -36,26 +41,60 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
      * 文件
      */
     private MappedByteBuffer mMapFile;
-
+    /**
+     * 文件编码
+     */
     private String mEncoding;
+    /**
+     * 开始下标
+     */
     private int mStartIndex = 0;
+    /**
+     * 文件长度
+     */
+    private int mFileLength;
+    /**
+     * 章节编号
+     */
+    private int mChapterNo = 1;
 
-    DisposableObserver<TxtChapter> mDisposableObserver = new DisposableObserver<TxtChapter>() {
+
+    private DisposableObserver<TxtChapter> mDisposableObserver = new DisposableObserver<TxtChapter>() {
         @Override
-        public void onNext(TxtChapter t) {
+        public void onNext(TxtChapter chapter) {
+            if (!mInitialized) {
+                // 第一次初始化 回调初始化
+                mInitialized = true;
+                mOnChapterListener.onInitialized();
+            } else {
+                mOnChapterListener.onChapterLoaded();
+            }
         }
 
         @Override
         public void onError(Throwable e) {
-
+            mOnChapterListener.onError(e);
         }
 
         @Override
         public void onComplete() {
-            mPageListener.onBookFinished();
+            mOnChapterListener.onComplete();
         }
     };
-    private int mFileLength;
+
+    public void setBookFile(File file) {
+        mBookFile = file;
+    }
+
+    @Override
+    public void onLoadChapter(boolean isNext) {
+        if (isNext) {
+            // 下一章
+            mCurrentChapter = mChapters.get(mCurrentChapter.getChapterName() + (mCurrentChapter.getChapterNo() + 1));
+        } else {
+            mCurrentChapter = mChapters.get(mCurrentChapter.getChapterName() + (mCurrentChapter.getChapterNo() - 1));
+        }
+    }
 
     private void loadChapter() {
         Observable.create(new ObservableOnSubscribe<TxtChapter>() {
@@ -68,9 +107,24 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 .subscribe(mDisposableObserver);
     }
 
+    public TxtChapterFactory() {
+        mOnChapterRequestListener = new OnChapterRequestListener() {
+            @Override
+            public void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener listener) {
+                loadChapter();
+            }
+        };
+    }
+
     @Override
     public String getEncoding() {
         return mEncoding;
+    }
+
+    @Override
+    public void initData() {
+        super.initData();
+        loadChapter();
     }
 
     /**
@@ -96,7 +150,6 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             emitter.onError(e);
             e.printStackTrace();
         } finally {
-
             try {
                 if (mRandomFile != null) {
                     mRandomFile.close();
@@ -125,29 +178,28 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 e.printStackTrace();
             }
             if (BookUtils.checkArticle(paragraphStr)) {
-                break;
+                // 找到一个章节
+                String chapterName = getChapterName();
+                String content = getContent(start);
+
+                TxtChapter chapter = new TxtChapter();
+                chapter.setBookEnd(mFileLength == start);
+                chapter.setBookStart(mStartIndex == 0);
+                chapter.setChapterStart(mStartIndex);
+                chapter.setChapterEnd(start);
+                chapter.setChapterName(chapterName);
+                chapter.setChapterContent(content);
+                chapter.setChapterNo(++mChapterNo);
+                //通知
+                emitter.onNext(chapter);
+                // 添加进缓存
+                mChapters.put(chapterName + mChapterNo, chapter);
             }
             start += paragraph.length;
         }
-        String chapterName = getChapterName();
-        String content = getContent(start);
-
-        TxtChapter chapter = new TxtChapter();
-        chapter.setBookEnd(mFileLength == start);
-        chapter.setBookStart(mStartIndex == 0);
-        chapter.setChapterStart(mStartIndex);
-        chapter.setChapterEnd(start);
-        chapter.setChapterName(chapterName);
-        chapter.setChapterContent(content);
-        chapter.setChapterNo(++mChapterNo);
-
-        emitter.onNext(chapter);
-
-        mChapters.put(chapterName + mChapterNo, chapter);
 
     }
 
-    private int mChapterNo = 1;
 
     /**
      * 获取章节内容
@@ -235,7 +287,8 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     @Override
     public void recycle() {
         super.recycle();
-        // 取消后台读取目录操作操作
+        // 取消子线程读取目录的操作
         mDisposableObserver.dispose();
     }
+
 }

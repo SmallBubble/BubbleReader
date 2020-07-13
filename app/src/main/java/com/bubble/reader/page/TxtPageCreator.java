@@ -517,7 +517,7 @@ public class TxtPageCreator extends PageCreator {
         page.setPageStart(start);
         // 结束位置
         int end = start;
-        int contentHeight = mPadding;
+        int contentHeight = 0;
 //        BubbleLog.e(TAG, "mFontSize  ==  " + mFontSize + "  mLineSpace  ===   " + mLineSpace + "   mParagraphSpace ==  " + mParagraphSpace + "  mPageHeight === " + mPageHeight);
         // 当开始位置不超过文件长度 并且新增一行的高度不超过页面高度时 获取页面内容
         while (end < mFileLength && contentHeight + mFontSize + mLineSpace < mContentHeight) {
@@ -582,7 +582,8 @@ public class TxtPageCreator extends PageCreator {
                 end += paragraph.length;
             }
         }
-        if (page.getPageNum() > 1) {// 如果当前页面不是章节首页，设置+1 页
+        if (page.getPageNum() > 1) {
+            // 如果当前页面不是章节首页，设置+1 页
             page.setPageNum(page.getPageNum() + 1);
         }
         page.setBookStart(start == 0);
@@ -621,7 +622,8 @@ public class TxtPageCreator extends PageCreator {
         // 如果超过文件大小 结尾使用文件长度
         index = Math.min(index, mFileLength - 1);
         int len = index - start;
-        if (len == 0) {// 空行 继续找
+        if (len == 0) {
+            // 空行 继续找
             return readNextParagraph(start + 1);
         }
         //读取找到的段落
@@ -663,16 +665,16 @@ public class TxtPageCreator extends PageCreator {
 //        }
 
 //        canvas.drawColor(mBackgroundColor);
-
-        int y = mFontSize + mPadding;
-        for (int i = 0; i < pageBean.getContent().size(); i++) {
-            String line = pageBean.getContent().get(i);
-            if (line.length() > 0) {
-                canvas.drawText(line, mPadding, y, mPaint);
-                y += mFontSize + mLineSpace;
-            } else {
-                y += mParagraphSpace;
-            }
-        }
+//
+//        int y = mFontSize + mPadding;
+//        for (int i = 0; i < pageBean.getContent().size(); i++) {
+//            String line = pageBean.getContent().get(i);
+//            if (line.length() > 0) {
+//                canvas.drawText(line, mPadding, y, mPaint);
+//                y += mFontSize + mLineSpace;
+//            } else {
+//                y += mParagraphSpace;
+//            }
+//        }
     }
 }

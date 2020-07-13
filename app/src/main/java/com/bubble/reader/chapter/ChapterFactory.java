@@ -1,9 +1,9 @@
 package com.bubble.reader.chapter;
 
-import com.bubble.reader.chapter.listener.OnChapterListener;
-import com.bubble.reader.chapter.listener.OnChapterResultListener;
 import com.bubble.reader.bean.IChapter;
-import com.bubble.reader.page.listener.PageListener;
+import com.bubble.reader.chapter.listener.OnChapterListener;
+import com.bubble.reader.chapter.listener.OnChapterRequestListener;
+import com.bubble.reader.chapter.listener.OnChapterResultListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,10 +18,11 @@ import java.util.Map;
  */
 public class ChapterFactory<T extends IChapter> implements IChapterFactory<T> {
 
-    protected PageListener mPageListener;
     protected Map<String, T> mChapters = new HashMap<>();
     protected T mCurrentChapter;
-    private OnChapterListener mOnChapterListener;
+    protected OnChapterListener mOnChapterListener;
+    protected boolean mInitialized = false;
+    protected OnChapterRequestListener mOnChapterRequestListener;
     protected OnChapterResultListener<T> mOnChapterResultListener = new OnChapterResultListener<T>() {
         @Override
         public void onGetChapterSuccess(boolean isPrepare, T chapter) {
@@ -33,14 +34,36 @@ public class ChapterFactory<T extends IChapter> implements IChapterFactory<T> {
 
         @Override
         public void onGetChapterFailure(String message) {
-//            mOnChapterListener.on(message);
+            mOnChapterListener.onError(new Throwable(message));
         }
     };
 
+    public OnChapterListener getOnChapterListener() {
+        return mOnChapterListener;
+    }
+
+    public void setOnChapterListener(OnChapterListener onChapterListener) {
+        mOnChapterListener = onChapterListener;
+    }
+
+    @Override
+    public void initData() {
+
+    }
 
     @Override
     public int getCurrentChapterNo() {
         return mCurrentChapter.getChapterNo();
+    }
+
+    @Override
+    public String getCurrentContent() {
+        return mCurrentChapter.getContent();
+    }
+
+    @Override
+    public String getCurrentName() {
+        return mCurrentChapter.getChapterName();
     }
 
     @Override
@@ -65,6 +88,35 @@ public class ChapterFactory<T extends IChapter> implements IChapterFactory<T> {
 
     @Override
     public String getEncoding() {
-        return null;
+        return "UTF-8";
+    }
+
+    @Override
+    public boolean isEnd() {
+        return mCurrentChapter.getChapterCount() == mCurrentChapter.getChapterNo();
+    }
+
+    @Override
+    public boolean isStart() {
+        return mCurrentChapter.getChapterNo() == 1;
+    }
+
+    @Override
+    public void onLoadChapter(boolean isNext) {
+        if (isNext) {
+            String key = mCurrentChapter.getChapterName() + (mCurrentChapter.getChapterNo() + 1);
+            T t = mChapters.get(key);
+            if (t == null) {
+                // 获取到下一章为空 请求获取章节
+                mOnChapterRequestListener.onRequest(false, mCurrentChapter.getChapterNo(), mOnChapterResultListener);
+            }
+        } else {
+            String key = mCurrentChapter.getChapterName() + (mCurrentChapter.getChapterNo() - 1);
+            T t = mChapters.get(key);
+            if (t == null) {
+                // 获取到下一章为空 请求获取章节
+                mOnChapterRequestListener.onRequest(false, mCurrentChapter.getChapterNo(), mOnChapterResultListener);
+            }
+        }
     }
 }

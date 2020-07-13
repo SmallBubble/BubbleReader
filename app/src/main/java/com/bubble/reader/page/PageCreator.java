@@ -37,10 +37,6 @@ public abstract class PageCreator {
     private int mPageHeight;
 
     /**
-     * 页边距
-     */
-    protected int mPadding = 0;
-    /**
      * 页面监听
      */
     protected List<PageListener> mPageListeners = new ArrayList<>();
@@ -80,8 +76,8 @@ public abstract class PageCreator {
         mPageResult = new PageResult();
         mPageWidth = mReadView.getMeasuredWidth();
         mPageHeight = mReadView.getMeasuredHeight();
-        mContentWidth = mPageWidth - mPadding * 2;
-        mContentHeight = mPageHeight - mPadding * 2;
+        mContentWidth = mPageWidth ;
+        mContentHeight = mPageHeight;
         BubbleLog.e(TAG, mContentWidth + "   " + mContentHeight);
         initData();
     }
