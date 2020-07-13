@@ -21,7 +21,7 @@ public abstract class PageCreator {
     /**
      * 阅读视图
      */
-    protected PageView mReadView;
+    protected PageView mPageView;
     /**
      * 可绘制高度
      */
@@ -66,7 +66,7 @@ public abstract class PageCreator {
     protected PageResult mPageResult;
 
     protected PageCreator(PageView readView) {
-        mReadView = readView;
+        mPageView = readView;
     }
 
     /**
@@ -74,20 +74,20 @@ public abstract class PageCreator {
      */
     public final void init() {
         mPageResult = new PageResult();
-        mPageWidth = mReadView.getMeasuredWidth();
-        mPageHeight = mReadView.getMeasuredHeight();
+        mPageWidth = mPageView.getMeasuredWidth();
+        mPageHeight = mPageView.getMeasuredHeight();
         mContentWidth = mPageWidth ;
         mContentHeight = mPageHeight;
         BubbleLog.e(TAG, mContentWidth + "   " + mContentHeight);
         initData();
     }
 
-    public PageView getReadView() {
-        return mReadView;
+    public PageView getPageView() {
+        return mPageView;
     }
 
-    public void setReadView(PageView readView) {
-        mReadView = readView;
+    public void setPageView(PageView pageView) {
+        mPageView = pageView;
     }
 
     public int getContentHeight() {

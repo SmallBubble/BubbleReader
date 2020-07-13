@@ -15,9 +15,21 @@ import java.io.Serializable;
  * @Desc
  */
 public class PageBitmap implements Parcelable, Serializable {
+    /**
+     * 要绘制的bitmap
+     */
     private Bitmap mBitmap;
+    /**
+     * 要绘制的内容
+     */
     private PageBean mPageBean;
+    /**
+     * 偏移的距离
+     */
     private int mTranslationY;
+    /**
+     * 类型 1 当前页 2 下一页
+     */
     private int type;
 
     public int getType() {

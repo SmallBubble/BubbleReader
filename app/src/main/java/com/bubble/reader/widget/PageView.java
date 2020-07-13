@@ -38,7 +38,7 @@ import java.util.List;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc  阅读视图
+ * @Desc 阅读视图
  */
 public class PageView extends View {
     private static final String TAG = PageView.class.getSimpleName();
@@ -119,6 +119,7 @@ public class PageView extends View {
                     }
                     pageView.invalidate();
                     break;
+                default:
 
             }
         }

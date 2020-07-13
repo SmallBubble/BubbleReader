@@ -20,21 +20,7 @@ public class PageBean implements Parcelable, Serializable {
      * 章节名称
      */
     private String mChapterName;
-    /**
-     * 是否是书籍开始和结束
-     */
-    private boolean mBookStart;
-    private boolean mBookEnd;
-    /**
-     * 页开始位置 和结束位置
-     */
-    private int mPageStart;
-    private int mPageEnd;
-    /**
-     * 该页所在章节开始位置 和结束位置
-     */
-    private int mChapterStart;
-    private int mChapterEnd;
+    private int mChapterNo;
     /**
      * 章节内容
      */
@@ -53,13 +39,12 @@ public class PageBean implements Parcelable, Serializable {
         mContent = new ArrayList<>();
     }
 
+    public int getChapterNo() {
+        return mChapterNo;
+    }
 
-    public void copyField(String chapterName, int chapterStart, int chapterEnd, int pageCount, int pageNum) {
-        mChapterName = chapterName;
-        mChapterStart = chapterStart;
-        mChapterEnd = chapterEnd;
-        mPageCount = pageCount;
-        mPageNum = pageNum;
+    public void setChapterNo(int chapterNo) {
+        mChapterNo = chapterNo;
     }
 
     public String getChapterName() {
@@ -68,54 +53,6 @@ public class PageBean implements Parcelable, Serializable {
 
     public void setChapterName(String chapterName) {
         mChapterName = chapterName;
-    }
-
-    public boolean isBookStart() {
-        return mBookStart;
-    }
-
-    public void setBookStart(boolean bookStart) {
-        mBookStart = bookStart;
-    }
-
-    public boolean isBookEnd() {
-        return mBookEnd;
-    }
-
-    public void setBookEnd(boolean bookEnd) {
-        mBookEnd = bookEnd;
-    }
-
-    public int getPageStart() {
-        return mPageStart;
-    }
-
-    public void setPageStart(int pageStart) {
-        mPageStart = pageStart;
-    }
-
-    public int getPageEnd() {
-        return mPageEnd;
-    }
-
-    public void setPageEnd(int pageEnd) {
-        mPageEnd = pageEnd;
-    }
-
-    public int getChapterStart() {
-        return mChapterStart;
-    }
-
-    public void setChapterStart(int chapterStart) {
-        mChapterStart = chapterStart;
-    }
-
-    public int getChapterEnd() {
-        return mChapterEnd;
-    }
-
-    public void setChapterEnd(int chapterEnd) {
-        mChapterEnd = chapterEnd;
     }
 
     public List<String> getContent() {
@@ -150,10 +87,7 @@ public class PageBean implements Parcelable, Serializable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mChapterName);
-        dest.writeByte(this.mBookStart ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.mBookEnd ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.mPageStart);
-        dest.writeInt(this.mPageEnd);
+        dest.writeInt(this.mChapterNo);
         dest.writeStringList(this.mContent);
         dest.writeInt(this.mPageCount);
         dest.writeInt(this.mPageNum);
@@ -161,10 +95,7 @@ public class PageBean implements Parcelable, Serializable {
 
     protected PageBean(Parcel in) {
         this.mChapterName = in.readString();
-        this.mBookStart = in.readByte() != 0;
-        this.mBookEnd = in.readByte() != 0;
-        this.mPageStart = in.readInt();
-        this.mPageEnd = in.readInt();
+        this.mChapterNo = in.readInt();
         this.mContent = in.createStringArrayList();
         this.mPageCount = in.readInt();
         this.mPageNum = in.readInt();

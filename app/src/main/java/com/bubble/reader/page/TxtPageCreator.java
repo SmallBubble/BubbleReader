@@ -231,11 +231,11 @@ public class TxtPageCreator extends PageCreator {
             mCancelPage = mVisiblePage;
             BubbleLog.e(TAG, "獲取下一頁");
             // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            drawPage(mPageView.getCurrentPage(), mVisiblePage);
             // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
             mVisiblePage = getNextPageContent(mVisiblePage);
             // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
-            drawPage(mReadView.getNextPage(), mVisiblePage);
+            drawPage(mPageView.getNextPage(), mVisiblePage);
             return mPageResult.set(true, true);
         } else {
             mCancelPage = mVisiblePage;
@@ -244,11 +244,11 @@ public class TxtPageCreator extends PageCreator {
                 return mPageResult.set(false, false);
             }
             // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            drawPage(mPageView.getCurrentPage(), mVisiblePage);
             // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
             mVisiblePage = getNextPageContent(mVisiblePage);
             // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
-            drawPage(mReadView.getNextPage(), mVisiblePage);
+            drawPage(mPageView.getNextPage(), mVisiblePage);
 
             return mPageResult.set(true, true);
         }
@@ -262,15 +262,15 @@ public class TxtPageCreator extends PageCreator {
         }
         if (mChapterPage) {
             mCancelPage = mVisiblePage;
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            drawPage(mPageView.getCurrentPage(), mVisiblePage);
             mVisiblePage = getPrePageContent(mVisiblePage);
-            drawPage(mReadView.getNextPage(), mVisiblePage);
+            drawPage(mPageView.getNextPage(), mVisiblePage);
             return mPageResult.set(true, true);
         } else {
             mCancelPage = mVisiblePage;
-            drawPage(mReadView.getCurrentPage(), mVisiblePage);
+            drawPage(mPageView.getCurrentPage(), mVisiblePage);
             mVisiblePage = getPrePageContent(mVisiblePage);
-            drawPage(mReadView.getNextPage(), mVisiblePage);
+            drawPage(mPageView.getNextPage(), mVisiblePage);
             return mPageResult.set(true, true);
         }
     }
@@ -640,8 +640,8 @@ public class TxtPageCreator extends PageCreator {
      * 绘制静止状态下的页面
      */
     private void drawStatic() {
-        drawPage(mReadView.getCurrentPage(), mVisiblePage);
-        drawPage(mReadView.getNextPage(), mVisiblePage);
+        drawPage(mPageView.getCurrentPage(), mVisiblePage);
+        drawPage(mPageView.getNextPage(), mVisiblePage);
     }
 
     /**

@@ -13,10 +13,11 @@ import com.bubble.reader.utils.PageFactory;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
+import com.bubble.reader.widget.listener.OnContentListener;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -87,7 +88,15 @@ public class TxtPageCreatorV2 extends PageCreator {
         mChapterFactory.setOnChapterListener(new OnChapterListener() {
             @Override
             public void onInitialized() {
-
+                String content = mChapterFactory.getCurrentContent();
+                // 从工厂生成当前章节的页面
+                List<PageBean> pages = PageFactory.getInstance()
+                        .createPages(mChapterFactory.getCurrentName()
+                                , mChapterFactory.getCurrentChapterNo()
+                                , content);
+                mVisiblePage = pages.get(0);
+                mPageView.getCurrentPage().setPageBean(mVisiblePage);
+                mPages.putAll(PageFactory.getInstance().convertToMap(pages));
             }
 
             @Override
@@ -146,37 +155,6 @@ public class TxtPageCreatorV2 extends PageCreator {
         mBookFile = bookFile;
     }
 
-//    /**
-//     * 打开书籍
-//     *
-//     * @param file 文件
-//     */
-//    private void openBook(File file) {
-//        if (!file.exists()) {
-//            // 文件不存在
-//            return;
-//        }
-//        try {
-//            mRandomFile = new RandomAccessFile(mBookFile, "r");
-//            mEncoding = FileUtils.getFileEncoding(mBookFile);
-//            mMapFile = mRandomFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, mBookFile.length());
-//            mFileLength = mMapFile.limit();
-//            mVisiblePage = getNextPageContent(0);
-//            drawStatic();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                if (mRandomFile != null) {
-//                    mRandomFile.close();
-//                    mRandomFile = null;
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
     /*=======================================对外方法阅读=========================================*/
 
     /**
@@ -191,7 +169,7 @@ public class TxtPageCreatorV2 extends PageCreator {
     /**
      * 取消翻页
      * 回复原来的页面
-     * 以下两个帮助类中 会通过{@link PageView#mDrawHelper }中的监听回调 调用该方法
+     * 以下两个帮助类中 会通过 {@link OnContentListener#onCancel()}中的监听回调 调用该方法
      * <p>
      * {@link HorizontalMoveDrawHelper }
      * <p>
@@ -208,181 +186,70 @@ public class TxtPageCreatorV2 extends PageCreator {
     @Override
     public PageResult onNextPage() {
         // 最后一章最后一页
-        if (mChapterFactory.isEnd() && mVisiblePage.isBookEnd()) {
+        if (mChapterFactory.isBookEnd() && mVisiblePage.getPageNum() == mVisiblePage.getPageCount()) {
             return mPageResult.set(false, false);
         }
+        mCancelPage = mVisiblePage;
         //该章节最后一页 获取下一章内容
         if (mVisiblePage.getPageCount() == mVisiblePage.getPageNum()) {
+            // 通知章节工厂 获取下一章
             mChapterFactory.onLoadChapter(true);
+            // 获取当前章内容（上一步获取了下一章 下一章变为当前章）
             String content = mChapterFactory.getCurrentContent();
-
-            PageFactory.getInstance()
-                    .getPages(mChapterFactory.isEnd()
-                            , mChapterFactory.getCurrentName()
+            // 从工厂生成当前章节的页面
+            List<PageBean> pages = PageFactory.getInstance()
+                    .createPages(mChapterFactory.getCurrentName()
                             , mChapterFactory.getCurrentChapterNo()
                             , content);
 
+            mPageView.getCurrentPage().setPageBean(mVisiblePage);
+            mVisiblePage = pages.get(0);
+            mPageView.getNextPage().setPageBean(mVisiblePage);
+            mPages.putAll(PageFactory.getInstance().convertToMap(pages));
         } else {
-            mCancelPage = mVisiblePage;
             // 直接获取Map里面的
-            String key = mChapterFactory.getCurrentName() + mChapterFactory.getCurrentChapterNo() + mVisiblePage.getPageNum();
+            String key = PageFactory.getInstance().getKey(mChapterFactory.getCurrentName(), mChapterFactory.getCurrentChapterNo(), mVisiblePage.getPageNum() + 1);
             mVisiblePage = mPages.get(key);
+            mPageView.getNextPage().setPageBean(mVisiblePage);
         }
         return mPageResult.set(true, true);
-
-//
-//        if (mChapterPage) {
-//            mCancelPage = mVisiblePage;
-//            BubbleLog.e(TAG, "獲取下一頁");
-//            // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-//            drawPage(mReadView.getCurrentPage(), mVisiblePage);
-//            // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
-//            mVisiblePage = getNextPageContent(mVisiblePage);
-//            // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
-//            drawPage(mReadView.getNextPage(), mVisiblePage);
-//            return mPageResult.set(true, true);
-//        } else {
-//            mCancelPage = mVisiblePage;
-//            // 设置取消页为当前可见的页 这时候往下一页方向滑动 也就是说  当滑动距离不足以翻到下一页的时候  会显示未滑动之前的页面
-//            drawPage(mReadView.getCurrentPage(), mVisiblePage);
-//            // 获取新的一页内容 并放到可见页上 这时候假设我们不会取消翻页
-//            mVisiblePage = getNextPageContent(mVisiblePage);
-//            // 绘制可见页内容到原来不可见页上 因为此时我们已经滑动 此时： 可见——>不可见  不可见——>可见
-//            drawPage(mReadView.getNextPage(), mVisiblePage);
-//
-//            return mPageResult.set(true, true);
-//        }
     }
 
     @Override
     public PageResult onPrePage() {
-        // 第一章第一页
-        if (mChapterFactory.isStart() && mVisiblePage.isBookStart()) {
+        // 第一章 第一页
+        if (mChapterFactory.isStart() && mVisiblePage.getPageNum() == 1) {
             return mPageResult.set(false, false);
         }
-        return mPageResult.set(false, false);
-    }
+        // 当前是章节第一页 获取上一章内容
+        if (mVisiblePage.getPageNum() == 1) {
+            // 通知章节工厂 获取上一章
+            mChapterFactory.onLoadChapter(false);
+            // 获取当前章内容（上一步获取了上一章 上一章变为当前章）
+            String content = mChapterFactory.getCurrentContent();
+            // 从工厂生成当前章节的页面
+            List<PageBean> pages = PageFactory.getInstance()
+                    .createPages(mChapterFactory.getCurrentName()
+                            , mChapterFactory.getCurrentChapterNo()
+                            , content);
+            // 获取最后一页
 
+            mPageView.getCurrentPage().setPageBean(mVisiblePage);
+            mVisiblePage = pages.get(pages.size() - 1);
+            mPageView.getNextPage().setPageBean(mVisiblePage);
+            mPages.putAll(PageFactory.getInstance().convertToMap(pages));
+        } else {
+            // 直接获取Map里面的
+            String key = PageFactory.getInstance().getKey(mChapterFactory.getCurrentName(), mChapterFactory.getCurrentChapterNo(), mVisiblePage.getPageNum() - 1);
+            mVisiblePage = mPages.get(key);
 
-    /*=======================================往前阅读=========================================*/
-
-    /**
-     * 获取上一个段落内容
-     *
-     * @param end 结束位置 往前读
-     * @return
-     */
-    private byte[] readPreParagraph(int end) {
-        int index = end;
-        while (index >= 0) {
-            byte b = mMapFile.get(index);
-            if (b == 10) {
-                // 遇到换行符 结束
-                break;
-            }
-            index--;
+            mPageView.getNextPage().setPageBean(mVisiblePage);
         }
-        // 这里是段落内容的总长度（不包括换行符 eg： aaaaa\n   这里的长度 为5）
-        int len = end - index;
-        if (len == 0) {
-            return readPreParagraph(index - 1);
+        if (mVisiblePage != null) {
+            return mPageResult.set(true, true);
+        } else {
+            // 有下一章但是需要一段时间加载
+            return mPageResult.set(true, false);
         }
-        //加上\n 的长度
-        len++;
-        byte[] paragraphByte = new byte[len];
-
-        for (int i = 0; i < len; i++) {
-            paragraphByte[i] = mMapFile.get(index + i + 1);
-        }
-        return paragraphByte;
-    }
-
-
-    /*=======================================往后阅读=========================================*/
-
-    /**
-     * 获取阅读页
-     *
-     * @param start 开始读取位置
-     * @return
-     */
-    private PageBean getPage(int start, String content) {
-        BubbleLog.e(TAG, "========================\n\n===================================");
-
-        try {
-            byte[] bytes = content.getBytes(getEncoding());
-            if (bytes == null) {
-                return null;
-            }
-            int length = bytes.length;
-
-            byte lastB = bytes[0];
-            // 获取一个段落
-            for (int i = start; i < length; i++) {
-                byte b = bytes[i];
-                if (b == 0 && b == 0) {
-                    break;
-                }
-                if (b == 10) {
-                    break;
-                }
-                lastB = b;
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 读取下一个段落
-     *
-     * @param start
-     * @return
-     */
-    private byte[] readNextParagraph(String content, int start) {
-
-        try {
-            byte[] bytes = content.getBytes(getEncoding());
-            int length = bytes.length;
-            //上一个字节
-            byte lastByte = 0;
-            int index = start;
-            while (index < length) {
-                // 文件没有结束
-                byte b = bytes[index];
-
-                if (lastByte == 0 && b == 0) {
-                    // 连续两个空格
-                    break;
-                }
-                // 换行符 读取段落完成
-                if (b == 10) {
-                    break;
-                }
-                // 往后移一位
-                index++;
-                // 记录当前字节
-                lastByte = b;
-            }
-            // 如果超过文件大小 结尾使用文件长度
-            index = Math.min(index, length - 1);
-            int len = index - start;
-            if (len == 0) {
-                // 空行 继续找
-                return readNextParagraph(start + 1);
-            }
-            //读取找到的段落
-            byte[] paragraph = new byte[len];
-            for (int i = 0; i < len; i++) {
-                paragraph[i] = bytes[start + i];
-            }
-            return paragraph;
-
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return new byte[];
     }
 }

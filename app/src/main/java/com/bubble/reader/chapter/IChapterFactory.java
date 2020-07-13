@@ -69,7 +69,7 @@ interface IChapterFactory<T extends IChapter> {
      *
      * @return
      */
-    boolean isEnd();
+    boolean isBookEnd();
 
     /**
      * 是否到书籍开始

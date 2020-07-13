@@ -6,9 +6,10 @@ import android.text.TextUtils;
 import com.bubble.reader.bean.PageBean;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Bubble
@@ -64,7 +65,6 @@ public class PageFactory {
         return sPageFactory;
     }
 
-
     /**
      * 分页
      *
@@ -72,8 +72,8 @@ public class PageFactory {
      * @param content     要分页的内容
      * @return
      */
-    public Map<String, PageBean> getPages(boolean isEnd, String chapterName, int chapterNo, String content) {
-        Map<String, PageBean> pages = new HashMap<>();
+    public List<PageBean> createPages(String chapterName, int chapterNo, String content) {
+        List<PageBean> pages = new ArrayList<>();
         int pageCount = 0;
         String key = "";
         int pageNum = 1;
@@ -107,38 +107,59 @@ public class PageFactory {
                     paragraphStr = paragraphStr.substring(size);
 
                 }
-
-
-                if (checkHeight(contentHeight)) {
+                /**
+                 * 超过高度并且 内容不为空
+                 */
+                if (checkHeight(contentHeight) && !pageBean.getContent().isEmpty()) {
+                    // 也数量和页号加1
                     pageCount++;
                     pageNum++;
+                    // 因为读取了一页 高度置为0
                     contentHeight = 0;
-                    pageBean.setChapterStart(start);
+                    // 设置页面信息
                     pageBean.setChapterName(chapterName);
-                    pageBean.setPageStart(start);
-                    pageBean.setBookEnd(isEnd);
                     pageBean.setPageNum(pageNum);
-                    key = chapterName + "_" + chapterNo + "_" + pageNum;
-                    pages.put(key, pageBean);
-
+                    pageBean.setChapterNo(chapterNo);
+                    pages.add(pageBean);
                     // 重新創建一個新的頁面
                     pageBean = new PageBean();
                 }
 
-                start += paragraph.length;
+                // 判断段落是否剩余文本
+                if (TextUtils.isEmpty(paragraphStr)) {
+                    // 没有剩余 刚好到一页结尾
+                    start += paragraph.length;
+                } else {
+                    // 有剩余 需要加到下一页
+                    start += paragraphStr.getBytes().length;
+                }
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        if (pages.isEmpty()) {
-            Set<Map.Entry<String, PageBean>> entries = pages.entrySet();
-
-            for (Map.Entry<String, PageBean> page : entries) {
-//                page.getValue().setPageCount();
+        // 章节所有的页面都生成出来以后 统一设置 页面数量
+        if (!pages.isEmpty()) {
+            for (PageBean bean : pages) {
+                bean.setPageCount(pageCount);
             }
         }
+        // 返回章节生成的所有页面
         return pages;
     }
+
+    public Map<String, PageBean> convertToMap(List<PageBean> pages) {
+        if (pages == null) {
+            return null;
+        }
+        Map<String, PageBean> mapPages = new HashMap<>();
+        for (PageBean bean : pages) {
+            //以页号作为key存取页面
+            String key = getKey(bean.getChapterName(), bean.getChapterNo(), bean.getPageNum());
+            mapPages.put(key, bean);
+        }
+        return mapPages;
+    }
+
 
     private byte[] getParagraph(byte[] bytes, int start) {
 
@@ -179,6 +200,10 @@ public class PageFactory {
      */
     private boolean checkLineBreak(byte b, byte lastB) {
         return b == 10 || (lastB == 0 && b == 0);
+    }
+
+    public String getKey(String chapterName, int chapterNo, int pageNum) {
+        return chapterName + "_" + chapterNo + "_" + pageNum;
     }
 
 }

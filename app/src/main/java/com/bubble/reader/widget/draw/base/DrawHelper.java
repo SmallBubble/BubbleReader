@@ -1,11 +1,16 @@
 package com.bubble.reader.widget.draw.base;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
 import com.bubble.common.log.BubbleLog;
+import com.bubble.reader.bean.PageBean;
+import com.bubble.reader.bean.PageBitmap;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.listener.OnContentListener;
 
@@ -60,6 +65,18 @@ public abstract class DrawHelper implements IDrawHelper {
 
     private int mTopArea;
     private int mBottomArea;
+    /**
+     * 内间距
+     */
+    private int mPadding;
+    /**
+     * 画笔
+     */
+    private Paint mPaint;
+    /**
+     * 文字颜色
+     */
+    private int mFontColor;
 
     /*=======================================初始化=========================================*/
     public DrawHelper(PageView pageView) {
@@ -73,6 +90,10 @@ public abstract class DrawHelper implements IDrawHelper {
     public final void init() {
         mPageWidth = mPageView.getMeasuredWidth();
         mPageHeight = mPageView.getMeasuredHeight();
+
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setTextSize(mFontSize);
+        mPaint.setColor(mFontColor);
 
         initData();
     }
@@ -175,5 +196,26 @@ public abstract class DrawHelper implements IDrawHelper {
     @Override
     public void setBottomArea(int bottomArea) {
         mBottomArea = bottomArea;
+    }
+
+
+    protected void drawPage(PageBitmap bitmap) {
+        Canvas canvas = new Canvas(bitmap.getBitmap());
+        // 清除原来内容
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        PageBean pageBean = bitmap.getPageBean();
+
+        int y = mFontSize + mPadding;
+
+        for (int i = 0; i < pageBean.getContent().size(); i++) {
+            String line = pageBean.getContent().get(i);
+            if (line.length() > 0) {
+                canvas.drawText(line, mPadding, y, mPaint);
+                y += mFontSize + mLineSpace;
+            } else {
+                y += mParagraphSpace;
+            }
+        }
     }
 }
