@@ -7,11 +7,12 @@ import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.base.DrawHelper;
 
 /**
- * packger：com.bubble.reader.widget.draw
- * author：Bubble
- * date：2020/6/21
- * email：1337986595@qq.com
- * Desc：仿真翻页
+ * @author Bubble
+ * @date 2020/6/21
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc 仿真翻页
  */
 public class SimulationDrawHelper extends DrawHelper {
 

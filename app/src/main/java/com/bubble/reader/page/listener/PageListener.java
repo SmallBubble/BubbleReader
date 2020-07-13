@@ -1,11 +1,12 @@
 package com.bubble.reader.page.listener;
 
 /**
- * packger：com.bubble.reader.page.event
- * author：Bubble
- * date：2020/6/27
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/27
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc
  */
 public abstract class PageListener {
     public final static int TYPE_ERROR = 0x1;

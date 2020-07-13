@@ -28,11 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * packger：com.bubble.reader.page.offline
- * author：Bubble
- * date：2020/6/21
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/21
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc
  */
 public class OfflinePageCreator extends PageCreator {
     private static final String TAG = OfflinePageCreator.class.getSimpleName();

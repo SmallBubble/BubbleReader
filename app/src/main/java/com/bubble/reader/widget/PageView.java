@@ -33,11 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * packger：com.bubble.reader.reader
- * author：Bubble
- * date：2020/6/20
- * email：1337986595@qq.com
- * Desc： 阅读视图
+ * @author Bubble
+ * @date 2020/6/20
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc  阅读视图
  */
 public class PageView extends View {
     private static final String TAG = PageView.class.getSimpleName();

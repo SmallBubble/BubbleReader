@@ -5,13 +5,18 @@ import android.text.TextUtils;
 import java.util.regex.Pattern;
 
 /**
- * packger：com.bubble.reader.utils
- * author：Bubble
- * date：2020/6/21
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/7/4
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc 页面加载类
  */
 public class BookUtils {
+    private static Pattern sPattern1 = Pattern.compile("(☆)(\\s*.*\\s*)(\n|\r|)*");
+    private static Pattern sPattern2 = Pattern.compile("(.*第)([一二三四五六七八九十百千万1234567890]*)[章节卷集部篇回](\\s{1,}.*)(\n|\r|)*");
+    private static Pattern sPattern3 = Pattern.compile("(Chapter)(\\s*.*\\s*)(\n|\r|)*");
+
     /**
      * 检查是否是章节名称
      *
@@ -19,13 +24,16 @@ public class BookUtils {
      * @return
      */
     public static boolean checkArticle(String str) {
-        if (TextUtils.isEmpty(str)) return false;
-        Pattern p = Pattern.compile("(☆)(\\s*.*\\s*)(\n|\r|)*");
-        if (p.matcher(str).find()) return true;
-        p = Pattern.compile("(.*第)([一二三四五六七八九十百千万1234567890]*)[章节卷集部篇回](\\s{1,}.*)(\n|\r|)*");
-        if (p.matcher(str).matches()) return true;
-        p = Pattern.compile("(Chapter)(\\s*.*\\s*)(\n|\r|)*");
-        return p.matcher(str).find();
+        if (TextUtils.isEmpty(str)) {
+            return false;
+        }
+        if (sPattern1.matcher(str).find()) {
+            return true;
+        }
+        if (sPattern2.matcher(str).matches()) {
+            return true;
+        }
+        return sPattern3.matcher(str).find();
     }
 
     /**

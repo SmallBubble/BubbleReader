@@ -6,11 +6,10 @@ import android.content.Context;
 import androidx.multidex.MultiDexApplication;
 
 /**
- * packger：com.bubble.common.base
- * author：Bubble
- * date：2020/6/29
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/29
+ * @email 1337986595@qq.com
+ * @Desc
  */
 public class BaseApplication extends MultiDexApplication {
     private static Application sInstance;

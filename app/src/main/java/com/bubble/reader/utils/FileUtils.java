@@ -5,11 +5,12 @@ import java.io.File;
 import java.io.FileInputStream;
 
 /**
- * packger：com.bubble.reader.utils
- * author：Bubble
- * date：2020/6/21
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/21
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc
  */
 public class FileUtils {
 

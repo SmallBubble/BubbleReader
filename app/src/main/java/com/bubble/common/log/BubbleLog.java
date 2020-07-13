@@ -3,11 +3,10 @@ package com.bubble.common.log;
 import android.util.Log;
 
 /**
- * packger：com.bubble.common.log
- * author：Bubble
- * date：2020/6/20
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/20
+ * @email 1337986595@qq.com
+ * @Desc
  */
 public class BubbleLog {
     private final static String TAG = BubbleLog.class.getSimpleName();

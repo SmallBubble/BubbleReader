@@ -7,8 +7,8 @@ import retrofit2.HttpException;
 
 /**
  * @author WeiJiaxiang
- * Date：2020/7/8
- * Desc：
+ * @date 2020/7/8
+ * @Desc
  */
 public abstract class RequestCallBack<T> extends DisposableObserver<JsonResult<T>> {
 

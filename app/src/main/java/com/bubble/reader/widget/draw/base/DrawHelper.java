@@ -10,11 +10,12 @@ import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.listener.OnContentListener;
 
 /**
- * packger：com.bubble.reader.widget
- * author：Bubble
- * date：2020/6/21
- * email：1337986595@qq.com
- * Desc：绘制内容帮助类  实现不同的滑动效果  继承该类 绘制不同区域
+ * @author Bubble
+ * @date 2020/6/21
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc 绘制内容帮助类  实现不同的滑动效果  继承该类 绘制不同区域
  */
 public abstract class DrawHelper implements IDrawHelper {
     private static final String TAG = DrawHelper.class.getSimpleName();

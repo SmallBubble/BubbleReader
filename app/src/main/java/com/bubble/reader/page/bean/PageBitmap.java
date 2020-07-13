@@ -7,11 +7,12 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 /**
- * packger：com.bubble.reader.page
- * author：Bubble
- * date：2020/6/20
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/20
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc
  */
 public class PageBitmap implements Parcelable, Serializable {
     private Bitmap mBitmap;

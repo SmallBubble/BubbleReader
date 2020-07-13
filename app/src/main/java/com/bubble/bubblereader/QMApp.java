@@ -5,11 +5,10 @@ import com.bubble.common.base.BaseApplication;
 import com.bubble.common.net.NetManager;
 
 /**
- * packger：com.bubble.newqingman
- * author：Bubble
- * date：2020/6/29
- * email：1337986595@qq.com
- * Desc：
+ * @author Bubble
+ * @date 2020/6/29
+ * @email 1337986595@qq.com
+ * @Desc
  */
 public class QMApp extends BaseApplication {
     @Override

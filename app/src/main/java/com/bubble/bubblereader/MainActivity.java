@@ -12,7 +12,7 @@ import com.bubble.common.base.BaseActivity;
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
  * <p>
- * Desc：MainActivity
+ * @Desc MainActivity
  */
 public class MainActivity extends BaseActivity {
 

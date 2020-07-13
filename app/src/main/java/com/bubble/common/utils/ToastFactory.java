@@ -12,8 +12,8 @@ import com.bubble.common.base.BaseApplication;
 
 /**
  * @author WeiJiaxiang
- * Date：2020/7/8
- * Desc：
+ * @date 2020/7/8
+ * @Desc
  */
 public class ToastFactory {
     private static Toast sToast;

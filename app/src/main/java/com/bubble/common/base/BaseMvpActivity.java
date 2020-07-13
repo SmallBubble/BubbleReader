@@ -28,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * Desc：
+ * @Desc
  */
 public abstract class BaseMvpActivity<V extends BaseMvpView> extends RxAppCompatActivity {
     protected V mView;

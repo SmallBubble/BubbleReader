@@ -11,7 +11,7 @@ import android.view.View;
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
  * <p>
- * Desc：Activity基类 继承自{@link BaseMvpActivity} 创建一个默认的View层
+ * @Desc Activity基类 继承自{@link BaseMvpActivity} 创建一个默认的View层
  */
 public abstract class BaseActivity extends BaseMvpActivity<BaseView>  {
     @Override

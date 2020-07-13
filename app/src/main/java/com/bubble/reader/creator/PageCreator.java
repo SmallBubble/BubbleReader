@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * packger：com.bubble.reader.page.offline
- * author：Bubble
- * date：2020/6/20
- * email：1337986595@qq.com
- * Desc：离线内容 分页
+ * @author Bubble
+ * @date 2020/6/20
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc 离线内容 分页
  */
 public abstract class PageCreator {
     private final static String TAG = PageCreator.class.getSimpleName();

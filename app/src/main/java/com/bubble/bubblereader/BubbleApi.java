@@ -7,8 +7,8 @@ import retrofit2.http.POST;
 
 /**
  * @author WeiJiaxiang
- * Date：2020/7/8
- * Desc：
+ * @date 2020/7/8
+ * @Desc
  */
 public interface BubbleApi {
     @POST("")
