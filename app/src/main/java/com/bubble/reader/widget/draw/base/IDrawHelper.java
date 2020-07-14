@@ -19,4 +19,6 @@ public interface IDrawHelper {
      * @param canvas
      */
     void draw(Canvas canvas);
+
+    public void recycle();
 }

@@ -7,8 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +19,7 @@ import com.bubble.reader.bean.PageBitmap;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.page.PageCreator;
 import com.bubble.reader.page.listener.PageListener;
-import com.bubble.reader.widget.draw.base.LoadingDrawHelper;
+import com.bubble.reader.widget.draw.impl.LoadingDrawHelper;
 import com.bubble.reader.widget.draw.base.PageDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
@@ -29,7 +27,6 @@ import com.bubble.reader.widget.draw.impl.SimulationDrawHelper;
 import com.bubble.reader.widget.draw.impl.VerticalScrollDrawHelperV2;
 import com.bubble.reader.widget.listener.OnContentListener;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,8 +80,6 @@ public class PageView extends View {
         return mSettings;
     }
 
-    private LoadHandler mLoadHandler = new LoadHandler(this);
-
     private TurnPageMode mTurnPageMode = TurnPageMode.HORIZONTAL_SCROLL;
 
     enum TurnPageMode {
@@ -106,39 +101,12 @@ public class PageView extends View {
         SIMULATION
     }
 
-    static class LoadHandler extends Handler {
-        private WeakReference<PageView> mReference;
-
-        public LoadHandler(PageView view) {
-            mReference = new WeakReference<>(view);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            PageView pageView = mReference.get();
-            if (pageView == null) {
-                removeCallbacksAndMessages(null);
-                return;
-            }
-            if (msg.what == 1) {
-                if (!pageView.mLoading) {
-                    // 不在加载了 去掉
-                    removeCallbacksAndMessages(null);
-                }
-
-
-                pageView.invalidate();
-            }
-        }
-    }
-
     private PageListener mPageListener = new PageListener() {
         @Override
         public void onPageLoadFinished() {
             super.onPageLoadFinished();
             // 页面加载结束 绘制内容
-            mLoading = false;
+            mLoadingDrawHelper.stopLoading();
             invalidate();
         }
     };
@@ -147,9 +115,11 @@ public class PageView extends View {
         public PageResult onNextPage() {
             if (mPageCreator != null) {
                 exchangePage(true);
-                PageResult hasNext = mPageCreator.onNextPage();
-                mLoading = hasNext.isLoading();
-                return hasNext;
+                PageResult result = mPageCreator.onNextPage();
+                if (result.isLoading()) {
+                    mLoadingDrawHelper.startLoading();
+                }
+                return result;
             }
             return new PageResult();
         }
@@ -159,7 +129,9 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(false);
                 PageResult result = mPageCreator.onPrePage();
-                mLoading = result.isLoading();
+                if (result.isLoading()) {
+                    mLoadingDrawHelper.startLoading();
+                }
                 return result;
             }
             return new PageResult();
@@ -186,7 +158,6 @@ public class PageView extends View {
         mPageBitmaps.get(1).setType(2);
     }
 
-    private boolean mLoading;
     private Paint mPaint;
 
     public PageView(Context context) {
@@ -207,8 +178,6 @@ public class PageView extends View {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.RED);
         mPaint.setTextSize(32);
-
-        mLoadingDrawHelper = new LoadingDrawHelper();
     }
 
     private Runnable mDelayedInit = () -> delayedInit();
@@ -217,8 +186,8 @@ public class PageView extends View {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         removeCallbacks(mDelayedInit);
-        mLoadHandler.removeCallbacksAndMessages(null);
         mDrawHelper.recycle();
+        mLoadingDrawHelper.recycle();
         recycle();
     }
 
@@ -407,12 +376,9 @@ public class PageView extends View {
     protected void onDraw(Canvas canvas) {
         BubbleLog.e(TAG, "onDraw");
         // 绘制加载中
-        if (mLoading) {
-            canvas.drawText("加载中", mWidth / 2f, mHeight / 2f, mPaint);
-        } else {
-            if (mInitialized && checkPageInit()) {
-                mDrawHelper.draw(canvas);
-            }
+        mLoadingDrawHelper.draw(canvas);
+        if (mInitialized && checkPageInit()) {
+            mDrawHelper.draw(canvas);
         }
     }
 

@@ -4,8 +4,15 @@ import android.graphics.Canvas;
 
 import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
-
-public class DrawHelper implements IDrawHelper {
+/**
+ * @author  Bubble
+ * @date    2020/7/14
+ * @email   1337986595@qq.com
+ * @GitHub  https://github.com/SmallBubble
+ * @Gitte   https://gitee.com/SmallCatBubble
+ * @Desc    TODO
+ */
+public abstract class DrawHelper implements IDrawHelper {
     protected PageView mPageView;
     /**
      * 页面宽度
