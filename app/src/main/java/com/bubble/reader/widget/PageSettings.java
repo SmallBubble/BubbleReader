@@ -1,5 +1,7 @@
 package com.bubble.reader.widget;
 
+import android.graphics.Color;
+
 import com.bubble.common.utils.Dp2PxUtil;
 
 /**
@@ -14,11 +16,11 @@ public class PageSettings {
     /**
      * 正文字体大小
      */
-    private int mFontSize = 16;
+    private int mFontSize = 48;
     /**
      * 文字颜色
      */
-    private int mFontColor = 0x333333;
+    private int mFontColor = Color.parseColor("#ff0000");
     /**
      * 行间距
      */

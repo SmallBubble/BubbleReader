@@ -11,8 +11,8 @@ import android.util.Log;
 public class BubbleLog {
     private final static String TAG = BubbleLog.class.getSimpleName();
 
-    public static void e(String message) {
-        Log.e(TAG, message);
+    public static void e(Object message) {
+        Log.e(TAG, String.valueOf(message));
     }
 
     public static void e(String tag, String message) {

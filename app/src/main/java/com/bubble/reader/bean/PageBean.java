@@ -80,6 +80,17 @@ public class PageBean implements Parcelable, Serializable {
     }
 
     @Override
+    public String toString() {
+        return "PageBean{" +
+                "mChapterName='" + mChapterName + '\'' +
+                ", mChapterNo=" + mChapterNo +
+                ", mContent=" + mContent +
+                ", mPageCount=" + mPageCount +
+                ", mPageNum=" + mPageNum +
+                '}';
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

@@ -208,14 +208,16 @@ public abstract class PageDrawHelper extends DrawHelper {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         // 页面所对应的内容
         PageBean pageBean = bitmap.getPageBean();
+        BubbleLog.e("drawPage" + (pageBean == null ? pageBean : pageBean.toString()));
         if (pageBean == null) {
             return;
         }
         canvas.drawColor(Color.YELLOW);
 
         // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
-        mBaseLine = mPageHeight - mSettings.getTopHeight() - mSettings.getPaddingTop();
+        mBaseLine = mSettings.getTopHeight() - mSettings.getPaddingTop();
         mBaseLine += mSettings.getFontSize() - mPaint.descent();
+        BubbleLog.e("drawPage  baseLine" + mBaseLine);
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
             if (line.length() > 0) {
@@ -224,9 +226,12 @@ public abstract class PageDrawHelper extends DrawHelper {
             } else {
                 mBaseLine += mSettings.getParagraphSpace();
             }
+            BubbleLog.e("drawPage  baseLine" + mBaseLine);
         }
+        BubbleLog.e("drawPage  baseLine" + mBaseLine);
         drawTop(canvas);
         drawBottom(canvas);
+        mBaseLine = 0;
     }
 
     /**
