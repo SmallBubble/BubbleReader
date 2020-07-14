@@ -11,7 +11,7 @@ import android.widget.OverScroller;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.base.DrawHelper;
+import com.bubble.reader.widget.draw.base.PageDrawHelper;
 
 /**
  * @author Bubble
@@ -21,7 +21,7 @@ import com.bubble.reader.widget.draw.base.DrawHelper;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 上下滑动
  */
-public class VerticalScrollDrawHelper extends DrawHelper {
+public class VerticalScrollDrawHelper extends PageDrawHelper {
     private static final String TAG = VerticalScrollDrawHelper.class.getSimpleName();
     /**
      * 滑动处理

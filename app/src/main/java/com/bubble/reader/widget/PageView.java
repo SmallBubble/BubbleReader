@@ -21,7 +21,8 @@ import com.bubble.reader.bean.PageBitmap;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.page.PageCreator;
 import com.bubble.reader.page.listener.PageListener;
-import com.bubble.reader.widget.draw.base.DrawHelper;
+import com.bubble.reader.widget.draw.base.LoadingDrawHelper;
+import com.bubble.reader.widget.draw.base.PageDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
 import com.bubble.reader.widget.draw.impl.SimulationDrawHelper;
@@ -46,11 +47,12 @@ public class PageView extends View {
     /**
      * 绘制帮助类
      */
-    private DrawHelper mDrawHelper;
+    private PageDrawHelper mDrawHelper;
+    private LoadingDrawHelper mLoadingDrawHelper;
     /**
      * 绘制帮助类集合 缓存起来 不用每次切换都重新创建一个
      */
-    private ArrayMap<String, DrawHelper> mDrawHelpers = new ArrayMap<>();
+    private ArrayMap<String, PageDrawHelper> mDrawHelpers = new ArrayMap<>();
     /**
      * 获取内容
      */
@@ -119,15 +121,14 @@ public class PageView extends View {
                 removeCallbacksAndMessages(null);
                 return;
             }
-            switch (msg.what) {
-                case 1:
-                    if (!pageView.mLoading) {
-                        removeCallbacksAndMessages(null);
-                    }
-                    pageView.invalidate();
-                    break;
-                default:
+            if (msg.what == 1) {
+                if (!pageView.mLoading) {
+                    // 不在加载了 去掉
+                    removeCallbacksAndMessages(null);
+                }
 
+
+                pageView.invalidate();
             }
         }
     }
@@ -136,8 +137,9 @@ public class PageView extends View {
         @Override
         public void onPageLoadFinished() {
             super.onPageLoadFinished();
-
-
+            // 页面加载结束 绘制内容
+            mLoading = false;
+            invalidate();
         }
     };
     private OnContentListener mOnContentListener = new OnContentListener() {
@@ -146,7 +148,7 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(true);
                 PageResult hasNext = mPageCreator.onNextPage();
-                mLoading = false;
+                mLoading = hasNext.isLoading();
                 return hasNext;
             }
             return new PageResult();
@@ -156,8 +158,9 @@ public class PageView extends View {
         public PageResult onPrePage() {
             if (mPageCreator != null) {
                 exchangePage(false);
-                return mPageCreator.onPrePage();
-//                return new PageResult(true, false);
+                PageResult result = mPageCreator.onPrePage();
+                mLoading = result.isLoading();
+                return result;
             }
             return new PageResult();
         }
@@ -204,6 +207,8 @@ public class PageView extends View {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.RED);
         mPaint.setTextSize(32);
+
+        mLoadingDrawHelper = new LoadingDrawHelper();
     }
 
     private Runnable mDelayedInit = () -> delayedInit();
@@ -213,20 +218,17 @@ public class PageView extends View {
         super.onDetachedFromWindow();
         removeCallbacks(mDelayedInit);
         mLoadHandler.removeCallbacksAndMessages(null);
-//        mDrawHelper.recycle();
-//        recycle();
+        mDrawHelper.recycle();
+        recycle();
     }
 
     private void recycle() {
         for (PageBitmap bitmap : mPageBitmaps) {
             bitmap.getBitmap().recycle();
+            bitmap.setBitmap(null);
             bitmap = null;
         }
         mPageBitmaps.clear();
-//        mCurrentPage.getBitmap().recycle();
-//        mNextPage.getBitmap().recycle();
-//        mCurrentPage = null;
-//        mNextPage = null;
     }
 
     private void delayedInit() {
@@ -241,9 +243,6 @@ public class PageView extends View {
 
     private void initBitmap() {
         BubbleLog.e(TAG, "initBitmap");
-//        mCurrentPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
-//        mCurrentPage.setType(1);
-//        mNextPage = new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888));
         mPageBitmaps.add(new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)));
         mPageBitmaps.get(0).setType(1);
         mPageBitmaps.add(new PageBitmap(Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)));
@@ -325,7 +324,7 @@ public class PageView extends View {
      *
      * @param drawHelper
      */
-    public void setDrawHelper(DrawHelper drawHelper) {
+    public void setDrawHelper(PageDrawHelper drawHelper) {
         mDrawHelper = drawHelper;
         initData();
     }
@@ -399,6 +398,7 @@ public class PageView extends View {
                 }
                 mMove = false;
                 break;
+            default:
         }
         return true;
     }
@@ -406,8 +406,9 @@ public class PageView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         BubbleLog.e(TAG, "onDraw");
-        if (mLoading) {// 绘制加载中
-            canvas.drawText("加载中", mWidth / 2, mHeight / 2, mPaint);
+        // 绘制加载中
+        if (mLoading) {
+            canvas.drawText("加载中", mWidth / 2f, mHeight / 2f, mPaint);
         } else {
             if (mInitialized && checkPageInit()) {
                 mDrawHelper.draw(canvas);
@@ -422,7 +423,6 @@ public class PageView extends View {
      */
     private boolean checkPageInit() {
         return mPageBitmaps != null && mPageBitmaps.size() >= 2;
-//        return mCurrentPage.getBitmap() != null && mNextPage != null;
     }
 
     @Override

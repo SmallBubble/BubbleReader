@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.base.DrawHelper;
+import com.bubble.reader.widget.draw.base.PageDrawHelper;
 
 /**
  * @author Bubble
@@ -14,7 +14,7 @@ import com.bubble.reader.widget.draw.base.DrawHelper;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 仿真翻页
  */
-public class SimulationDrawHelper extends DrawHelper {
+public class SimulationDrawHelper extends PageDrawHelper {
 
     public SimulationDrawHelper(PageView pageView) {
         super(pageView);

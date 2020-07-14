@@ -10,7 +10,7 @@ import android.widget.Scroller;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.base.DrawHelper;
+import com.bubble.reader.widget.draw.base.PageDrawHelper;
 
 /**
  *
@@ -21,7 +21,7 @@ import com.bubble.reader.widget.draw.base.DrawHelper;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 水平平移
  */
-public class HorizontalMoveDrawHelper extends DrawHelper {
+public class HorizontalMoveDrawHelper extends PageDrawHelper {
     private final static String TAG = HorizontalMoveDrawHelper.class.getSimpleName();
     /**
      * 阴影

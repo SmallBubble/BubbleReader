@@ -9,6 +9,7 @@ import com.bubble.reader.bean.PageBean;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.chapter.TxtChapterFactory;
 import com.bubble.reader.chapter.listener.OnChapterListener;
+import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.utils.PageFactory;
 import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
@@ -107,6 +108,7 @@ public class TxtPageCreatorV2 extends PageCreator {
                 mVisiblePage = pages.get(0);
                 mPageView.getCurrentPage().setPageBean(mVisiblePage);
                 mPages.putAll(PageFactory.getInstance().convertToMap(pages));
+                notifyPage(PageListener.TYPE_PAGE_LOAD_FINISHED);
             }
 
             @Override
@@ -200,6 +202,7 @@ public class TxtPageCreatorV2 extends PageCreator {
         if (mChapterFactory.isBookEnd() && mVisiblePage.getPageNum() == mVisiblePage.getPageCount()) {
             return mPageResult.set(false, false);
         }
+
         mCancelPage = mVisiblePage;
         //该章节最后一页 获取下一章内容
         if (mVisiblePage.getPageCount() == mVisiblePage.getPageNum()) {
