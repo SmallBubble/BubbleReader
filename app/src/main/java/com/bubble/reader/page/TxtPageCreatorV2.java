@@ -2,6 +2,7 @@ package com.bubble.reader.page;
 
 import android.graphics.Color;
 import android.text.TextPaint;
+import android.text.TextUtils;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.common.utils.Dp2PxUtil;
@@ -107,7 +108,10 @@ public class TxtPageCreatorV2 extends PageCreator {
                                 , content);
                 mVisiblePage = pages.get(0);
                 mPageView.getCurrentPage().setPageBean(mVisiblePage);
+                mPageView.getNextPage().setPageBean(mVisiblePage);
+
                 mPages.putAll(PageFactory.getInstance().convertToMap(pages));
+                // 这里初始化成功后 通知要监听的地方
                 notifyPage(PageListener.TYPE_PAGE_LOAD_FINISHED);
             }
 
@@ -131,6 +135,7 @@ public class TxtPageCreatorV2 extends PageCreator {
     }
 
     /*=======================================建造者=========================================*/
+
     public static class Builder extends PageCreator.Builder<Builder> {
         private File mFile;
 
@@ -161,7 +166,7 @@ public class TxtPageCreatorV2 extends PageCreator {
     /**
      * 设置要阅读的文件
      *
-     * @param bookFile
+     * @param bookFile txt文件
      * @version v1 只支持txt
      */
     private void setBookFile(File bookFile) {
@@ -207,19 +212,26 @@ public class TxtPageCreatorV2 extends PageCreator {
         //该章节最后一页 获取下一章内容
         if (mVisiblePage.getPageCount() == mVisiblePage.getPageNum()) {
             // 通知章节工厂 获取下一章
-            mChapterFactory.onLoadChapter(true);
+            mChapterFactory.loadChapter(true);
             // 获取当前章内容（上一步获取了下一章 下一章变为当前章）
             String content = mChapterFactory.getCurrentContent();
-            // 从工厂生成当前章节的页面
-            List<PageBean> pages = PageFactory.getInstance()
-                    .createPages(mChapterFactory.getCurrentName()
-                            , mChapterFactory.getCurrentChapterNo()
-                            , content);
+            if (TextUtils.isEmpty(content)) {
+                // 本章内容为空
+                // 获取本章内容
+                mChapterFactory.loadChapter();
 
-            mPageView.getCurrentPage().setPageBean(mVisiblePage);
-            mVisiblePage = pages.get(0);
-            mPageView.getNextPage().setPageBean(mVisiblePage);
-            mPages.putAll(PageFactory.getInstance().convertToMap(pages));
+            } else {
+                // 从工厂生成当前章节的页面
+                List<PageBean> pages = PageFactory.getInstance()
+                        .createPages(mChapterFactory.getCurrentName()
+                                , mChapterFactory.getCurrentChapterNo()
+                                , content);
+
+                mPageView.getCurrentPage().setPageBean(mVisiblePage);
+                mVisiblePage = pages.get(0);
+                mPageView.getNextPage().setPageBean(mVisiblePage);
+                mPages.putAll(PageFactory.getInstance().convertToMap(pages));
+            }
         } else {
             // 直接获取Map里面的
             String key = PageFactory.getInstance().getKey(mChapterFactory.getCurrentName(), mChapterFactory.getCurrentChapterNo(), mVisiblePage.getPageNum() + 1);
@@ -238,7 +250,7 @@ public class TxtPageCreatorV2 extends PageCreator {
         // 当前是章节第一页 获取上一章内容
         if (mVisiblePage.getPageNum() == 1) {
             // 通知章节工厂 获取上一章
-            mChapterFactory.onLoadChapter(false);
+            mChapterFactory.loadChapter(false);
             // 获取当前章内容（上一步获取了上一章 上一章变为当前章）
             String content = mChapterFactory.getCurrentContent();
             // 从工厂生成当前章节的页面

@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc Txt文件章节工厂
  */
-public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
+public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnChapterRequestListener<TxtChapter> {
     private static final String TAG = TxtChapterFactory.class.getSimpleName();
     /**
      * 要读取得txt文件
@@ -59,8 +59,9 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
      * 章节编号
      */
     private int mChapterNo = 0;
-
-
+    /***
+     * 用来回收资源的时候 停止请求
+     */
     private DisposableObserver<TxtChapter> mDisposableObserver = new DisposableObserver<TxtChapter>() {
         @Override
         public void onNext(TxtChapter chapter) {
@@ -89,34 +90,11 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
         mBookFile = file;
     }
 
-    @Override
-    public void onLoadChapter(boolean isNext) {
-        if (isNext) {
-            // 下一章
-            mCurrentChapter = mChapters.get(mCurrentChapter.getChapterName() + (mCurrentChapter.getChapterNo() + 1));
-        } else {
-            mCurrentChapter = mChapters.get(mCurrentChapter.getChapterName() + (mCurrentChapter.getChapterNo() - 1));
-        }
-    }
-
-    private void loadChapter() {
-        Observable.create(new ObservableOnSubscribe<TxtChapter>() {
-            @Override
-            public void subscribe(ObservableEmitter<TxtChapter> emitter) throws Exception {
-                openBook(emitter, mBookFile);
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mDisposableObserver);
-    }
-
     public TxtChapterFactory() {
-        mOnChapterRequestListener = new OnChapterRequestListener() {
-            @Override
-            public void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener listener) {
-                loadChapter();
-            }
-        };
+        /***
+         * 章节获取监听 这里直接用自己作为章节获取的实现类 只需要在自己里面实现逻辑即可
+         */
+        mOnChapterRequestListener = this;
     }
 
     @Override
@@ -127,7 +105,39 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     @Override
     public void initData() {
         super.initData();
-        loadChapter();
+        openBook();
+    }
+
+    @Override
+    public void recycle() {
+        super.recycle();
+        // 取消子线程读取目录的操作
+        mDisposableObserver.dispose();
+    }
+
+    /*****************************************章节获取*****************************************/
+    @Override
+    public void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener<TxtChapter> listener) {
+        TxtChapter chapter = parseChapter(mCurrentChapter.getChapterStart());
+        if (chapter == null) {
+            listener.onGetChapterFailure(isPrepare, "解析失败");
+        } else {
+            listener.onGetChapterSuccess(isPrepare, chapter);
+        }
+    }
+
+    /**
+     * 打开书籍
+     */
+    private void openBook() {
+        Observable.create(new ObservableOnSubscribe<TxtChapter>() {
+            @Override
+            public void subscribe(ObservableEmitter<TxtChapter> emitter) throws Exception {
+                openBook(emitter, mBookFile);
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mDisposableObserver);
     }
 
     /**
@@ -165,6 +175,37 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
         }
     }
 
+    private TxtChapter parseChapter(int start) {
+        // 没有到书籍结尾 直到找到下一章节 这里只要找出end 当前章节的结束位置
+        String paragraphStr = "";
+        while (start < mFileLength) {
+            byte[] paragraph = readNextParagraph(start);
+            try {
+                paragraphStr = new String(paragraph, getEncoding());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            if (BookUtils.checkArticle(paragraphStr)) {
+                // 找到一个章节
+                String chapterName = getChapterName();
+                String content = getContent(mStartIndex);
+                mChapterNo++;
+                TxtChapter chapter = new TxtChapter();
+                chapter.setBookEnd(mFileLength == start);
+                chapter.setBookStart(mStartIndex == 0);
+                chapter.setChapterStart(mStartIndex);
+                chapter.setChapterEnd(start);
+                chapter.setChapterName(chapterName);
+                chapter.setChapterContent(content);
+                chapter.setChapterNo(mChapterNo);
+                BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
+                return chapter;
+            }
+            start += paragraph.length;
+        }
+        return null;
+    }
+
     /**
      * 解析章节
      *
@@ -173,8 +214,8 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     private void parseChapter(ObservableEmitter<TxtChapter> emitter) {
         int start = mStartIndex;
         // 没有到书籍结尾 直到找到下一章节 这里只要找出end 当前章节的结束位置
+        String paragraphStr = "";
         while (start < mFileLength) {
-            String paragraphStr = "";
             byte[] paragraph = readNextParagraph(start);
             try {
                 paragraphStr = new String(paragraph, getEncoding());
@@ -196,7 +237,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 chapter.setChapterNo(mChapterNo);
                 //通知
                 emitter.onNext(chapter);
-                // 添加进缓存
+                // 添加进map 存起来 下次直接读取
                 mChapters.put(chapterName + mChapterNo, chapter);
 
                 BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
@@ -204,9 +245,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             }
             start += paragraph.length;
         }
-
     }
-
 
     /**
      * 获取章节内容
@@ -216,8 +255,8 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
      */
     private String getContent(int end) {
         StringBuilder sb = new StringBuilder();
+        String paragraphStr = "";
         while (end < mFileLength) {
-            String paragraphStr = "";
             byte[] paragraph = readNextParagraph(end);
             try {
                 paragraphStr = new String(paragraph, getEncoding());
@@ -259,10 +298,11 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     private byte[] readNextParagraph(int start) {
         //上一个字节
         byte lastByte = 0;
+        byte b = 0;
         int index = start;
         while (index < mFileLength) {
             // 文件没有结束
-            byte b = mMapFile.get(index);
+            b = mMapFile.get(index);
             // 往后移一位
             index++;
             if (lastByte == 0 && b == 0) {
@@ -279,23 +319,12 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
         // 如果超过文件大小 结尾使用文件长度
         index = Math.min(index, mFileLength);
         int len = Math.max(index - start, 0);
-//        if (len == 0 && index < mFileLength) {
-        // 空行 继续找
-//            return readNextParagraph(start + 1);
-//        }
         //读取找到的段落
         byte[] paragraph = new byte[len];
         for (int i = 0; i < len; i++) {
             paragraph[i] = mMapFile.get(start + i);
         }
         return paragraph;
-    }
-
-    @Override
-    public void recycle() {
-        super.recycle();
-        // 取消子线程读取目录的操作
-        mDisposableObserver.dispose();
     }
 
 }

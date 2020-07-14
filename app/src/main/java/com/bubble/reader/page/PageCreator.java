@@ -120,6 +120,9 @@ public abstract class PageCreator {
         public abstract <C extends PageCreator> C build();
     }
 
+
+    /*=====================================外部监听===================================*/
+
     public <T extends PageListener> void removePageListener(T listener) {
         mPageListeners.remove(listener);
     }
@@ -128,6 +131,11 @@ public abstract class PageCreator {
         mPageListeners.add(pageListener);
     }
 
+    /**
+     * 通知其他页面监听
+     *
+     * @param type
+     */
     protected void notifyPage(int type) {
         for (PageListener listener : mPageListeners) {
             switch (type) {

@@ -17,7 +17,7 @@ import java.util.Map;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc
+ * @Desc 在线分页 创建者
  */
 public class OnlinePageCreator<T extends IChapter> extends PageCreator {
 
@@ -55,9 +55,10 @@ public class OnlinePageCreator<T extends IChapter> extends PageCreator {
         }
 
         @Override
-        public void onGetChapterFailure(String message) {
+        public void onGetChapterFailure(boolean isPrepare, String message) {
 
         }
+
     };
     /**
      * 预读章节数量
@@ -73,6 +74,7 @@ public class OnlinePageCreator<T extends IChapter> extends PageCreator {
     }
 
     /*=======================================建造者=========================================*/
+
     public static class Builder extends PageCreator.Builder<OnlinePageCreator.Builder> {
         OnChapterRequestListener mOnlineRequestListener;
 

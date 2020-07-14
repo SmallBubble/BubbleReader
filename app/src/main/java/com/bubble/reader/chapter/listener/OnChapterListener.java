@@ -8,27 +8,35 @@ package com.bubble.reader.chapter.listener;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc TODO
  */
-public interface OnChapterListener {
+public abstract class OnChapterListener {
 
     /**
      * 初始化完成 打开阅读器后的第一章解析完成
      */
-    void onInitialized();
+    public void onInitialized() {
+
+    }
 
     /**
      * 章节加载完成
      */
-    void onChapterLoaded();
+    public void onChapterLoaded() {
+
+    }
 
     /**
      * 解析完成
      */
-    void onComplete();
+    public void onComplete() {
+
+    }
 
     /**
      * 解析错误
      *
      * @param e
      */
-    void onError(Throwable e);
+    public void onError(Throwable e) {
+
+    }
 }

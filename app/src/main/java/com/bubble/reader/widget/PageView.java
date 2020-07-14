@@ -178,6 +178,8 @@ public class PageView extends View {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.RED);
         mPaint.setTextSize(32);
+        mLoadingDrawHelper = new LoadingDrawHelper(this);
+        mLoadingDrawHelper.init();
     }
 
     private Runnable mDelayedInit = () -> delayedInit();

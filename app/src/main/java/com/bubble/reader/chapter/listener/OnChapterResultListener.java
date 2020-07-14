@@ -22,7 +22,8 @@ public interface OnChapterResultListener<T extends IChapter> {
     /**
      * 获取章节失败
      *
+     * @param isPrepare 是否预读
      * @param message
      */
-    void onGetChapterFailure(String message);
+    void onGetChapterFailure(boolean isPrepare, String message);
 }

@@ -1,5 +1,7 @@
 package com.bubble.reader.chapter.listener;
 
+import com.bubble.reader.bean.IChapter;
+
 /**
  * @author Bubble
  * @date 2020/7/12
@@ -8,7 +10,7 @@ package com.bubble.reader.chapter.listener;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 章节请求接口 由外部实现 再通过{@link OnChapterResultListener}回调给章节工程内部
  */
-public interface OnChapterRequestListener {
+public interface OnChapterRequestListener<T extends IChapter> {
     /**
      * 请求数据
      *
@@ -16,5 +18,5 @@ public interface OnChapterRequestListener {
      * @param currentIndex 当前章节的下标
      * @param listener     结果回调 回调给{@link com.bubble.reader.page.OnlinePageCreator} 进行处理
      */
-    void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener listener);
+    void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener<T> listener);
 }

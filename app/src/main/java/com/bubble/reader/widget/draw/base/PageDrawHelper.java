@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageBean;
 import com.bubble.reader.bean.PageBitmap;
-import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.listener.OnContentListener;
 
@@ -50,20 +49,17 @@ public abstract class PageDrawHelper extends DrawHelper {
      */
     protected boolean mCancel;
 
-    /*=======================================正文区域=========================================*/
     /**
      * 画笔
      */
     private Paint mPaint;
 
-    /*=======================================頂部区域=========================================*/
     /**
      * 顶部画笔
      */
     public Paint mTopPaint;
-    /*=======================================底部区域=========================================*/
     /**
-     * 顶部画笔
+     * 底部画笔
      */
     public Paint mBottomPaint;
     /**
@@ -79,8 +75,12 @@ public abstract class PageDrawHelper extends DrawHelper {
      * 内容监听器
      */
     protected OnContentListener mOnContentListener;
-
+    /**
+     * 绘制内容的基线
+     */
+    private int mBaseLine;
     /*=======================================初始化=========================================*/
+
     public PageDrawHelper(PageView pageView) {
         super(pageView);
         mStartPoint = new PointF();
@@ -89,11 +89,9 @@ public abstract class PageDrawHelper extends DrawHelper {
         mDestRect = new Rect();
     }
 
-    private PageSettings mSettings;
-
     @Override
     public final void init() {
-
+        super.init();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setTextSize(mSettings.getFontSize());
         mPaint.setColor(mSettings.getFontColor());
@@ -109,6 +107,10 @@ public abstract class PageDrawHelper extends DrawHelper {
     }
 
     /*=======================================必须重写方法区=========================================*/
+
+    /**
+     * 初始化
+     */
     protected abstract void initData();
 
     /**
@@ -165,6 +167,11 @@ public abstract class PageDrawHelper extends DrawHelper {
         }
     }
 
+    /**
+     * 滑动
+     */
+    public void computeScroll() {
+    }
 
     /**
      * 回收资源 子类有需要回收的资源重写该方法
@@ -174,10 +181,10 @@ public abstract class PageDrawHelper extends DrawHelper {
 
     }
 
-    /**
-     * 滑动
-     */
-    public void computeScroll() {
+    /*=======================================set/get方法区=========================================*/
+
+    public void setOnContentListener(OnContentListener onContentListener) {
+        mOnContentListener = onContentListener;
     }
 
     /**
@@ -189,11 +196,6 @@ public abstract class PageDrawHelper extends DrawHelper {
         return false;
     }
 
-    /*=======================================set/get方法区=========================================*/
-    public void setOnContentListener(OnContentListener onContentListener) {
-        mOnContentListener = onContentListener;
-    }
-
     /*=======================================绘制相关=========================================*/
 
     /**
@@ -202,7 +204,6 @@ public abstract class PageDrawHelper extends DrawHelper {
      * @param bitmap
      */
     protected void drawPage(PageBitmap bitmap) {
-
         Canvas canvas = new Canvas(bitmap.getBitmap());
         // 清除原来内容
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
@@ -212,15 +213,15 @@ public abstract class PageDrawHelper extends DrawHelper {
             return;
         }
         // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
-        int baseLine = mPageHeight - mSettings.getTopHeight() - mSettings.getPaddingTop();
-        baseLine += mSettings.getFontSize() - mPaint.descent();
+        mBaseLine = mPageHeight - mSettings.getTopHeight() - mSettings.getPaddingTop();
+        mBaseLine += mSettings.getFontSize() - mPaint.descent();
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
             if (line.length() > 0) {
-                canvas.drawText(line, mSettings.getBottomFontColor(), baseLine, mPaint);
-                baseLine += mSettings.getFontSize() + mSettings.getLineSpace();
+                canvas.drawText(line, mSettings.getBottomFontColor(), mBaseLine, mPaint);
+                mBaseLine += mSettings.getFontSize() + mSettings.getLineSpace();
             } else {
-                baseLine += mSettings.getParagraphSpace();
+                mBaseLine += mSettings.getParagraphSpace();
             }
         }
         drawTop(canvas);

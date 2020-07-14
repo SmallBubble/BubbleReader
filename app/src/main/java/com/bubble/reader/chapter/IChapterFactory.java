@@ -83,5 +83,10 @@ interface IChapterFactory<T extends IChapter> {
      *
      * @param isNext
      */
-    void onLoadChapter(boolean isNext);
+    boolean loadChapter(boolean isNext);
+
+    /**
+     * 加載本章章節
+     */
+    void loadChapter();
 }

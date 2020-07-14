@@ -25,6 +25,7 @@ public abstract class DrawHelper implements IDrawHelper {
     protected PageSettings mSettings;
 
     /*=======================================初始化=========================================*/
+
     public DrawHelper(PageView pageView) {
         mPageView = pageView;
     }
