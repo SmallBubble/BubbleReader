@@ -14,23 +14,23 @@ public class PageSettings {
     /**
      * 正文字体大小
      */
-    private int mFontSize;
+    private int mFontSize = 16;
     /**
      * 文字颜色
      */
-    private int mFontColor;
+    private int mFontColor = 0x333333;
     /**
      * 行间距
      */
-    private int mLineSpace;
+    private int mLineSpace = 10;
     /**
      * 标题字体大小
      */
-    private int mTitleFontSize;
+    private int mTitleFontSize = 18;
     /**
      * 段间距
      */
-    private int mParagraphSpace;
+    private int mParagraphSpace = 12;
 
     /**
      * 内间距
@@ -42,7 +42,7 @@ public class PageSettings {
     /**
      * 底部区域
      */
-    private int mBottomHeight;
+    private int mBottomHeight = 32;
     /**
      * 顶部字体大小
      */
@@ -55,7 +55,7 @@ public class PageSettings {
     /**
      * 顶部区域
      */
-    private int mTopHeight;
+    private int mTopHeight = 32;
 
     /**
      * 顶部字体大小

@@ -159,7 +159,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
             parseChapter(emitter);
             // 解析完成
             emitter.onComplete();
-            BubbleLog.e(TAG, "解析成功");
+            BubbleLog.e(TAG, "解析成功" + Thread.currentThread().getName());
         } catch (Exception e) {
             emitter.onError(e);
             e.printStackTrace();
@@ -240,7 +240,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
                 // 添加进map 存起来 下次直接读取
                 mChapters.put(chapterName + mChapterNo, chapter);
 
-                BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
+//                BubbleLog.e(TAG, chapter.getChapterName() + Thread.currentThread().getName());
                 mStartIndex = start;
             }
             start += paragraph.length;
@@ -336,10 +336,9 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
 
         @Override
         public <C extends ChapterFactory> C build() {
-
             TxtChapterFactory factory = new TxtChapterFactory();
             factory.setBookFile(mBookFile);
-            return null;
+            return (C) factory;
         }
 
         public Builder file(File file) {

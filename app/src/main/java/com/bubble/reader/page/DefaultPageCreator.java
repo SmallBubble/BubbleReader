@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageBean;
 import com.bubble.reader.bean.PageResult;
-import com.bubble.reader.chapter.TxtChapterFactory;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.utils.PageFactory;
 import com.bubble.reader.widget.PageView;
@@ -46,7 +45,6 @@ public class DefaultPageCreator extends PageCreator {
      * 取消页
      */
     private PageBean mCancelPage;
-    private TxtChapterFactory mChapterFactory;
 
     public DefaultPageCreator(PageView readView) {
         super(readView);

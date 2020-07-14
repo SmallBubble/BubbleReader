@@ -113,9 +113,11 @@ public class PageFactory {
             int start = 0;
             int contentHeight = 0;
             PageBean pageBean = new PageBean();
+            String paragraphStr = "";
+            String line = "";
+            int size = 0;
             while (start < length) {
                 byte[] paragraph = getParagraph(bytes, start);
-                String paragraphStr = "";
                 paragraphStr = new String(paragraph, mEncoding);
                 // 如果是章节
                 if (BookUtils.checkArticle(paragraphStr)) {
@@ -124,8 +126,8 @@ public class PageFactory {
                 // 段落不为空
                 while (!TextUtils.isEmpty(paragraphStr)) {
                     // 获取一行
-                    int size = mPaint.breakText(paragraphStr, true, mWidth, null);
-                    String line = paragraphStr.substring(0, size);
+                    size = mPaint.breakText(paragraphStr, true, mWidth, null);
+                    line = paragraphStr.substring(0, size);
                     pageBean.getContent().add(line);
                     // 每添加一行 需要加一个字体大小好行间距
                     contentHeight += mLineSpace + mFontSize;
@@ -219,18 +221,17 @@ public class PageFactory {
      * @return
      */
     private byte[] getParagraph(byte[] bytes, int start) {
-
         byte lastB = 0;
         int index = start;
+        byte b;
         while (index < bytes.length) {
-            byte b = bytes[index];
+            b = bytes[index];
+            index++;
             if (checkLineBreak(b, lastB)) {
                 break;
             }
-            index++;
             lastB = b;
         }
-
         byte[] paragraph = new byte[index - start];
         for (int i = 0; i < paragraph.length; i++) {
             paragraph[i] = bytes[i + start];

@@ -3,14 +3,18 @@ package com.bubble.bubblereader;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.bubble.reader.chapter.TxtChapterFactory;
 import com.bubble.reader.page.DefaultPageCreator;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.VerticalScrollDrawHelperV2;
+
+import java.io.File;
 
 public class VerticalScrollReadActivity extends AppCompatActivity {
 
@@ -43,7 +47,12 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
     }
 
     private void initRead() {
+        File directory = Environment.getExternalStorageDirectory();
+        TxtChapterFactory factory = new TxtChapterFactory.Builder()
+                .file(directory.getAbsoluteFile() + "/test.txt")
+                .build();
         mPageCreator = new DefaultPageCreator.Builder(mReadView)
+                .chapterFactory(factory)
                 .build();
         mReadView.setDrawHelper(new VerticalScrollDrawHelperV2(mReadView));
         mReadView.setPageCreator(mPageCreator);
@@ -62,5 +71,11 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
 //                super.onSuccess();
 //            }
 //        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPageCreator.recycle();
     }
 }

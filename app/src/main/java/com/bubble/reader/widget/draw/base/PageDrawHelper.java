@@ -95,7 +95,6 @@ public abstract class PageDrawHelper extends DrawHelper {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setTextSize(mSettings.getFontSize());
         mPaint.setColor(mSettings.getFontColor());
-
         mTopPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTopPaint.setTextSize(mSettings.getTopFontSize());
         mTopPaint.setColor(mSettings.getTopFontColor());
@@ -212,13 +211,15 @@ public abstract class PageDrawHelper extends DrawHelper {
         if (pageBean == null) {
             return;
         }
+        canvas.drawColor(Color.YELLOW);
+
         // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
         mBaseLine = mPageHeight - mSettings.getTopHeight() - mSettings.getPaddingTop();
         mBaseLine += mSettings.getFontSize() - mPaint.descent();
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
             if (line.length() > 0) {
-                canvas.drawText(line, mSettings.getBottomFontColor(), mBaseLine, mPaint);
+                canvas.drawText(line, 0, mBaseLine, mPaint);
                 mBaseLine += mSettings.getFontSize() + mSettings.getLineSpace();
             } else {
                 mBaseLine += mSettings.getParagraphSpace();

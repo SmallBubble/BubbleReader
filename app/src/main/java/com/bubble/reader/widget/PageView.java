@@ -107,7 +107,7 @@ public class PageView extends View {
             super.onPageLoadFinished();
             // 页面加载结束 绘制内容
             mLoadingDrawHelper.stopLoading();
-            invalidate();
+            postInvalidate();
         }
     };
     private OnContentListener mOnContentListener = new OnContentListener() {
@@ -276,8 +276,6 @@ public class PageView extends View {
         }
         mDrawHelper.init();
         if (mPageCreator != null) {
-
-
             mPageCreator.init();
         }
         mInitialized = true;

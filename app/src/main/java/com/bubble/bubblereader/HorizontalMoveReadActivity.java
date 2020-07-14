@@ -51,7 +51,6 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
 
     private void initRead() {
         File directory = Environment.getExternalStorageDirectory();
-
         TxtChapterFactory factory = new TxtChapterFactory.Builder()
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
