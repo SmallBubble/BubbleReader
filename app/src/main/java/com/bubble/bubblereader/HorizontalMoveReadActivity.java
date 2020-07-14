@@ -9,9 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.bubble.reader.chapter.TxtChapterFactory;
 import com.bubble.reader.chapter.listener.OnChapterRequestListener;
 import com.bubble.reader.chapter.listener.OnChapterResultListener;
-import com.bubble.reader.page.TxtPageCreatorV2;
+import com.bubble.reader.page.DefaultPageCreator;
 import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
@@ -22,7 +23,7 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
 
     PageView mReadView;
 
-    private TxtPageCreatorV2 mPageCreator;
+    private DefaultPageCreator mPageCreator;
 
 
     @Override
@@ -50,8 +51,13 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
 
     private void initRead() {
         File directory = Environment.getExternalStorageDirectory();
-        mPageCreator = new TxtPageCreatorV2.Builder(mReadView)
+
+        TxtChapterFactory factory = new TxtChapterFactory.Builder()
                 .file(directory.getAbsoluteFile() + "/test.txt")
+                .build();
+
+        mPageCreator = new DefaultPageCreator.Builder(mReadView)
+                .chapterFactory(factory)
                 .build();
         mReadView.setDrawHelper(new HorizontalMoveDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);

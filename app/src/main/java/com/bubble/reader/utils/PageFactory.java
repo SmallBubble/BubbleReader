@@ -17,7 +17,7 @@ import java.util.Map;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc TODO
+ * @Desc 页面工厂
  */
 public class PageFactory {
     private static PageFactory sPageFactory;
@@ -192,6 +192,12 @@ public class PageFactory {
         return pages;
     }
 
+    /**
+     * 转换成map
+     *
+     * @param pages list
+     * @return map
+     */
     public Map<String, PageBean> convertToMap(List<PageBean> pages) {
         if (pages == null) {
             return null;
@@ -205,7 +211,13 @@ public class PageFactory {
         return mapPages;
     }
 
-
+    /**
+     * 获取段落
+     *
+     * @param bytes
+     * @param start
+     * @return
+     */
     private byte[] getParagraph(byte[] bytes, int start) {
 
         byte lastB = 0;
@@ -247,6 +259,14 @@ public class PageFactory {
         return b == 10 || (lastB == 0 && b == 0);
     }
 
+    /**
+     * 获取key
+     *
+     * @param chapterName
+     * @param chapterNo
+     * @param pageNum
+     * @return
+     */
     public String getKey(String chapterName, int chapterNo, int pageNum) {
         return chapterName + "_" + chapterNo + "_" + pageNum;
     }

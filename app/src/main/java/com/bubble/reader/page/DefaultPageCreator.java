@@ -1,24 +1,18 @@
 package com.bubble.reader.page;
 
-import android.graphics.Color;
-import android.text.TextPaint;
 import android.text.TextUtils;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.common.utils.Dp2PxUtil;
 import com.bubble.reader.bean.PageBean;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.chapter.TxtChapterFactory;
-import com.bubble.reader.chapter.listener.OnChapterListener;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.utils.PageFactory;
-import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
 import com.bubble.reader.widget.listener.OnContentListener;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,35 +23,16 @@ import java.util.Map;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc
+ * @Desc 页面生成器(默认的) 可以自己继承{@link PageCreator } 实现自己的生成器
  */
-public class TxtPageCreatorV2 extends PageCreator {
-    private static final String TAG = TxtPageCreatorV2.class.getSimpleName();
+public class DefaultPageCreator extends PageCreator {
+    private static final String TAG = DefaultPageCreator.class.getSimpleName();
     /**
      * 解析出来的页面
      */
     private Map<String, PageBean> mPages = new HashMap<>();
 
-    /**
-     * 字体大小
-     */
-    private int mFontSize = Dp2PxUtil.dip2px(64);
-    ;
-    /**
-     * 行距
-     */
-    private int mLineSpace = Dp2PxUtil.dip2px(12);
 
-    /**
-     * 画笔 用于测量文字
-     */
-    private TextPaint mPaint;
-    /**
-     * 段间距
-     */
-    private int mParagraphSpace = Dp2PxUtil.dip2px(30);
-
-    private File mBookFile;
     /**
      * 可见页
      */
@@ -71,107 +46,33 @@ public class TxtPageCreatorV2 extends PageCreator {
      * 取消页
      */
     private PageBean mCancelPage;
-
     private TxtChapterFactory mChapterFactory;
-    private PageSettings mSettings;
 
-    public TxtPageCreatorV2(PageView readView) {
+    public DefaultPageCreator(PageView readView) {
         super(readView);
     }
 
     @Override
     protected void initData() {
-        mPaint = new TextPaint();
-        mPaint.setAntiAlias(true);
-        mPaint.setTextSize(mFontSize);
-        mPaint.setColor(Color.RED);
-        mPaint.setSubpixelText(true);
-        mChapterFactory = new TxtChapterFactory();
-        mChapterFactory.setBookFile(mBookFile);
-        mSettings = mPageView.getSettings();
-        PageFactory.getInstance()
-                .height(mContentHeight)
-                .width(mContentWidth)
-                .lineSpace(mSettings.getLineSpace())
-                .paragraphSpace(mSettings.getParagraphSpace())
-                .fontSize(mSettings.getFontSize());
-
-        mChapterFactory.setOnChapterListener(new OnChapterListener() {
-            @Override
-            public void onInitialized() {
-                String content = mChapterFactory.getCurrentContent();
-                // 从工厂生成当前章节的页面
-                List<PageBean> pages = PageFactory.getInstance()
-                        .setEncoding(getEncoding())
-                        .createPages(mChapterFactory.getCurrentName()
-                                , mChapterFactory.getCurrentChapterNo()
-                                , content);
-                mVisiblePage = pages.get(0);
-                mPageView.getCurrentPage().setPageBean(mVisiblePage);
-                mPageView.getNextPage().setPageBean(mVisiblePage);
-
-                mPages.putAll(PageFactory.getInstance().convertToMap(pages));
-                // 这里初始化成功后 通知要监听的地方
-                notifyPage(PageListener.TYPE_PAGE_LOAD_FINISHED);
-            }
-
-            @Override
-            public void onChapterLoaded() {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-        });
-        // 开始解析书籍
-        mChapterFactory.initData();
     }
 
     /*=======================================建造者=========================================*/
 
-    public static class Builder extends PageCreator.Builder<Builder> {
-        private File mFile;
+    public static class Builder extends PageCreator.Builder<DefaultPageCreator, Builder> {
 
         public Builder(PageView view) {
             super(view);
         }
 
         @Override
-        public <C extends PageCreator> C build() {
-            TxtPageCreatorV2 creator = new TxtPageCreatorV2(mReadView);
-            creator.setBookFile(mFile);
-            return (C) creator;
+        protected DefaultPageCreator onBuild() {
+            DefaultPageCreator creator = new DefaultPageCreator(mReadView);
+            return creator;
         }
-
-        public Builder file(String path) {
-            return file(new File(path));
-        }
-
-        public Builder file(File file) {
-            mFile = file;
-            return this;
-        }
-
     }
 
     /*=======================================私有方法阅读=========================================*/
 
-    /**
-     * 设置要阅读的文件
-     *
-     * @param bookFile txt文件
-     * @version v1 只支持txt
-     */
-    private void setBookFile(File bookFile) {
-        mBookFile = bookFile;
-    }
 
     /*=======================================对外方法阅读=========================================*/
 
@@ -200,6 +101,28 @@ public class TxtPageCreatorV2 extends PageCreator {
         BubbleLog.e(TAG, "mCancel ====  drawStatic");
     }
 
+    @Override
+    public void onChapterInitialized() {
+        String content = mChapterFactory.getCurrentContent();
+        // 从工厂生成当前章节的页面
+        List<PageBean> pages = PageFactory.getInstance()
+                .setEncoding(getEncoding())
+                .createPages(mChapterFactory.getCurrentName()
+                        , mChapterFactory.getCurrentChapterNo()
+                        , content);
+        mVisiblePage = pages.get(0);
+        mPageView.getCurrentPage().setPageBean(mVisiblePage);
+        mPageView.getNextPage().setPageBean(mVisiblePage);
+
+        mPages.putAll(PageFactory.getInstance().convertToMap(pages));
+        // 这里初始化成功后 通知要监听的地方
+        notifyPage(PageListener.TYPE_PAGE_LOAD_FINISHED);
+    }
+
+    @Override
+    public void onCurrentChapterLoaded() {
+
+    }
 
     @Override
     public PageResult onNextPage() {
@@ -268,14 +191,15 @@ public class TxtPageCreatorV2 extends PageCreator {
             // 直接获取Map里面的
             String key = PageFactory.getInstance().getKey(mChapterFactory.getCurrentName(), mChapterFactory.getCurrentChapterNo(), mVisiblePage.getPageNum() - 1);
             mVisiblePage = mPages.get(key);
-
             mPageView.getNextPage().setPageBean(mVisiblePage);
         }
         if (mVisiblePage != null) {
+            // 直接生成 有下一章 已经加载完成
             return mPageResult.set(true, true);
         } else {
             // 有下一章但是需要一段时间加载
             return mPageResult.set(true, false);
         }
     }
+
 }

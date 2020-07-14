@@ -3,24 +3,21 @@ package com.bubble.bubblereader;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bubble.reader.page.TxtPageCreatorV2;
+import com.bubble.reader.page.DefaultPageCreator;
 import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
-
-import java.io.File;
 
 public class HorizontalScrollReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
-    private TxtPageCreatorV2 mPageCreator;
+    private DefaultPageCreator mPageCreator;
 
 
     @Override
@@ -47,9 +44,7 @@ public class HorizontalScrollReadActivity extends AppCompatActivity {
     }
 
     private void initRead() {
-        File directory = Environment.getExternalStorageDirectory();
-        mPageCreator = new TxtPageCreatorV2.Builder(mReadView)
-                .file(directory.getAbsoluteFile() + "/test.txt")
+        mPageCreator = new DefaultPageCreator.Builder(mReadView)
                 .build();
         mReadView.setDrawHelper(new HorizontalScrollDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);

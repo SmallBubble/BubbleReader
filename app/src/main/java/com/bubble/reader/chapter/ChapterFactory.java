@@ -182,4 +182,22 @@ public class ChapterFactory<T extends IChapter> implements IChapterFactory<T>, O
             mOnChapterListener.onError(new Throwable(message));
         }
     }
+
+
+    public static abstract class Builder<T extends ChapterFactory.Builder> {
+        protected ChapterFactory mChapterFactory;
+
+        public Builder() {
+
+        }
+
+        /**
+         * 创建一个创建者
+         *
+         * @return
+         */
+        public abstract <C extends ChapterFactory> C build();
+    }
+
+
 }

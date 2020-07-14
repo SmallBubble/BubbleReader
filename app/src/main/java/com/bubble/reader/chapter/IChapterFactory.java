@@ -4,7 +4,15 @@ import com.bubble.reader.bean.IChapter;
 
 import java.util.Map;
 
-interface IChapterFactory<T extends IChapter> {
+/**
+ * @author  Bubble
+ * @date    2020/7/14
+ * @email   1337986595@qq.com
+ * @GitHub  https://github.com/SmallBubble
+ * @Gitte   https://gitee.com/SmallCatBubble
+ * @Desc    TODO
+ */
+public interface IChapterFactory<T extends IChapter> {
     /**
      * 初始化工厂
      */

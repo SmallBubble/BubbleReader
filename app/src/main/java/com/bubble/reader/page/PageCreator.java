@@ -2,7 +2,12 @@ package com.bubble.reader.page;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageResult;
+import com.bubble.reader.chapter.ChapterFactory;
+import com.bubble.reader.chapter.IChapterFactory;
+import com.bubble.reader.chapter.TxtChapterFactory;
+import com.bubble.reader.chapter.listener.OnChapterListener;
 import com.bubble.reader.page.listener.PageListener;
+import com.bubble.reader.utils.PageFactory;
 import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
 
@@ -17,7 +22,7 @@ import java.util.List;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 离线内容 分页
  */
-public abstract class PageCreator {
+public abstract class PageCreator extends OnChapterListener {
     private final static String TAG = PageCreator.class.getSimpleName();
     /**
      * 阅读视图
@@ -59,6 +64,12 @@ public abstract class PageCreator {
      * 阅读页返回结果
      */
     protected PageResult mPageResult;
+    /**
+     * 章节工厂
+     */
+    protected ChapterFactory mChapterFactory;
+
+    private PageSettings mSettings;
 
     protected PageCreator(PageView readView) {
         mPageView = readView;
@@ -68,11 +79,23 @@ public abstract class PageCreator {
      * 通用數據初始化
      */
     public final void init() {
+        if (mChapterFactory == null) {
+            throw new RuntimeException("请设置章节工厂");
+        }
+        mSettings = mPageView.getSettings();
+        mContentWidth = mPageView.getMeasuredWidth() - mSettings.getPaddingLeft() - mSettings.getPaddingRight();
+        mContentHeight = mPageView.getMeasuredHeight() - mSettings.getTopHeight() - mSettings.getBottomHeight() - mSettings.getPaddingTop() - mSettings.getPaddingBottom();
         mPageResult = new PageResult();
-        PageSettings settings = mPageView.getSettings();
-        mContentWidth = mPageView.getMeasuredWidth() - settings.getPaddingLeft() - settings.getPaddingRight();
-        mContentHeight = mPageView.getMeasuredHeight() - settings.getTopHeight() - settings.getBottomHeight() - settings.getPaddingTop() - settings.getPaddingBottom();
         BubbleLog.e(TAG, mContentWidth + "   " + mContentHeight);
+
+        PageFactory.getInstance()
+                .height(mContentHeight)
+                .width(mContentWidth)
+                .lineSpace(mSettings.getLineSpace())
+                .paragraphSpace(mSettings.getParagraphSpace())
+                .fontSize(mSettings.getFontSize());
+        mChapterFactory.setOnChapterListener(this);
+        mChapterFactory.initData();
         initData();
     }
 
@@ -100,13 +123,29 @@ public abstract class PageCreator {
         mContentWidth = contentWidth;
     }
 
+    public List<PageListener> getPageListeners() {
+        return mPageListeners;
+    }
+
+    public void setPageListeners(List<PageListener> pageListeners) {
+        mPageListeners = pageListeners;
+    }
+
+    public IChapterFactory getChapterFactory() {
+        return mChapterFactory;
+    }
+
+    public void setChapterFactory(ChapterFactory chapterFactory) {
+        mChapterFactory = chapterFactory;
+    }
+
     public void onCancel() {
 
     }
 
-    public static abstract class Builder<T extends Builder> {
+    public static abstract class Builder<C extends PageCreator, T extends Builder> {
         protected PageView mReadView;
-        protected PageCreator mPageCreator;
+        protected ChapterFactory mChapterFactory;
 
         public Builder(PageView view) {
             mReadView = view;
@@ -117,9 +156,36 @@ public abstract class PageCreator {
          *
          * @return
          */
-        public abstract <C extends PageCreator> C build();
+        public C build() {
+            C pageCreator = onBuild();
+            pageCreator.setChapterFactory(mChapterFactory);
+            return pageCreator;
+        }
+
+        /**
+         * 建造的时候子类回调 子类需要的信息在这个方法设置
+         *
+         * @return 返回一个页面生成器
+         */
+        protected abstract C onBuild();
+
+        /**
+         * 设置章节工厂
+         *
+         * @param factory 工厂
+         * @return
+         */
+        public T chapterFactory(TxtChapterFactory factory) {
+            mChapterFactory = factory;
+            return (T) this;
+        }
     }
 
+    public void recycle() {
+        if (mChapterFactory != null) {
+            mChapterFactory.recycle();
+        }
+    }
 
     /*=====================================外部监听===================================*/
 
@@ -154,7 +220,27 @@ public abstract class PageCreator {
                 case PageListener.TYPE_SUCCESS:
                     listener.onSuccess();
                     break;
+                default:
             }
         }
+    }
+
+    /**
+     * 章节初始化完成 加载完第一章
+     */
+    public abstract void onChapterInitialized();
+
+    public abstract void onCurrentChapterLoaded();
+
+    @Override
+    public void onInitialized() {
+        super.onInitialized();
+        onChapterInitialized();
+    }
+
+    @Override
+    public void onChapterLoaded() {
+        super.onChapterLoaded();
+        onCurrentChapterLoaded();
     }
 }

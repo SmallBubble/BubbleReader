@@ -327,4 +327,29 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
         return paragraph;
     }
 
+    public static class Builder extends ChapterFactory.Builder<Builder> {
+        private File mBookFile;
+
+        public Builder() {
+            super();
+        }
+
+        @Override
+        public <C extends ChapterFactory> C build() {
+
+            TxtChapterFactory factory = new TxtChapterFactory();
+            factory.setBookFile(mBookFile);
+            return null;
+        }
+
+        public Builder file(File file) {
+            mBookFile = file;
+            return this;
+        }
+
+        public Builder file(String path) {
+            return file(new File(path));
+        }
+
+    }
 }
