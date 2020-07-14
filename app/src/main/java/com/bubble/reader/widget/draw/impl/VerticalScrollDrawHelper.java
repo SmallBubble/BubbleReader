@@ -101,10 +101,12 @@ public class VerticalScrollDrawHelper extends PageDrawHelper {
                     float yVelocity = mVelocityTracker.getYVelocity();
                     mScroller.fling(0, (int) mTouchPoint.y, 0, (int) yVelocity, 0, 0, -mPageHeight * 10, 10 * mPageHeight);
                     mPageView.invalidate();
-                    if (mVelocityTracker != null)
+                    if (mVelocityTracker != null) {
                         mVelocityTracker.clear();
+                    }
                 }
                 break;
+            default:
         }
     }
 

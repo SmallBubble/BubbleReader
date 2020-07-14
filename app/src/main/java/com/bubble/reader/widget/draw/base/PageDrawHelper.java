@@ -147,26 +147,6 @@ public abstract class PageDrawHelper extends DrawHelper {
     }
 
     /**
-     * 绘制静止时的页面
-     * <p>
-     * <p>
-     * 默认情况下 取消状态 绘制当前页  未取消（翻页状态） 绘制新页（上一页/下一页）
-     *
-     * @param canvas 画布
-     */
-    public void onDrawStatic(Canvas canvas) {
-        BubbleLog.e(TAG, "onDrawStatic mCancel ====  " + mCancel);
-        if (mCancel) {
-            // 取消翻页（绘制原来的页）
-            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), 0, 0, null);
-            mCancel = false;
-        } else {
-            // 没取消翻页 绘制新的一页（上一页或者下一页 根据滑动方向决定）
-            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), 0, 0, null);
-        }
-    }
-
-    /**
      * 滑动
      */
     public void computeScroll() {
@@ -196,6 +176,26 @@ public abstract class PageDrawHelper extends DrawHelper {
     }
 
     /*=======================================绘制相关=========================================*/
+
+    /**
+     * 绘制静止时的页面
+     * <p>
+     * <p>
+     * 默认情况下 取消状态 绘制当前页  未取消（翻页状态） 绘制新页（上一页/下一页）
+     *
+     * @param canvas 画布
+     */
+    public void onDrawStatic(Canvas canvas) {
+        BubbleLog.e(TAG, "onDrawStatic mCancel ====  " + mCancel);
+        if (mCancel) {
+            // 取消翻页（绘制原来的页）
+            canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), 0, 0, null);
+            mCancel = false;
+        } else {
+            // 没取消翻页 绘制新的一页（上一页或者下一页 根据滑动方向决定）
+            canvas.drawBitmap(mPageView.getNextPage().getBitmap(), 0, 0, null);
+        }
+    }
 
     /**
      * 绘制内容
@@ -239,9 +239,40 @@ public abstract class PageDrawHelper extends DrawHelper {
      *
      * @param canvas
      */
-    protected void drawTop(Canvas canvas) {
+    private void drawTop(Canvas canvas) {
         mTopPaint.setColor(Color.RED);
         canvas.drawRect(new RectF(0, 0, mPageWidth, mSettings.getTopHeight()), mTopPaint);
+        onDrawTop(canvas, 0, 0, mPageWidth, mSettings.getTopHeight());
+    }
+
+    /**
+     * 绘制顶部
+     *
+     * @param canvas
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     */
+    protected void onDrawTop(Canvas canvas, int left, int top, int right, int bottom) {
+
+    }
+
+    /**
+     * 绘制顶部
+     *
+     * @param canvas
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     */
+    protected void onDrawBottom(Canvas canvas, int left, int top, int right, int bottom) {
+        drawDefaultBottom(canvas, left, top, right, bottom);
+    }
+
+    private void drawDefaultBottom(Canvas canvas, int left, int top, int right, int bottom) {
+
     }
 
     /**
@@ -249,7 +280,9 @@ public abstract class PageDrawHelper extends DrawHelper {
      *
      * @param canvas
      */
-    protected void drawBottom(Canvas canvas) {
+    private void drawBottom(Canvas canvas) {
         canvas.drawRect(new RectF(0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight), mTopPaint);
+
+        onDrawBottom(canvas, 0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight);
     }
 }

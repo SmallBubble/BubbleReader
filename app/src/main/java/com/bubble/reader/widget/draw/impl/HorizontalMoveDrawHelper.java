@@ -13,7 +13,6 @@ import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.base.PageDrawHelper;
 
 /**
- *
  * @author Bubble
  * @date 2020/6/21
  * @email 1337986595@qq.com
@@ -146,6 +145,7 @@ public class HorizontalMoveDrawHelper extends PageDrawHelper {
                     mPageView.postInvalidate();
                 }
                 break;
+            default:
         }
     }
 

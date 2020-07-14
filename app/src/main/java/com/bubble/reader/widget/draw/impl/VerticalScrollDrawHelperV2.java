@@ -121,10 +121,12 @@ public class VerticalScrollDrawHelperV2 extends PageDrawHelper {
                     BubbleLog.e(TAG, "==============================yVelocity" + yVelocity);
                     mScroller.fling(0, (int) mTouchPoint.y, 0, (int) yVelocity, 0, 0, -mPageHeight * 10, 10 * mPageHeight);
                     mPageView.invalidate();
-                    if (mVelocityTracker != null)
+                    if (mVelocityTracker != null) {
                         mVelocityTracker.clear();
+                    }
                 }
                 break;
+            default:
         }
     }
 

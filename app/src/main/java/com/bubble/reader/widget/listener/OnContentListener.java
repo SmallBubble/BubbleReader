@@ -11,15 +11,17 @@ import com.bubble.reader.bean.PageResult;
  * @Desc 内容监听
  */
 public interface OnContentListener {
-
-
     /**
      * 下一页
+     *
+     * @return
      */
     PageResult onNextPage();
 
     /**
      * 上一页
+     *
+     * @return
      */
     PageResult onPrePage();
 

@@ -161,6 +161,7 @@ public class HorizontalScrollDrawHelper extends PageDrawHelper {
                 }
                 BubbleLog.e(TAG, "\n\n\n开始：\n\n\n");
                 break;
+            default:
         }
     }
 

@@ -37,7 +37,6 @@ public class LoadingDrawHelper extends DrawHelper {
     @Override
     public void init() {
 
-
         mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBackgroundPaint.setStyle(Paint.Style.STROKE);
         mBackgroundPaint.setStrokeWidth(16);

@@ -11,6 +11,9 @@ import android.graphics.Canvas;
  * @Desc 绘制类需要实现的接口
  */
 public interface IDrawHelper {
+    /**
+     * 初始化
+     */
     void init();
 
     /**
@@ -20,5 +23,8 @@ public interface IDrawHelper {
      */
     void draw(Canvas canvas);
 
-    public void recycle();
+    /**
+     * 回收资源
+     */
+    void recycle();
 }
