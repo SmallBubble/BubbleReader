@@ -1,5 +1,7 @@
 package com.bubble.reader.widget.draw.base;
 
+import android.graphics.Canvas;
+
 /**
  * @author Bubble
  * @date 2020/7/12
@@ -9,15 +11,6 @@ package com.bubble.reader.widget.draw.base;
  * @Desc 绘制类需要实现的接口
  */
 public interface IDrawHelper {
-    void setFontSize(int fontSize);
 
-    void setLineSpace(int lineSpace);
-
-    void setChapterFontSize(int fontSize);
-
-    void setParagraphSpace(int paragraphSpace);
-
-    void setTopArea(int topArea);
-
-    void setBottomArea(int bottomArea);
+    void draw(Canvas canvas);
 }

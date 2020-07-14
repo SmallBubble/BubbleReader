@@ -54,4 +54,6 @@ dependencies {
     api 'com.trello.rxlifecycle3:rxlifecycle-components:3.1.0'
 
     implementation project(path: ':common')
+    // 腾讯 MMKV 轻量级缓存
+    implementation 'com.tencent:mmkv:1.0.17'
 }

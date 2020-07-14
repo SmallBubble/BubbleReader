@@ -3,6 +3,7 @@ package com.bubble.reader.page;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.page.listener.PageListener;
+import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
 
 import java.util.ArrayList;
@@ -30,12 +31,6 @@ public abstract class PageCreator {
      * 可绘制宽度
      */
     protected int mContentWidth;
-    /**
-     * 页宽 和页高 包含panding和margin
-     */
-    private int mPageWidth;
-    private int mPageHeight;
-
     /**
      * 页面监听
      */
@@ -74,10 +69,9 @@ public abstract class PageCreator {
      */
     public final void init() {
         mPageResult = new PageResult();
-        mPageWidth = mPageView.getMeasuredWidth();
-        mPageHeight = mPageView.getMeasuredHeight();
-        mContentWidth = mPageWidth ;
-        mContentHeight = mPageHeight;
+        PageSettings settings = mPageView.getSettings();
+        mContentWidth = mPageView.getMeasuredWidth() - settings.getPaddingLeft() - settings.getPaddingRight();
+        mContentHeight = mPageView.getMeasuredHeight() - settings.getTopHeight() - settings.getBottomHeight() - settings.getPaddingTop() - settings.getPaddingBottom();
         BubbleLog.e(TAG, mContentWidth + "   " + mContentHeight);
         initData();
     }

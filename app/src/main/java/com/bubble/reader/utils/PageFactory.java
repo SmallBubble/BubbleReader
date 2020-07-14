@@ -26,7 +26,7 @@ public class PageFactory {
     private int mWidth;
     private int mFontSize;
     private int mLineSpace;
-    private int mParagraphLine;
+    private int mParagraphSpace;
     private String mEncoding;
 
     private Paint mPaint;
@@ -49,9 +49,40 @@ public class PageFactory {
         mWidth = width;
         mFontSize = fontSize;
         mLineSpace = lineSpace;
-        mParagraphLine = paragraphLine;
+        mParagraphSpace = paragraphLine;
 
         mPaint.setTextSize(mFontSize);
+    }
+
+
+    public PageFactory height(int height) {
+        mHeight = height;
+        return getInstance();
+    }
+
+    public PageFactory width(int width) {
+        mWidth = width;
+        return getInstance();
+    }
+
+    public PageFactory fontSize(int fontSize) {
+        mFontSize = fontSize;
+        return getInstance();
+    }
+
+    public PageFactory lineSpace(int lineSpace) {
+        mLineSpace = lineSpace;
+        return getInstance();
+    }
+
+    public PageFactory paragraphSpace(int paragraphLine) {
+        mParagraphSpace = paragraphLine;
+        return getInstance();
+    }
+
+    public PageFactory setEncoding(String encoding) {
+        mEncoding = encoding;
+        return getInstance();
     }
 
     public static PageFactory getInstance() {
@@ -75,18 +106,17 @@ public class PageFactory {
     public List<PageBean> createPages(String chapterName, int chapterNo, String content) {
         List<PageBean> pages = new ArrayList<>();
         int pageCount = 0;
-        String key = "";
-        int pageNum = 1;
+        int pageNum = 0;
         try {
             byte[] bytes = content.getBytes(mEncoding);
             int length = bytes.length;
             int start = 0;
             int contentHeight = 0;
             PageBean pageBean = new PageBean();
-            while (!checkHeight(contentHeight) && start < length) {
+            while (start < length) {
                 byte[] paragraph = getParagraph(bytes, start);
                 String paragraphStr = "";
-                paragraphStr = new String(paragraph);
+                paragraphStr = new String(paragraph, mEncoding);
                 // 如果是章节
                 if (BookUtils.checkArticle(paragraphStr)) {
 
@@ -131,9 +161,24 @@ public class PageFactory {
                     start += paragraph.length;
                 } else {
                     // 有剩余 需要加到下一页
-                    start += paragraphStr.getBytes().length;
+                    start += paragraphStr.getBytes(mEncoding).length;
                 }
             }
+            /**
+             * 超过高度并且 内容不为空
+             */
+            if (!pageBean.getContent().isEmpty()) {
+                // 也数量和页号加1
+                pageCount++;
+                pageNum++;
+                // 设置页面信息
+                pageBean.setChapterName(chapterName);
+                pageBean.setPageNum(pageNum);
+                pageBean.setChapterNo(chapterNo);
+                pages.add(pageBean);
+            }
+
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

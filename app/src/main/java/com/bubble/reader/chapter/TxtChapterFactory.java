@@ -1,5 +1,6 @@
 package com.bubble.reader.chapter;
 
+import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.TxtChapter;
 import com.bubble.reader.chapter.listener.OnChapterRequestListener;
 import com.bubble.reader.chapter.listener.OnChapterResultListener;
@@ -29,6 +30,7 @@ import io.reactivex.schedulers.Schedulers;
  * @Desc Txt文件章节工厂
  */
 public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
+    private static final String TAG = TxtChapterFactory.class.getSimpleName();
     /**
      * 要读取得txt文件
      */
@@ -56,7 +58,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     /**
      * 章节编号
      */
-    private int mChapterNo = 1;
+    private int mChapterNo = 0;
 
 
     private DisposableObserver<TxtChapter> mDisposableObserver = new DisposableObserver<TxtChapter>() {
@@ -65,6 +67,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             if (!mInitialized) {
                 // 第一次初始化 回调初始化
                 mInitialized = true;
+                mCurrentChapter = chapter;
                 mOnChapterListener.onInitialized();
             } else {
                 mOnChapterListener.onChapterLoaded();
@@ -146,6 +149,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             parseChapter(emitter);
             // 解析完成
             emitter.onComplete();
+            BubbleLog.e(TAG, "解析成功");
         } catch (Exception e) {
             emitter.onError(e);
             e.printStackTrace();
@@ -180,8 +184,8 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             if (BookUtils.checkArticle(paragraphStr)) {
                 // 找到一个章节
                 String chapterName = getChapterName();
-                String content = getContent(start);
-
+                String content = getContent(mStartIndex);
+                mChapterNo++;
                 TxtChapter chapter = new TxtChapter();
                 chapter.setBookEnd(mFileLength == start);
                 chapter.setBookStart(mStartIndex == 0);
@@ -189,11 +193,14 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 chapter.setChapterEnd(start);
                 chapter.setChapterName(chapterName);
                 chapter.setChapterContent(content);
-                chapter.setChapterNo(++mChapterNo);
+                chapter.setChapterNo(mChapterNo);
                 //通知
                 emitter.onNext(chapter);
                 // 添加进缓存
                 mChapters.put(chapterName + mChapterNo, chapter);
+
+                BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
+                mStartIndex = start;
             }
             start += paragraph.length;
         }
@@ -209,9 +216,9 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
      */
     private String getContent(int end) {
         StringBuilder sb = new StringBuilder();
-        while (mStartIndex < mFileLength) {
+        while (end < mFileLength) {
             String paragraphStr = "";
-            byte[] paragraph = readNextParagraph(mStartIndex);
+            byte[] paragraph = readNextParagraph(end);
             try {
                 paragraphStr = new String(paragraph, getEncoding());
             } catch (UnsupportedEncodingException e) {
@@ -221,7 +228,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 break;
             }
             sb.append(paragraphStr);
-            mStartIndex += paragraph.length;
+            end += paragraph.length;
         }
         return sb.toString();
     }
@@ -239,6 +246,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        mStartIndex += paragraph.length;
         return chapterName;
     }
 
@@ -255,7 +263,8 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
         while (index < mFileLength) {
             // 文件没有结束
             byte b = mMapFile.get(index);
-
+            // 往后移一位
+            index++;
             if (lastByte == 0 && b == 0) {
                 // 连续两个空格
                 break;
@@ -264,18 +273,16 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             if (b == 10) {
                 break;
             }
-            // 往后移一位
-            index++;
             // 记录当前字节
             lastByte = b;
         }
         // 如果超过文件大小 结尾使用文件长度
-        index = Math.min(index, mFileLength - 1);
-        int len = index - start;
-        if (len == 0) {
-            // 空行 继续找
-            return readNextParagraph(start + 1);
-        }
+        index = Math.min(index, mFileLength);
+        int len = Math.max(index - start, 0);
+//        if (len == 0 && index < mFileLength) {
+        // 空行 继续找
+//            return readNextParagraph(start + 1);
+//        }
         //读取找到的段落
         byte[] paragraph = new byte[len];
         for (int i = 0; i < len; i++) {

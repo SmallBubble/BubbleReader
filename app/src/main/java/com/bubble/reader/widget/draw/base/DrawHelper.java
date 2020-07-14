@@ -6,11 +6,13 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.MotionEvent;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageBean;
 import com.bubble.reader.bean.PageBitmap;
+import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.listener.OnContentListener;
 
@@ -50,33 +52,40 @@ public abstract class DrawHelper implements IDrawHelper {
      * 页面高度
      */
     protected int mPageHeight;
-
-    protected OnContentListener mOnContentListener;
-
     /**
      * 是否取消翻页
      */
     protected boolean mCancel;
 
-    private int mFontSize;
-    private int mLineSpace;
-    private int mChapterFontSize;
-    private int mParagraphSpace;
-
-    private int mTopArea;
-    private int mBottomArea;
-    /**
-     * 内间距
-     */
-    private int mPadding;
+    /*=======================================正文区域=========================================*/
     /**
      * 画笔
      */
     private Paint mPaint;
+
+    /*=======================================頂部区域=========================================*/
     /**
-     * 文字颜色
+     * 顶部画笔
      */
-    private int mFontColor;
+    public Paint mTopPaint;
+    /*=======================================底部区域=========================================*/
+    /**
+     * 顶部画笔
+     */
+    public Paint mBottomPaint;
+    /**
+     * 电池主体
+     */
+    public RectF mBatteryRect = new RectF();
+    /**
+     * 电池头部
+     */
+    public RectF mBatteryHeadRect = new RectF();
+
+    /**
+     * 内容监听器
+     */
+    protected OnContentListener mOnContentListener;
 
     /*=======================================初始化=========================================*/
     public DrawHelper(PageView pageView) {
@@ -87,17 +96,26 @@ public abstract class DrawHelper implements IDrawHelper {
         mDestRect = new Rect();
     }
 
+    private PageSettings mSettings;
+
     public final void init() {
+        mSettings = mPageView.getSettings();
         mPageWidth = mPageView.getMeasuredWidth();
         mPageHeight = mPageView.getMeasuredHeight();
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setTextSize(mFontSize);
-        mPaint.setColor(mFontColor);
+        mPaint.setTextSize(mSettings.getFontSize());
+        mPaint.setColor(mSettings.getFontColor());
 
+        mTopPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTopPaint.setTextSize(mSettings.getTopFontSize());
+        mTopPaint.setColor(mSettings.getTopFontColor());
+
+        mBottomPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBottomPaint.setTextSize(mSettings.getBottomFontSize());
+        mBottomPaint.setColor(mSettings.getBottomFontColor());
         initData();
     }
-
 
     /*=======================================必须重写方法区=========================================*/
     protected abstract void initData();
@@ -118,6 +136,23 @@ public abstract class DrawHelper implements IDrawHelper {
     public abstract void onDrawPage(Canvas canvas);
 
     /*=======================================默认操作/子类可以重写进行自己的实现=========================================*/
+
+    @Override
+    public void draw(Canvas canvas) {
+        // 绘制内容
+        drawPage(mPageView.getCurrentPage());
+        drawPage(mPageView.getNextPage());
+
+        // 绘制翻页
+        if (isRunning()) {
+            BubbleLog.e(TAG, "onDrawPage");
+            onDrawPage(canvas);
+        } else {
+            BubbleLog.e(TAG, "onDrawStatic");
+            onDrawStatic(canvas);
+        }
+
+    }
 
     /**
      * 绘制静止时的页面
@@ -167,55 +202,55 @@ public abstract class DrawHelper implements IDrawHelper {
         mOnContentListener = onContentListener;
     }
 
-    /*=======================================通用的一些设置=========================================*/
-    @Override
-    public void setFontSize(int fontSize) {
-        mFontSize = fontSize;
-    }
+    /*=======================================绘制相关=========================================*/
 
-    @Override
-    public void setLineSpace(int lineSpace) {
-        mLineSpace = lineSpace;
-    }
-
-    @Override
-    public void setChapterFontSize(int fontSize) {
-        mChapterFontSize = fontSize;
-    }
-
-    @Override
-    public void setParagraphSpace(int paragraphSpace) {
-        mParagraphSpace = paragraphSpace;
-    }
-
-    @Override
-    public void setTopArea(int topArea) {
-        mTopArea = topArea;
-    }
-
-    @Override
-    public void setBottomArea(int bottomArea) {
-        mBottomArea = bottomArea;
-    }
-
-
+    /**
+     * 绘制内容
+     *
+     * @param bitmap
+     */
     protected void drawPage(PageBitmap bitmap) {
+
         Canvas canvas = new Canvas(bitmap.getBitmap());
         // 清除原来内容
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-
+        // 页面所对应的内容
         PageBean pageBean = bitmap.getPageBean();
-
-        int y = mFontSize + mPadding;
-
+        if (pageBean == null) {
+            return;
+        }
+        // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
+        int baseLine = mPageHeight - mSettings.getTopHeight() - mSettings.getPaddingTop();
+        baseLine += mSettings.getFontSize() - mPaint.descent();
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
             if (line.length() > 0) {
-                canvas.drawText(line, mPadding, y, mPaint);
-                y += mFontSize + mLineSpace;
+                canvas.drawText(line, mSettings.getBottomFontColor(), baseLine, mPaint);
+                baseLine += mSettings.getFontSize() + mSettings.getLineSpace();
             } else {
-                y += mParagraphSpace;
+                baseLine += mSettings.getParagraphSpace();
             }
         }
+        drawTop(canvas);
+        drawBottom(canvas);
+    }
+
+    /**
+     * 绘制顶部
+     *
+     * @param canvas
+     */
+    protected void drawTop(Canvas canvas) {
+        mTopPaint.setColor(Color.RED);
+        canvas.drawRect(new RectF(0, 0, mPageWidth, mSettings.getTopHeight()), mTopPaint);
+    }
+
+    /**
+     * 绘制底部
+     *
+     * @param canvas
+     */
+    protected void drawBottom(Canvas canvas) {
+        canvas.drawRect(new RectF(0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight), mTopPaint);
     }
 }

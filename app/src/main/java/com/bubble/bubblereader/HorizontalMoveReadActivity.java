@@ -9,11 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bubble.reader.page.TxtPageCreator;
-import com.bubble.reader.page.OnlinePageCreator;
-import com.bubble.reader.page.listener.OfflinePageListener;
-import com.bubble.reader.chapter.listener.OnChapterResultListener;
 import com.bubble.reader.chapter.listener.OnChapterRequestListener;
+import com.bubble.reader.chapter.listener.OnChapterResultListener;
+import com.bubble.reader.page.TxtPageCreatorV2;
+import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 
@@ -23,7 +22,7 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
 
     PageView mReadView;
 
-    private TxtPageCreator mPageCreator;
+    private TxtPageCreatorV2 mPageCreator;
 
 
     @Override
@@ -51,14 +50,9 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
 
     private void initRead() {
         File directory = Environment.getExternalStorageDirectory();
-//        mPageCreator = new OfflinePageCreator.Builder(mReadView)
-//                .file(directory.getAbsoluteFile() + "/test.txt")
-//                .build();
-//        mPageCreator.setChapterPage(false);
-        mPageCreator = new OnlinePageCreator.Builder(mReadView)
-                .setOnlineRequestListener(this)
+        mPageCreator = new TxtPageCreatorV2.Builder(mReadView)
+                .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-
         mReadView.setDrawHelper(new HorizontalMoveDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);
         mPageCreator.addPageListener(new OfflinePageListener() {

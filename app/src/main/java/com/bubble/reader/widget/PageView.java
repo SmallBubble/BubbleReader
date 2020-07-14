@@ -17,9 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.reader.page.PageCreator;
 import com.bubble.reader.bean.PageBitmap;
 import com.bubble.reader.bean.PageResult;
+import com.bubble.reader.page.PageCreator;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.draw.base.DrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
@@ -74,6 +74,13 @@ public class PageView extends View {
     private boolean mMove = false;
     private boolean mAttach;
     private boolean mInitialized;
+
+    private PageSettings mSettings = new PageSettings();
+
+    public PageSettings getSettings() {
+        return mSettings;
+    }
+
     private LoadHandler mLoadHandler = new LoadHandler(this);
 
     private TurnPageMode mTurnPageMode = TurnPageMode.HORIZONTAL_SCROLL;
@@ -243,6 +250,7 @@ public class PageView extends View {
         mPageBitmaps.get(1).setType(2);
     }
 
+
     /**
      * 切换翻页模式
      *
@@ -296,10 +304,10 @@ public class PageView extends View {
         if (mDrawHelper == null) {
             mDrawHelper = new HorizontalScrollDrawHelper(this);
         }
-
-
         mDrawHelper.init();
         if (mPageCreator != null) {
+
+
             mPageCreator.init();
         }
         mInitialized = true;
@@ -402,13 +410,7 @@ public class PageView extends View {
             canvas.drawText("加载中", mWidth / 2, mHeight / 2, mPaint);
         } else {
             if (mInitialized && checkPageInit()) {
-                if (mDrawHelper.isRunning()) {
-                    BubbleLog.e(TAG, "onDrawPage");
-                    mDrawHelper.onDrawPage(canvas);
-                } else {
-                    BubbleLog.e(TAG, "onDrawStatic");
-                    mDrawHelper.onDrawStatic(canvas);
-                }
+                mDrawHelper.draw(canvas);
             }
         }
     }

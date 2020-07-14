@@ -74,4 +74,16 @@ public class ChapterBean implements IChapter {
     public void setBookEnd(boolean bookEnd) {
         mBookEnd = bookEnd;
     }
+
+    @Override
+    public String toString() {
+        return "ChapterBean{" +
+                "mChapterName='" + mChapterName + '\'' +
+                ", mChapterContent='" + mChapterContent + '\'' +
+                ", mChapterNo=" + mChapterNo +
+                ", mChapterCount=" + mChapterCount +
+                ", mBookStart=" + mBookStart +
+                ", mBookEnd=" + mBookEnd +
+                '}';
+    }
 }

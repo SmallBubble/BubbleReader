@@ -9,8 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bubble.reader.page.listener.OfflinePageListener;
-import com.bubble.reader.page.TxtPageCreator;
+import com.bubble.reader.page.TxtPageCreatorV2;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.VerticalScrollDrawHelperV2;
 
@@ -20,7 +19,7 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
-    private TxtPageCreator mPageCreator;
+    private TxtPageCreatorV2 mPageCreator;
 
 
     @Override
@@ -48,26 +47,25 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
 
     private void initRead() {
         File directory = Environment.getExternalStorageDirectory();
-        mPageCreator = new TxtPageCreator.Builder(mReadView)
+        mPageCreator = new TxtPageCreatorV2.Builder(mReadView)
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-        mPageCreator.setChapterPage(false);
         mReadView.setDrawHelper(new VerticalScrollDrawHelperV2(mReadView));
         mReadView.setPageCreator(mPageCreator);
-        mPageCreator.addPageListener(new OfflinePageListener() {
-            @Override
-            public void onFileNotFound() {
-            }
-
-            @Override
-            public void onError(String message) {
-                super.onError(message);
-            }
-
-            @Override
-            public void onSuccess() {
-                super.onSuccess();
-            }
-        });
+//        mPageCreator.addPageListener(new OfflinePageListener() {
+//            @Override
+//            public void onFileNotFound() {
+//            }
+//
+//            @Override
+//            public void onError(String message) {
+//                super.onError(message);
+//            }
+//
+//            @Override
+//            public void onSuccess() {
+//                super.onSuccess();
+//            }
+//        });
     }
 }

@@ -20,4 +20,15 @@ public class TxtChapter extends ChapterBean {
     public void setChapterEnd(int chapterEnd) {
         mChapterEnd = chapterEnd;
     }
+
+
+    @Override
+    public String toString() {
+        return "TxtChapter{" +
+                "mChapterStart=" + mChapterStart +
+                ", mChapterEnd=" + mChapterEnd +
+                ", mChapterName='" + mChapterName + '\'' +
+                ", mChapterContent='" + mChapterContent + '\'' +
+                '}';
+    }
 }

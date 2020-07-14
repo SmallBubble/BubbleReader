@@ -10,6 +10,7 @@ import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.chapter.TxtChapterFactory;
 import com.bubble.reader.chapter.listener.OnChapterListener;
 import com.bubble.reader.utils.PageFactory;
+import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
@@ -70,6 +71,7 @@ public class TxtPageCreatorV2 extends PageCreator {
     private PageBean mCancelPage;
 
     private TxtChapterFactory mChapterFactory;
+    private PageSettings mSettings;
 
     public TxtPageCreatorV2(PageView readView) {
         super(readView);
@@ -84,13 +86,21 @@ public class TxtPageCreatorV2 extends PageCreator {
         mPaint.setSubpixelText(true);
         mChapterFactory = new TxtChapterFactory();
         mChapterFactory.setBookFile(mBookFile);
-        mChapterFactory.initData();
+        mSettings = mPageView.getSettings();
+        PageFactory.getInstance()
+                .height(mContentHeight)
+                .width(mContentWidth)
+                .lineSpace(mSettings.getLineSpace())
+                .paragraphSpace(mSettings.getParagraphSpace())
+                .fontSize(mSettings.getFontSize());
+
         mChapterFactory.setOnChapterListener(new OnChapterListener() {
             @Override
             public void onInitialized() {
                 String content = mChapterFactory.getCurrentContent();
                 // 从工厂生成当前章节的页面
                 List<PageBean> pages = PageFactory.getInstance()
+                        .setEncoding(getEncoding())
                         .createPages(mChapterFactory.getCurrentName()
                                 , mChapterFactory.getCurrentChapterNo()
                                 , content);
@@ -114,7 +124,8 @@ public class TxtPageCreatorV2 extends PageCreator {
 
             }
         });
-//        openBook(mBookFile);
+        // 开始解析书籍
+        mChapterFactory.initData();
     }
 
     /*=======================================建造者=========================================*/
