@@ -7,6 +7,7 @@ import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.text.TextPaint;
 import android.view.MotionEvent;
 
 import com.bubble.common.log.BubbleLog;
@@ -52,7 +53,7 @@ public abstract class PageDrawHelper extends DrawHelper {
     /**
      * 画笔
      */
-    private Paint mPaint;
+    private TextPaint mPaint;
 
     /**
      * 顶部画笔
@@ -79,6 +80,7 @@ public abstract class PageDrawHelper extends DrawHelper {
      * 绘制内容的基线
      */
     private int mBaseLine;
+    private Paint mTitlePaint;
     /*=======================================初始化=========================================*/
 
     public PageDrawHelper(PageView pageView) {
@@ -92,9 +94,14 @@ public abstract class PageDrawHelper extends DrawHelper {
     @Override
     public final void init() {
         super.init();
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTitlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTitlePaint.setTextSize(mSettings.getTitleFontSize());
+        mTitlePaint.setColor(mSettings.getTitleFontColor());
+
+        mPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setTextSize(mSettings.getFontSize());
         mPaint.setColor(mSettings.getFontColor());
+
         mTopPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTopPaint.setTextSize(mSettings.getTopFontSize());
         mTopPaint.setColor(mSettings.getTopFontColor());
@@ -216,16 +223,31 @@ public abstract class PageDrawHelper extends DrawHelper {
 
         // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
         mBaseLine = mSettings.getTopHeight() - mSettings.getPaddingTop();
-        mBaseLine += mSettings.getFontSize() - mPaint.descent();
+        // 获取基线
+        if (pageBean.getChapterNo() == 1) {
+            // 如果是第一页 基线为 标题文字大小
+            mBaseLine += mSettings.getTitleFontSize();
+            // 第一页 绘制标题
+            canvas.drawText(pageBean.getChapterName(), 0, mBaseLine, mTitlePaint);
+            canvas.drawLine(0, mBaseLine, mPageWidth, mBaseLine, mPaint);
+            // 画完标题以后 加上一个段间距
+            mBaseLine += mSettings.getParagraphSpace();
+            canvas.drawLine(0, mBaseLine, mPageWidth, mBaseLine, mPaint);
+        }
+        // 此时 正文开始 基线需要加上一个文字高度
+        mBaseLine += mSettings.getFontSize();
+        canvas.drawLine(0, mBaseLine, mPageWidth, mBaseLine, mPaint);
         BubbleLog.e("drawPage  baseLine" + mBaseLine);
         for (int i = 0; i < pageBean.getContent().size(); i++) {
             String line = pageBean.getContent().get(i);
             if (line.length() > 0) {
                 canvas.drawText(line, 0, mBaseLine, mPaint);
+                // 绘制完一行后 需要加上一个文字高度和一个行高度 进行下一行的绘制
                 mBaseLine += mSettings.getFontSize() + mSettings.getLineSpace();
             } else {
                 mBaseLine += mSettings.getParagraphSpace();
             }
+            canvas.drawLine(0, mBaseLine, mPageWidth, mBaseLine, mPaint);
             BubbleLog.e("drawPage  baseLine" + mBaseLine);
         }
         BubbleLog.e("drawPage  baseLine" + mBaseLine);

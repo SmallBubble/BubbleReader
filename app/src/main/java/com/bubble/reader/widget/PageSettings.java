@@ -28,7 +28,11 @@ public class PageSettings {
     /**
      * 标题字体大小
      */
-    private int mTitleFontSize = 18;
+    private int mTitleFontSize = 72;
+    /**
+     * 标题文字颜色
+     */
+    private int mTitleFontColor = Color.parseColor("#ff0000");
     /**
      * 段间距
      */
@@ -95,6 +99,14 @@ public class PageSettings {
 
     public int getTitleFontSize() {
         return mTitleFontSize;
+    }
+
+    public int getTitleFontColor() {
+        return mTitleFontColor;
+    }
+
+    public void setTitleFontColor(int titleFontColor) {
+        mTitleFontColor = titleFontColor;
     }
 
     public void setTitleFontSize(int titleFontSize) {

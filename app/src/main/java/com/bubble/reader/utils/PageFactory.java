@@ -3,6 +3,7 @@ package com.bubble.reader.utils;
 import android.graphics.Paint;
 import android.text.TextUtils;
 
+import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageBean;
 
 import java.io.UnsupportedEncodingException;
@@ -30,6 +31,7 @@ public class PageFactory {
     private String mEncoding;
 
     private Paint mPaint;
+    private int mTitleFontSize;
 
     private PageFactory() {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -67,6 +69,12 @@ public class PageFactory {
 
     public PageFactory fontSize(int fontSize) {
         mFontSize = fontSize;
+        mPaint.setTextSize(mFontSize);
+        return getInstance();
+    }
+
+    public PageFactory titleFontSize(int fontSize) {
+        mTitleFontSize = fontSize;
         return getInstance();
     }
 
@@ -104,6 +112,7 @@ public class PageFactory {
      * @return
      */
     public List<PageBean> createPages(String chapterName, int chapterNo, String content) {
+        BubbleLog.e("PageFactory", mWidth + "   " + mHeight);
         List<PageBean> pages = new ArrayList<>();
         int pageCount = 0;
         int pageNum = 0;
@@ -111,7 +120,9 @@ public class PageFactory {
             byte[] bytes = content.getBytes(mEncoding);
             int length = bytes.length;
             int start = 0;
-            int contentHeight = 0;
+            // 第一页的开始高度 == 标题文字大小+段间距
+            int contentHeight = mTitleFontSize + mParagraphSpace;
+
             PageBean pageBean = new PageBean();
             String paragraphStr = "";
             String line = "";
@@ -129,7 +140,7 @@ public class PageFactory {
                     size = mPaint.breakText(paragraphStr, true, mWidth, null);
                     line = paragraphStr.substring(0, size);
                     pageBean.getContent().add(line);
-                    // 每添加一行 需要加一个字体大小好行间距
+                    // 每添加一行 需要加一个字体大小和行间距
                     contentHeight += mLineSpace + mFontSize;
 
                     // 如果这时候的高度再加上一行就超过页面了 就完成一行了
