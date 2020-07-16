@@ -7,7 +7,10 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.os.Build;
 import android.view.MotionEvent;
+import android.view.animation.LinearInterpolator;
+import android.widget.Scroller;
 
+import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.base.PageDrawHelper;
 
@@ -32,11 +35,23 @@ public class SimulationDrawHelper extends PageDrawHelper {
     private PointF mPointI = new PointF();
     private PointF mPointJ = new PointF();
     private PointF mPointK = new PointF();
+    private PointF mTempPoint = new PointF();
 
     private Path mPathFront;
     private Path mPathBack;
     private Path mPathNext;
     private Paint mPaint;
+
+    private Scroller mScroller;
+
+    enum Op {
+        CACNEL,
+        TOP,
+        BOTTOM,
+        RIGHT
+    }
+
+    private Op mOp = Op.CACNEL;
 
     public SimulationDrawHelper(PageView pageView) {
         super(pageView);
@@ -44,6 +59,9 @@ public class SimulationDrawHelper extends PageDrawHelper {
 
     @Override
     protected void initData() {
+        mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator());
+
+
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.YELLOW);
 
@@ -53,31 +71,87 @@ public class SimulationDrawHelper extends PageDrawHelper {
         mPointA.set(680, 1420);
         mPointF.set(mPageWidth, mPageHeight);
         calcPoints();
+
+
     }
+
 
     @Override
     public void onTouchEvent(PageView view, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (event.getY() > mPageHeight / 2f) {
+                mScroller.abortAnimation();
+
+                if (event.getY() > mPageHeight / 3f * 2) {
+                    mOp = Op.BOTTOM;
                     //右下角
                     mPointF.set(mPageWidth, mPageHeight);
-                } else {
+                } else if (event.getY() < mPageHeight / 3f) {
+                    mOp = Op.TOP;
                     // 右上角
                     mPointF.set(mPageWidth, 0);
+                } else {
+                    mOp = Op.RIGHT;
+                    // 横向翻页
                 }
                 mPointA.set(event.getX(), event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (event.getY() < 0 || event.getY() > mPageHeight) return;
                 mPointA.set(event.getX(), event.getY());
-                checkPointC();
+                if (mOp == Op.RIGHT) {
+                    mPointA.y = mPageHeight - 5;
+                }
+                calcPoints();
+                if (mPointC.x < 0) {
+                    checkPointC();
+                }
+                mPageView.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
+                startCancel();
+                mOp = Op.CACNEL;
                 break;
             default:
         }
-        calcPoints();
+    }
+
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+        if (mScroller != null && mScroller.computeScrollOffset()) {
+            if (mScroller.getCurrX() == mScroller.getFinalX() && mScroller.getCurrY() == mScroller.getFinalY()) {
+                mCancel = true;
+                return;
+            }
+            mPointA.set(mScroller.getCurrX(), mScroller.getCurrY());
+            calcPoints();
+            if (mPointC.x < 0) {
+                checkPointC();
+            }
+            mPageView.invalidate();
+        }
+
+    }
+
+    private void startCancel() {
+
+        if (mOp == Op.TOP) {
+            int dx = (int) (mPointF.x - mPointA.x);
+            int dy = -(int) (mPointA.y);
+            mScroller.startScroll((int) mPointA.x, (int) mPointA.y, dx, dy, 3000);
+        } else {
+            int dx = (int) (mPointF.x - mPointA.x);
+            int dy = mPageHeight - (int) (mPointA.y);
+            mScroller.startScroll((int) mPointA.x, (int) mPointA.y, dx, dy, 3000);
+        }
         mPageView.invalidate();
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+//        super.draw(canvas);
+        onDrawPage(canvas);
     }
 
     @Override
@@ -147,14 +221,25 @@ public class SimulationDrawHelper extends PageDrawHelper {
             return;
         }
 
+        int c1ToF = (int) (mPageWidth - mPointC.x);
+        int c1ToN = (int) (mPointA.x - mPointC.x);
+        int c2ToF = mPageWidth;
+        //  c1ToN       c2ToM
+        // ———————— =  ————————
+        //  c1ToF       c2ToF
+        int c2ToM = c1ToN * c2ToF / c1ToF;
+//        BubbleLog.e("c2ToF   " + c2ToF + "   c1ToF   " + c1ToF + "    c1ToN   " + c1ToN + "    c2ToM  " + c2ToM);
 
 
+        //  c1ToN       a2ToM
+        // ———————— =  ————————
+        //  c2ToM       a1ToN
 
-        int width1 = mPointF.y > 0 ? (int) (mPointF.x - mPointA.x) : (int) mPointA.x;
-        int width2 = mPointF.y > 0 ? (int) (mPageWidth - mPointC.x) : (int) (width1 - mPointC.x);
-        int height2 = mPointF.y > 0 ? (int) (mPageHeight - mPointA.y) : (int) mPointA.y;
-        int height1 = width1 * height2 / width2;
-        mPointA.set(mPageHeight - height1, mPageHeight - height1);
+        //
+        int a1ToN = mPointF.y == 0 ? (int) mPointA.y : (int) (mPageHeight - mPointA.y);
+        int a2ToM = c2ToM * a1ToN / c1ToN;
+        mPointA.set(c2ToM, mPointF.y == 0 ? a2ToM : mPageHeight - a2ToM);
+        BubbleLog.e("mPointA  " + mPointA);
         calcPoints();
     }
 

@@ -49,7 +49,7 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.btnRead4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, HorizontalMoveReadActivity.class));
+                startActivity(new Intent(MainActivity.this, SimulationReadActivity.class));
             }
         });
     }
