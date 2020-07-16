@@ -65,9 +65,18 @@ public abstract class LoadingDrawHelper extends DrawHelper {
             LoadingDrawHelper helper = mReference.get();
             if (helper == null) {
                 removeCallbacksAndMessages(null);
+                return;
             }
+            helper.updateValue();
             sendEmptyMessageDelayed(0, helper.mSpeed);
         }
+    }
+
+    /**
+     * 更新值
+     */
+    protected void updateValue() {
+
     }
 
     public void startLoading() {

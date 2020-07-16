@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import com.bubble.common.utils.Dp2PxUtil;
 import com.bubble.reader.widget.PageView;
 
 /**
@@ -16,11 +17,13 @@ import com.bubble.reader.widget.PageView;
  * @Desc TODO
  */
 public class DefaultLoadingDrawHelper extends LoadingDrawHelper {
-    private int mAngle;
+    private final static int ANGLE_360 = 360;
+    private int mAngle = 0;
     private Paint mBackgroundPaint;
     private Paint mForegroundPaint;
-    private float mLoadingWidth;
-    private float mSweepAngle;
+    private float mLoadingWidth = Dp2PxUtil.dip2px(24);
+    private float mSweepAngle = 0;
+    private RectF mRectF;
 
     public DefaultLoadingDrawHelper(PageView pageView, int speed) {
         super(pageView, speed);
@@ -33,16 +36,28 @@ public class DefaultLoadingDrawHelper extends LoadingDrawHelper {
         mBackgroundPaint.setStyle(Paint.Style.STROKE);
         mBackgroundPaint.setStrokeWidth(16);
         mBackgroundPaint.setColor(Color.parseColor("#454545"));
+
         mForegroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBackgroundPaint.setStyle(Paint.Style.STROKE);
         mBackgroundPaint.setStrokeWidth(16);
         mBackgroundPaint.setColor(Color.parseColor("#ff0000"));
+
+        mRectF = new RectF(mPageWidth / 2f - mLoadingWidth / 2f, 0, 0, 0);
     }
 
     @Override
     protected void onDraw(Canvas canvas, int pageWidth, int pageHeight) {
         super.onDraw(canvas, pageWidth, pageHeight);
-        canvas.drawCircle(mPageWidth / 2f, mPageHeight / 2f, mLoadingWidth, mBackgroundPaint);
-        canvas.drawArc(new RectF(mPageWidth / 2f - mLoadingWidth / 2f, 0, 0, 0), mAngle, mSweepAngle, false, mForegroundPaint);
+        canvas.drawArc(mRectF, mAngle, mSweepAngle, false, mForegroundPaint);
+    }
+
+    @Override
+    protected void updateValue() {
+        super.updateValue();
+        mAngle += 5;
+        mSweepAngle += 5;
+        if (mSweepAngle > ANGLE_360) {
+            mSweepAngle = mSweepAngle - ANGLE_360;
+        }
     }
 }
