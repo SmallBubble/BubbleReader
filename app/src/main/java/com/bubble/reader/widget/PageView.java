@@ -122,6 +122,7 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(true);
                 PageResult result = mPageCreator.onNextPage();
+                result.set(false, true);
                 if (result.isLoading() && mLoadingDrawHelper != null) {
                     mLoadingDrawHelper.startLoading();
                 }
@@ -392,12 +393,12 @@ public class PageView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         BubbleLog.e(TAG, "onDraw");
-        if (mInitialized && checkPageInit()) {
-            mDrawHelper.draw(canvas);
-        }
-        // 绘制加载中
-        if (mLoadingDrawHelper != null) {
+        if (mLoadingDrawHelper != null && mLoadingDrawHelper.isLoading()) {
             mLoadingDrawHelper.draw(canvas);
+        } else {
+            if (mInitialized && checkPageInit()) {
+                mDrawHelper.draw(canvas);
+            }
         }
     }
 

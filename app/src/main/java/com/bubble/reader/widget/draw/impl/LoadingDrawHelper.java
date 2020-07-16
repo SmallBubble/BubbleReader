@@ -79,6 +79,10 @@ public abstract class LoadingDrawHelper extends DrawHelper {
 
     }
 
+    public boolean isLoading() {
+        return mLoading;
+    }
+
     public void startLoading() {
         mLoading = true;
         mHandler.sendEmptyMessageDelayed(0, mSpeed);
