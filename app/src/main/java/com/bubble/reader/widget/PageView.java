@@ -110,7 +110,9 @@ public class PageView extends View {
         public void onPageLoadFinished() {
             super.onPageLoadFinished();
             // 页面加载结束 绘制内容
-            mLoadingDrawHelper.stopLoading();
+            if (mLoadingDrawHelper != null) {
+                mLoadingDrawHelper.stopLoading();
+            }
             postInvalidate();
         }
     };
@@ -120,7 +122,7 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(true);
                 PageResult result = mPageCreator.onNextPage();
-                if (result.isLoading()) {
+                if (result.isLoading() && mLoadingDrawHelper != null) {
                     mLoadingDrawHelper.startLoading();
                 }
                 return result;
@@ -133,7 +135,7 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(false);
                 PageResult result = mPageCreator.onPrePage();
-                if (result.isLoading()) {
+                if (result.isLoading() && mLoadingDrawHelper != null) {
                     mLoadingDrawHelper.startLoading();
                 }
                 return result;
@@ -161,7 +163,6 @@ public class PageView extends View {
         mPageBitmaps.get(0).setType(1);
         mPageBitmaps.get(1).setType(2);
     }
-
 
     public PageView(Context context) {
         this(context, null);
@@ -288,6 +289,14 @@ public class PageView extends View {
         mPageCreator.addPageListener(mPageListener);
     }
 
+    public void nextPage() {
+        mOnContentListener.onNextPage();
+    }
+
+    public void prePage() {
+        mOnContentListener.onPrePage();
+    }
+
     /**
      * 设置绘制 帮助类
      *
@@ -387,7 +396,9 @@ public class PageView extends View {
             mDrawHelper.draw(canvas);
         }
         // 绘制加载中
-        mLoadingDrawHelper.draw(canvas);
+        if (mLoadingDrawHelper != null) {
+            mLoadingDrawHelper.draw(canvas);
+        }
     }
 
     /**
@@ -442,22 +453,37 @@ public class PageView extends View {
     }
 
     public interface OnPageCenterListener {
+        /**
+         * 点击中心
+         */
         void onPageCenter();
     }
 
     public interface OnPageLeftListener {
+        /**
+         * 点击左侧
+         */
         void onPageLeft();
     }
 
     public interface OnPageRightListener {
+        /**
+         * 点击右侧
+         */
         void onPageRight();
     }
 
     public interface OnPageTopListener {
+        /**
+         * 点击顶部
+         */
         void onPageTop();
     }
 
     public interface OnPageBottomListener {
+        /**
+         * 点击底部
+         */
         void onPageBottom();
     }
 }

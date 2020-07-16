@@ -14,7 +14,7 @@ import com.bubble.reader.widget.PageView;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc TODO
+ * @Desc 默认的加载
  */
 public class DefaultLoadingDrawHelper extends LoadingDrawHelper {
     private final static int ANGLE_360 = 360;
