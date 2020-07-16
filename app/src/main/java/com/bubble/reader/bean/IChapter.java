@@ -51,8 +51,4 @@ public interface IChapter {
      */
     String getContent();
 
-    boolean isLoaded();
-
-    void setLoaded(boolean loaded);
-
 }

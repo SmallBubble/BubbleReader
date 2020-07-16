@@ -24,6 +24,7 @@ import com.bubble.reader.widget.draw.base.PageDrawHelper;
  */
 public class SimulationDrawHelper extends PageDrawHelper {
 
+    private static final String TAG = SimulationDrawHelper.class.getSimpleName();
     private PointF mPointA = new PointF();
     private PointF mPointB = new PointF();
     private PointF mPointC = new PointF();
@@ -43,6 +44,8 @@ public class SimulationDrawHelper extends PageDrawHelper {
     private Paint mPaint;
 
     private Scroller mScroller;
+    private boolean mRunning;
+    private Path mTempPath;
 
     enum Op {
         CACNEL,
@@ -61,16 +64,13 @@ public class SimulationDrawHelper extends PageDrawHelper {
     protected void initData() {
         mScroller = new Scroller(mPageView.getContext(), new LinearInterpolator());
 
-
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.YELLOW);
-
         mPathFront = new Path();
         mPathBack = new Path();
         mPathNext = new Path();
+        mTempPath = new Path();
         calcPoints();
-
-
     }
 
 
@@ -79,7 +79,7 @@ public class SimulationDrawHelper extends PageDrawHelper {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mScroller.abortAnimation();
-
+                calcPoints();
                 if (event.getY() > mPageHeight / 3f * 2) {
                     mOp = Op.BOTTOM;
                     //右下角
@@ -95,6 +95,7 @@ public class SimulationDrawHelper extends PageDrawHelper {
                 mPointA.set(event.getX(), event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
+                mRunning = true;
                 if (event.getY() < 0 || event.getY() > mPageHeight) {
                     return;
                 }
@@ -122,6 +123,7 @@ public class SimulationDrawHelper extends PageDrawHelper {
         if (mScroller != null && mScroller.computeScrollOffset()) {
             if (mScroller.getCurrX() == mScroller.getFinalX() && mScroller.getCurrY() == mScroller.getFinalY()) {
                 mCancel = true;
+                mRunning = false;
                 return;
             }
             mPointA.set(mScroller.getCurrX(), mScroller.getCurrY());
@@ -139,19 +141,27 @@ public class SimulationDrawHelper extends PageDrawHelper {
         if (mOp == Op.TOP) {
             int dx = (int) (mPointF.x - mPointA.x);
             int dy = -(int) (mPointA.y);
-            mScroller.startScroll((int) mPointA.x, (int) mPointA.y, dx, dy, 3000);
+            mScroller.startScroll((int) mPointA.x, (int) mPointA.y, dx, dy, 200);
         } else {
             int dx = (int) (mPointF.x - mPointA.x);
             int dy = mPageHeight - (int) (mPointA.y);
-            mScroller.startScroll((int) mPointA.x, (int) mPointA.y, dx, dy, 3000);
+            mScroller.startScroll((int) mPointA.x, (int) mPointA.y, dx, dy, 200);
         }
         mPageView.invalidate();
     }
 
     @Override
     public void draw(Canvas canvas) {
-//        super.draw(canvas);
-        onDrawPage(canvas);
+        // 绘制翻页
+        if (isRunning()) {
+            BubbleLog.e(TAG, "draw drawPage");
+            onDrawPage(canvas);
+        } else {
+            drawPage(mPageView.getCurrentPage());
+            drawPage(mPageView.getNextPage());
+            BubbleLog.e(TAG, "draw drawStatic");
+            onDrawStatic(canvas);
+        }
     }
 
     @Override
@@ -162,6 +172,11 @@ public class SimulationDrawHelper extends PageDrawHelper {
         drawFront(canvas);
         drawBack(canvas);
         drawNext(canvas);
+    }
+
+    @Override
+    public boolean isRunning() {
+        return mRunning;
     }
 
     private void drawFront(Canvas canvas) {
@@ -177,6 +192,7 @@ public class SimulationDrawHelper extends PageDrawHelper {
         // 裁剪出正面
         canvas.save();
         mPaint.setColor(Color.GREEN);
+        canvas.clipPath(mPathBack);
         canvas.drawPath(mPathBack, mPaint);
         canvas.restore();
     }
@@ -186,6 +202,15 @@ public class SimulationDrawHelper extends PageDrawHelper {
         canvas.save();
         mPaint.setColor(Color.BLUE);
         canvas.drawPath(mPathNext, mPaint);
+        mTempPath.reset();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            mTempPath.op(mPathFront, Path.Op.UNION);
+//            mTempPath.op(mPathBack, Path.Op.UNION);
+//
+//            mPathNext.op(mTempPath, Path.Op.DIFFERENCE);
+//        }
+        canvas.clipPath(mPathNext);
+        canvas.drawBitmap(mPageView.getNextPage().getBitmap(), 0, 0, null);
         canvas.restore();
     }
 
@@ -234,6 +259,23 @@ public class SimulationDrawHelper extends PageDrawHelper {
     }
 
     /**
+     * 获取下一页的显示区域
+     */
+    private void getNextAreaPath() {
+        mPathNext.reset();
+        mPathNext.moveTo(mPointC.x, mPointC.y);
+        mPathNext.lineTo(mPointF.x, mPointF.y);
+        mPathNext.lineTo(mPointJ.x, mPointJ.y);
+        mPathNext.close();
+        mTempPath.reset();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mTempPath.op(mPathFront, Path.Op.UNION);
+            mTempPath.op(mPathBack, Path.Op.UNION);
+            mPathNext.op(mTempPath, Path.Op.DIFFERENCE);
+        }
+    }
+
+    /**
      * 检查c点是否超出范围 炒作重新设置a点并计算各点坐标
      */
     private void checkPointC() {
@@ -252,28 +294,10 @@ public class SimulationDrawHelper extends PageDrawHelper {
         // ———————— =  ————————
         //  c2ToM       a1ToN
 
-        //
         int a1ToN = mPointF.y == 0 ? (int) mPointA.y : (int) (mPageHeight - mPointA.y);
         int a2ToM = c2ToM * a1ToN / c1ToN;
         mPointA.set(c2ToM, mPointF.y == 0 ? a2ToM : mPageHeight - a2ToM);
         calcPoints();
-    }
-
-    /**
-     * 获取下一页的显示区域
-     */
-    private void getNextAreaPath() {
-        mPathNext.reset();
-        mPathNext.moveTo(mPointC.x, mPointC.y);
-        mPathNext.lineTo(mPointF.x, mPointF.y);
-        mPathNext.lineTo(mPointJ.x, mPointJ.y);
-        mPathNext.close();
-        Path tempPath = new Path();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            tempPath.op(mPathFront, Path.Op.UNION);
-            tempPath.op(mPathBack, Path.Op.UNION);
-            mPathNext.op(tempPath, Path.Op.DIFFERENCE);
-        }
     }
 
     /**
