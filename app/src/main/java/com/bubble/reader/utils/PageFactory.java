@@ -122,7 +122,6 @@ public class PageFactory {
             int start = 0;
             // 第一页的开始高度 == 标题文字大小+段间距
             int contentHeight = mTitleFontSize + mParagraphSpace;
-
             PageBean pageBean = new PageBean();
             String paragraphStr = "";
             String line = "";
@@ -148,7 +147,6 @@ public class PageFactory {
                         break;
                     }
                     paragraphStr = paragraphStr.substring(size);
-
                 }
                 /**
                  * 超过高度并且 内容不为空
@@ -173,8 +171,8 @@ public class PageFactory {
                     // 没有剩余 刚好到一页结尾
                     start += paragraph.length;
                 } else {
-                    // 有剩余 需要加到下一页
-                    start += paragraphStr.getBytes(mEncoding).length;
+                    // 有剩余 需要加到下一页 paragraphStr是剩余的文本
+                    start += paragraph.length - paragraphStr.getBytes(mEncoding).length;
                 }
             }
             /**

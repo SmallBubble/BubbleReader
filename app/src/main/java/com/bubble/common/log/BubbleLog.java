@@ -2,6 +2,8 @@ package com.bubble.common.log;
 
 import android.util.Log;
 
+import com.bubble.bubblereader.BuildConfig;
+
 /**
  * @author Bubble
  * @date 2020/6/20
@@ -16,7 +18,9 @@ public class BubbleLog {
     }
 
     public static void e(String tag, String message) {
-        Log.e(tag, message);
+        if (BuildConfig.DEBUG) {
+            Log.e(tag, message);
+        }
     }
 
     public static void i(String message) {

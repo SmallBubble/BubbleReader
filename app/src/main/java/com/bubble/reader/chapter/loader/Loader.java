@@ -9,4 +9,5 @@ package com.bubble.reader.chapter.loader;
  * @Desc TODO
  */
 public interface Loader<T> {
+    void recycle();
 }

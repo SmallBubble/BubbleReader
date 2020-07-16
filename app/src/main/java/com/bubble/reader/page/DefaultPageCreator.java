@@ -24,8 +24,6 @@ import java.util.List;
  */
 public class DefaultPageCreator extends PageCreator {
     private static final String TAG = DefaultPageCreator.class.getSimpleName();
-
-
     /**
      * 可见页
      */
@@ -57,9 +55,6 @@ public class DefaultPageCreator extends PageCreator {
             return creator;
         }
     }
-
-    /*=======================================私有方法阅读=========================================*/
-
 
     /*=======================================对外方法阅读=========================================*/
 
@@ -117,8 +112,6 @@ public class DefaultPageCreator extends PageCreator {
         if (mChapterFactory.isBookEnd() && mVisiblePage.getPageNum() == mVisiblePage.getPageCount()) {
             return mPageResult.set(false, false);
         }
-
-
         /* *****以下内容表示有下一章 但是是否能直接获取 要根据具体情况 有可能需要加载后才能获取******* */
         mCancelPage = mVisiblePage;
         //该章节最后一页 获取下一章内容
@@ -192,5 +185,4 @@ public class DefaultPageCreator extends PageCreator {
             return mPageResult.set(true, false);
         }
     }
-
 }

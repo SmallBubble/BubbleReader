@@ -10,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.bubble.reader.chapter.TxtChapterFactory;
-import com.bubble.reader.chapter.listener.OnChapterRequestListener;
-import com.bubble.reader.chapter.listener.OnChapterResultListener;
 import com.bubble.reader.page.DefaultPageCreator;
 import com.bubble.reader.page.listener.OfflinePageListener;
 import com.bubble.reader.widget.PageView;
@@ -19,7 +17,7 @@ import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 
 import java.io.File;
 
-public class HorizontalMoveReadActivity extends AppCompatActivity implements OnChapterRequestListener {
+public class HorizontalMoveReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
@@ -77,7 +75,4 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
         });
     }
 
-    @Override
-    public void onRequest(boolean isPrepare, int needIndex, OnChapterResultListener listener) {
-    }
 }

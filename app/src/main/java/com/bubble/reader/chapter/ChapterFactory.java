@@ -206,6 +206,12 @@ public class ChapterFactory<T extends IChapter> implements IChapterFactory<T> {
 
     @Override
     public void recycle() {
+        if (mChapterLoader != null) {
+            mChapterLoader.recycle();
+        }
+        if (mCacheLoader != null) {
+            mCacheLoader.recycle();
+        }
     }
 
     @Override
@@ -239,7 +245,6 @@ public class ChapterFactory<T extends IChapter> implements IChapterFactory<T> {
                 return true;
             }
         }
-
     }
 
     private void prepareRequest() {

@@ -164,7 +164,11 @@ public abstract class PageCreator {
      * 刷新页面
      */
     public void refreshPage() {
+        //刷新配置信息
         refreshPageConfig();
+        // 因为改变了配置 所有页面都会改变 所以清空已经生成的页面
+        mPages.clear();
+        // 通知生成页面
         onChapterInitialized();
     }
 

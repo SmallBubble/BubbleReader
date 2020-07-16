@@ -224,7 +224,7 @@ public abstract class PageDrawHelper extends DrawHelper {
         // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
         mBaseLine = mSettings.getTopHeight() - mSettings.getPaddingTop();
         // 获取基线
-        if (pageBean.getChapterNo() == 1) {
+        if (pageBean.getPageNum() == 1) {
             // 如果是第一页 基线为 标题文字大小
             mBaseLine += mSettings.getTitleFontSize();
             // 第一页 绘制标题
@@ -304,7 +304,6 @@ public abstract class PageDrawHelper extends DrawHelper {
      */
     private void drawBottom(Canvas canvas) {
         canvas.drawRect(new RectF(0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight), mTopPaint);
-
         onDrawBottom(canvas, 0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight);
     }
 }
