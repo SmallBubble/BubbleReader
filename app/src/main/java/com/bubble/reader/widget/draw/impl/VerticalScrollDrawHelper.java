@@ -115,7 +115,8 @@ public class VerticalScrollDrawHelper extends PageDrawHelper {
         int pageHeight = mPageView.getCurrentPage().getBitmap().getHeight();
         if (mLastY > 0) {
             // 往上滑 下一页
-            if (mState == State.IDLE && pageHeight - mLastY < mPageHeight) {
+            boolean needPre = mState == State.IDLE && pageHeight - mLastY < mPageHeight;
+            if (needPre) {
                 if (mLastY >= pageHeight) {
                     mLastY -= pageHeight;
                     mLastY += dy + 1;
@@ -126,7 +127,8 @@ public class VerticalScrollDrawHelper extends PageDrawHelper {
             }
         } else {
             // 往下滑 上一页
-            if (mState == State.IDLE && (Math.abs(mLastY) > mPageHeight || mLastY < 0)) {
+            boolean needNext = mState == State.IDLE && (Math.abs(mLastY) > mPageHeight || mLastY < 0);
+            if (needNext) {
                 if (Math.abs(mLastY) >= pageHeight) {
                     mLastY += pageHeight;
                     mLastY -= dy + 1;

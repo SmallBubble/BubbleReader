@@ -1,9 +1,6 @@
 package com.bubble.reader.widget.draw.impl;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 
@@ -20,40 +17,32 @@ import java.lang.ref.WeakReference;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 绘制加载动画
  */
-public class LoadingDrawHelper extends DrawHelper {
+public abstract class LoadingDrawHelper extends DrawHelper {
+    private boolean mLoading;
+    protected long mSpeed;
 
-
-    private int mAngle;
-    private Paint mBackgroundPaint;
-    private Paint mForegroundPaint;
-    private float mLoadingWidth;
-    private float mSweepAngle;
-    private long mTime;
-
-    public LoadingDrawHelper(PageView pageView) {
+    public LoadingDrawHelper(PageView pageView, int speed) {
         super(pageView);
+        mSpeed = speed;
     }
 
     @Override
     public void init() {
-
-        mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mBackgroundPaint.setStyle(Paint.Style.STROKE);
-        mBackgroundPaint.setStrokeWidth(16);
-        mBackgroundPaint.setColor(Color.parseColor("#454545"));
-
-        mForegroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mBackgroundPaint.setStyle(Paint.Style.STROKE);
-        mBackgroundPaint.setStrokeWidth(16);
-        mBackgroundPaint.setColor(Color.parseColor("#ff0000"));
-
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        canvas.drawCircle(mPageWidth / 2f, mPageHeight / 2f, mLoadingWidth, mBackgroundPaint);
-        canvas.drawArc(new RectF(mPageWidth / 2f - mLoadingWidth / 2f, 0, 0, 0), mAngle, mSweepAngle, false, mForegroundPaint);
-        mHandler.sendEmptyMessageDelayed(0, mTime);
+    public final void draw(Canvas canvas) {
+        if (!mLoading) {
+            return;
+        }
+        canvas.save();
+        onDraw(canvas, mPageWidth, mPageHeight);
+        canvas.restore();
+        mHandler.sendEmptyMessageDelayed(0, mSpeed);
+    }
+
+    protected void onDraw(Canvas canvas, int pageWidth, int pageHeight) {
+
     }
 
     @Override
@@ -77,17 +66,18 @@ public class LoadingDrawHelper extends DrawHelper {
             if (helper == null) {
                 removeCallbacksAndMessages(null);
             }
-            sendEmptyMessageDelayed(0, helper.mTime);
-
+            sendEmptyMessageDelayed(0, helper.mSpeed);
         }
     }
 
     public void startLoading() {
-        mHandler.sendEmptyMessageDelayed(0, mTime);
+        mLoading = true;
+        mHandler.sendEmptyMessageDelayed(0, mSpeed);
         mPageView.invalidate();
     }
 
     public void stopLoading() {
+        mLoading = false;
         mHandler.removeCallbacksAndMessages(null);
     }
 }

@@ -1,5 +1,6 @@
 package com.bubble.reader.page;
 
+import android.graphics.Canvas;
 import android.text.TextUtils;
 
 import com.bubble.common.log.BubbleLog;
@@ -21,6 +22,7 @@ import java.util.List;
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 页面生成器(默认的) 可以自己继承{@link PageCreator } 实现自己的生成器
+ * 加上其他内容 例如加上图片大小 然后再{@link com.bubble.reader.widget.draw.base.DrawHelper#draw(Canvas)} 中绘制对应内容
  */
 public class DefaultPageCreator extends PageCreator {
     private static final String TAG = DefaultPageCreator.class.getSimpleName();

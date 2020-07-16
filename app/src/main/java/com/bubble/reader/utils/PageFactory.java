@@ -129,10 +129,6 @@ public class PageFactory {
             while (start < length) {
                 byte[] paragraph = getParagraph(bytes, start);
                 paragraphStr = new String(paragraph, mEncoding);
-                // 如果是章节
-                if (BookUtils.checkArticle(paragraphStr)) {
-
-                }
                 // 段落不为空
                 while (!TextUtils.isEmpty(paragraphStr)) {
                     // 获取一行
@@ -142,6 +138,10 @@ public class PageFactory {
                     // 每添加一行 需要加一个字体大小和行间距
                     contentHeight += mLineSpace + mFontSize;
 
+                    // 如果段落长度刚好等于一行 加一个段落间距
+                    if (paragraphStr.length() == paragraph.length) {
+                        contentHeight += mParagraphSpace;
+                    }
                     // 如果这时候的高度再加上一行就超过页面了 就完成一行了
                     if (checkHeight(contentHeight)) {
                         break;

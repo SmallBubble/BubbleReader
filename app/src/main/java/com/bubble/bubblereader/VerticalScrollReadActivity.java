@@ -2,6 +2,7 @@ package com.bubble.bubblereader;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -12,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import com.bubble.reader.chapter.TxtChapterFactory;
 import com.bubble.reader.page.DefaultPageCreator;
 import com.bubble.reader.widget.PageView;
+import com.bubble.reader.widget.draw.impl.LoadingDrawHelper;
 import com.bubble.reader.widget.draw.impl.VerticalScrollDrawHelperV2;
 
 import java.io.File;
@@ -56,6 +58,12 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
                 .build();
         mReadView.setDrawHelper(new VerticalScrollDrawHelperV2(mReadView));
         mReadView.setPageCreator(mPageCreator);
+        mReadView.setLoadingDrawHelper(new LoadingDrawHelper(mReadView, 10) {
+            @Override
+            protected void onDraw(Canvas canvas, int pageWidth, int pageHeight) {
+                super.onDraw(canvas, pageWidth, pageHeight);
+            }
+        });
 //        mPageCreator.addPageListener(new OfflinePageListener() {
 //            @Override
 //            public void onFileNotFound() {

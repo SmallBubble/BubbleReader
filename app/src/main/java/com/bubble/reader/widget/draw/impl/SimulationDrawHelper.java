@@ -48,13 +48,29 @@ public class SimulationDrawHelper extends PageDrawHelper {
     private Path mTempPath;
 
     enum Op {
-        CACNEL,
+        /**
+         * 取消 静止
+         */
+        CANCEL,
+        /**
+         * 顶部
+         */
         TOP,
+        /**
+         * 底部
+         */
         BOTTOM,
-        RIGHT
+        /**
+         * 右边
+         */
+        RIGHT,
+        /**
+         * 左边
+         */
+        LEFT
     }
 
-    private Op mOp = Op.CACNEL;
+    private Op mOp = Op.CANCEL;
 
     public SimulationDrawHelper(PageView pageView) {
         super(pageView);
@@ -92,26 +108,33 @@ public class SimulationDrawHelper extends PageDrawHelper {
                     mOp = Op.RIGHT;
                     // 横向翻页
                 }
+                mStartPoint.set(event.getX(), event.getY());
                 mPointA.set(event.getX(), event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
-                mRunning = true;
-                if (event.getY() < 0 || event.getY() > mPageHeight) {
+                int moveX = (int) (event.getX() - mStartPoint.x);
+                if (moveX == 0 || event.getY() < 0 || event.getY() > mPageHeight) {
                     return;
                 }
+                if (moveX > 0) {
+                    // 右滑
+                    mHasNext = mOnContentListener.onPrePage();
+                    mNext = false;
+                } else {
+                    mHasNext = mOnContentListener.onNextPage();
+                    mNext = true;
+                }
+                // 没有新的一页 没有翻页效果
+                if (mHasNext == null || !mHasNext.isHasNext()) {
+                    return;
+                }
+                mRunning = true;
                 mPointA.set(event.getX(), event.getY());
-                if (mOp == Op.RIGHT) {
-                    mPointA.y = mPageHeight - 5;
-                }
-                calcPoints();
-                if (mPointC.x < 0) {
-                    checkPointC();
-                }
                 mPageView.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 startCancel();
-                mOp = Op.CACNEL;
+                mOp = Op.CANCEL;
                 break;
             default:
         }
@@ -166,12 +189,23 @@ public class SimulationDrawHelper extends PageDrawHelper {
 
     @Override
     public void onDrawPage(Canvas canvas) {
-        getFrontAreaPath();
-        getBackAreaPath();
-        getNextAreaPath();
+        if (mOp == Op.RIGHT) {
+            mPointA.y = mPageHeight - 5;
+        }
+        calcPoints();
+        if (mPointC.x < 0) {
+            checkPointC();
+        }
+        getPath();
         drawFront(canvas);
         drawBack(canvas);
         drawNext(canvas);
+    }
+
+    private void getPath() {
+        getFrontAreaPath();
+        getBackAreaPath();
+        getNextAreaPath();
     }
 
     @Override

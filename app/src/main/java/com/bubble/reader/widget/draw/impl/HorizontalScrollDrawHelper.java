@@ -8,7 +8,6 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.draw.base.PageDrawHelper;
 
@@ -39,14 +38,6 @@ public class HorizontalScrollDrawHelper extends PageDrawHelper {
      * 是否发生移动
      */
     private boolean mMove;
-    /**
-     * 是否  下一页
-     */
-    private boolean mNext;
-    /**
-     * 是否还有内容
-     */
-    private PageResult mHasNext;
     /**
      * 是否在滑动
      */
@@ -135,7 +126,7 @@ public class HorizontalScrollDrawHelper extends PageDrawHelper {
                     } else {
                         mCancel = false;
                         // 不大于5 根据滑动距离判断是否翻页
-                        if (Math.abs(moveX) > mPageWidth / 2) {
+                        if (Math.abs(moveX) > mPageWidth / 4) {
                             // 滑动距离超过一半 正常翻页
                             if (mNext) {
                                 // 翻到下一页

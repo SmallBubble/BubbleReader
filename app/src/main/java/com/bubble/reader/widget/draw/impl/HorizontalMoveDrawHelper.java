@@ -126,7 +126,7 @@ public class HorizontalMoveDrawHelper extends PageDrawHelper {
 
                     } else {
                         // 不大于一 根据滑动距离判断是否翻页
-                        if (Math.abs(moveX) > mPageWidth / 2) {
+                        if (Math.abs(moveX) > mPageWidth / 4) {
                             mCancel = false;
                             if (mNext) {
                                 dx = -(mPageWidth - Math.abs(moveX));

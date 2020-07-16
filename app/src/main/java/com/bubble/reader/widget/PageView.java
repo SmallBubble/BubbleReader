@@ -18,6 +18,7 @@ import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.page.PageCreator;
 import com.bubble.reader.page.listener.PageListener;
 import com.bubble.reader.widget.draw.base.PageDrawHelper;
+import com.bubble.reader.widget.draw.impl.DefaultLoadingDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
 import com.bubble.reader.widget.draw.impl.LoadingDrawHelper;
@@ -177,7 +178,7 @@ public class PageView extends View {
     }
 
     private void init() {
-        mLoadingDrawHelper = new LoadingDrawHelper(this);
+        mLoadingDrawHelper = new DefaultLoadingDrawHelper(this, 10);
         mLoadingDrawHelper.init();
     }
 
@@ -297,6 +298,14 @@ public class PageView extends View {
         initData();
     }
 
+    public LoadingDrawHelper getLoadingDrawHelper() {
+        return mLoadingDrawHelper;
+    }
+
+    public void setLoadingDrawHelper(LoadingDrawHelper loadingDrawHelper) {
+        mLoadingDrawHelper = loadingDrawHelper;
+    }
+
     /**
      * 设置页码帮助类
      *
@@ -374,12 +383,11 @@ public class PageView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         BubbleLog.e(TAG, "onDraw");
-        // 绘制加载中
-        mLoadingDrawHelper.draw(canvas);
         if (mInitialized && checkPageInit()) {
             mDrawHelper.draw(canvas);
         }
-
+        // 绘制加载中
+        mLoadingDrawHelper.draw(canvas);
     }
 
     /**

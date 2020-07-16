@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.PageBean;
 import com.bubble.reader.bean.PageBitmap;
+import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.widget.PageView;
 import com.bubble.reader.widget.listener.OnContentListener;
 
@@ -76,6 +77,14 @@ public abstract class PageDrawHelper extends DrawHelper {
      * 内容监听器
      */
     protected OnContentListener mOnContentListener;
+    /**
+     * 是否还有内容
+     */
+    protected PageResult mHasNext;
+    /**
+     * 是否  下一页
+     */
+    protected boolean mNext;
     /**
      * 绘制内容的基线
      */
@@ -215,7 +224,7 @@ public abstract class PageDrawHelper extends DrawHelper {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         // 页面所对应的内容
         PageBean pageBean = bitmap.getPageBean();
-        BubbleLog.e("drawPage" + (pageBean == null ? pageBean : pageBean.toString()));
+        BubbleLog.e("drawPage" + (pageBean == null ? null : pageBean.toString()));
         if (pageBean == null) {
             return;
         }
