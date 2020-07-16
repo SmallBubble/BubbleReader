@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -19,10 +17,10 @@ import com.bubble.reader.bean.PageBitmap;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.page.PageCreator;
 import com.bubble.reader.page.listener.PageListener;
-import com.bubble.reader.widget.draw.impl.LoadingDrawHelper;
 import com.bubble.reader.widget.draw.base.PageDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
+import com.bubble.reader.widget.draw.impl.LoadingDrawHelper;
 import com.bubble.reader.widget.draw.impl.SimulationDrawHelper;
 import com.bubble.reader.widget.draw.impl.VerticalScrollDrawHelperV2;
 import com.bubble.reader.widget.listener.OnContentListener;
@@ -74,7 +72,12 @@ public class PageView extends View {
     private boolean mAttach;
     private boolean mInitialized;
 
-    private PageSettings mSettings = new PageSettings();
+    private PageSettings mSettings = new PageSettings(new PageSettings.OnSettingListener() {
+        @Override
+        public void onChanged() {
+            mPageCreator.refresh();
+        }
+    });
 
     public PageSettings getSettings() {
         return mSettings;
@@ -158,7 +161,6 @@ public class PageView extends View {
         mPageBitmaps.get(1).setType(2);
     }
 
-    private Paint mPaint;
 
     public PageView(Context context) {
         this(context, null);
@@ -175,9 +177,6 @@ public class PageView extends View {
     }
 
     private void init() {
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setColor(Color.RED);
-        mPaint.setTextSize(32);
         mLoadingDrawHelper = new LoadingDrawHelper(this);
         mLoadingDrawHelper.init();
     }
@@ -197,7 +196,6 @@ public class PageView extends View {
         for (PageBitmap bitmap : mPageBitmaps) {
             bitmap.getBitmap().recycle();
             bitmap.setBitmap(null);
-            bitmap = null;
         }
         mPageBitmaps.clear();
     }
@@ -261,6 +259,7 @@ public class PageView extends View {
                     mDrawHelper = mDrawHelpers.get("VERTICAL_SCROLL");
                 }
                 break;
+            default:
         }
     }
 
@@ -380,6 +379,7 @@ public class PageView extends View {
         if (mInitialized && checkPageInit()) {
             mDrawHelper.draw(canvas);
         }
+
     }
 
     /**

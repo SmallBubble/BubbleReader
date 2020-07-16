@@ -68,8 +68,6 @@ public class SimulationDrawHelper extends PageDrawHelper {
         mPathFront = new Path();
         mPathBack = new Path();
         mPathNext = new Path();
-        mPointA.set(680, 1420);
-        mPointF.set(mPageWidth, mPageHeight);
         calcPoints();
 
 
@@ -97,7 +95,9 @@ public class SimulationDrawHelper extends PageDrawHelper {
                 mPointA.set(event.getX(), event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (event.getY() < 0 || event.getY() > mPageHeight) return;
+                if (event.getY() < 0 || event.getY() > mPageHeight) {
+                    return;
+                }
                 mPointA.set(event.getX(), event.getY());
                 if (mOp == Op.RIGHT) {
                     mPointA.y = mPageHeight - 5;
@@ -159,14 +159,34 @@ public class SimulationDrawHelper extends PageDrawHelper {
         getFrontAreaPath();
         getBackAreaPath();
         getNextAreaPath();
+        drawFront(canvas);
+        drawBack(canvas);
+        drawNext(canvas);
+    }
 
+    private void drawFront(Canvas canvas) {
+        // 裁剪出正面
+        canvas.save();
         canvas.drawPath(mPathFront, mPaint);
+        canvas.clipPath(mPathFront);
+        canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), 0, 0, mPaint);
+        canvas.restore();
+    }
 
+    private void drawBack(Canvas canvas) {
+        // 裁剪出正面
+        canvas.save();
         mPaint.setColor(Color.GREEN);
         canvas.drawPath(mPathBack, mPaint);
+        canvas.restore();
+    }
 
+    private void drawNext(Canvas canvas) {
+        // 裁剪出下一页
+        canvas.save();
         mPaint.setColor(Color.BLUE);
         canvas.drawPath(mPathNext, mPaint);
+        canvas.restore();
     }
 
     /**
@@ -228,9 +248,6 @@ public class SimulationDrawHelper extends PageDrawHelper {
         // ———————— =  ————————
         //  c1ToF       c2ToF
         int c2ToM = c1ToN * c2ToF / c1ToF;
-//        BubbleLog.e("c2ToF   " + c2ToF + "   c1ToF   " + c1ToF + "    c1ToN   " + c1ToN + "    c2ToM  " + c2ToM);
-
-
         //  c1ToN       a2ToM
         // ———————— =  ————————
         //  c2ToM       a1ToN
@@ -239,7 +256,6 @@ public class SimulationDrawHelper extends PageDrawHelper {
         int a1ToN = mPointF.y == 0 ? (int) mPointA.y : (int) (mPageHeight - mPointA.y);
         int a2ToM = c2ToM * a1ToN / c1ToN;
         mPointA.set(c2ToM, mPointF.y == 0 ? a2ToM : mPageHeight - a2ToM);
-        BubbleLog.e("mPointA  " + mPointA);
         calcPoints();
     }
 

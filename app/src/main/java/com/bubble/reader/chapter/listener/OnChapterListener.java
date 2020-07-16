@@ -9,6 +9,11 @@ package com.bubble.reader.chapter.listener;
  * @Desc TODO
  */
 public abstract class OnChapterListener {
+    public final static int TYPE_INIT = 0x0001;
+    public final static int TYPE_LOADED = 0x0002;
+    public final static int TYPE_COMPLETE = 0x0003;
+    public final static int TYPE_ERROR = 0x0004;
+    public final static int TYPE_PREPARE_LOAD = 0x0005;
 
     /**
      * 初始化完成 打开阅读器后的第一章解析完成
@@ -37,6 +42,13 @@ public abstract class OnChapterListener {
      * @param e
      */
     public void onError(Throwable e) {
+
+    }
+
+    /**
+     * 预加载完成
+     */
+    public void onPrepareComplete() {
 
     }
 }

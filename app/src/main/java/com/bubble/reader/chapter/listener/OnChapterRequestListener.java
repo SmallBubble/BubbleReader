@@ -15,8 +15,8 @@ public interface OnChapterRequestListener<T extends IChapter> {
      * 请求数据
      *
      * @param isPrepare    是否预加载章节 true 是 false 否
-     * @param currentIndex 当前章节的下标
+     * @param needIndex 当前章节的下标
      * @param listener
      */
-    void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener<T> listener);
+    void onRequest(boolean isPrepare, int needIndex, OnChapterResultListener<T> listener);
 }

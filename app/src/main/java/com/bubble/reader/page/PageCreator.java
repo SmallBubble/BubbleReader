@@ -22,7 +22,7 @@ import java.util.List;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 离线内容 分页
  */
-public abstract class PageCreator extends OnChapterListener {
+public abstract class PageCreator {
     private final static String TAG = PageCreator.class.getSimpleName();
     /**
      * 阅读视图
@@ -68,7 +68,9 @@ public abstract class PageCreator extends OnChapterListener {
      * 章节工厂
      */
     protected ChapterFactory mChapterFactory;
-
+    /**
+     * 页面参数设置 生成页面需要根据字体大小 行距等 获取内容
+     */
     private PageSettings mSettings;
 
     protected PageCreator(PageView readView) {
@@ -94,8 +96,21 @@ public abstract class PageCreator extends OnChapterListener {
                 .lineSpace(mSettings.getLineSpace())
                 .paragraphSpace(mSettings.getParagraphSpace())
                 .fontSize(mSettings.getFontSize());
-        mChapterFactory.setOnChapterListener(this);
-        mChapterFactory.initData();
+        mChapterFactory.addOnChapterListener(new OnChapterListener() {
+            @Override
+            public void onInitialized() {
+                super.onInitialized();
+                // 章节初始化完成
+                onChapterInitialized();
+            }
+
+            @Override
+            public void onChapterLoaded() {
+                super.onChapterLoaded();
+                onCurrentChapterLoaded();
+            }
+        });
+        mChapterFactory.init();
         initData();
     }
 
@@ -141,6 +156,16 @@ public abstract class PageCreator extends OnChapterListener {
 
     public void onCancel() {
 
+    }
+
+    public void refresh() {
+        PageFactory.getInstance()
+                .height(mContentHeight)
+                .width(mContentWidth)
+                .lineSpace(mSettings.getLineSpace())
+                .paragraphSpace(mSettings.getParagraphSpace())
+                .fontSize(mSettings.getFontSize());
+        onChapterInitialized();
     }
 
     public static abstract class Builder<C extends PageCreator, T extends Builder> {
@@ -230,17 +255,9 @@ public abstract class PageCreator extends OnChapterListener {
      */
     public abstract void onChapterInitialized();
 
+    /**
+     * 当前章加载完成
+     */
     public abstract void onCurrentChapterLoaded();
 
-    @Override
-    public void onInitialized() {
-        super.onInitialized();
-        onChapterInitialized();
-    }
-
-    @Override
-    public void onChapterLoaded() {
-        super.onChapterLoaded();
-        onCurrentChapterLoaded();
-    }
 }

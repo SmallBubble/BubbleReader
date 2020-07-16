@@ -16,7 +16,7 @@ public interface IChapterFactory<T extends IChapter> {
     /**
      * 初始化工厂
      */
-    void initData();
+    void init();
 
     /**
      * 获取当前章编号

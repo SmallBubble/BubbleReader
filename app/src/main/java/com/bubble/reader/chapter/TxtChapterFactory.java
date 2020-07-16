@@ -2,8 +2,8 @@ package com.bubble.reader.chapter;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.TxtChapter;
-import com.bubble.reader.chapter.listener.OnChapterRequestListener;
-import com.bubble.reader.chapter.listener.OnChapterResultListener;
+import com.bubble.reader.chapter.listener.OnChapterListener;
+import com.bubble.reader.chapter.loader.ChapterLoader;
 import com.bubble.reader.utils.BookUtils;
 import com.bubble.reader.utils.FileUtils;
 
@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc Txt文件章节工厂
  */
-public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnChapterRequestListener<TxtChapter> {
+public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     private static final String TAG = TxtChapterFactory.class.getSimpleName();
     /**
      * 要读取得txt文件
@@ -59,30 +59,33 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
      * 章节编号
      */
     private int mChapterNo = 0;
+    /*****************************************章节获取*****************************************/
+
     /***
+     *
      * 用来回收资源的时候 停止请求
      */
     private DisposableObserver<TxtChapter> mDisposableObserver = new DisposableObserver<TxtChapter>() {
         @Override
         public void onNext(TxtChapter chapter) {
+            // 添加进map 存起来 下次直接读取
+            mChapters.put(chapter.getChapterName() + chapter.getChapterNo(), chapter);
+            // 如果是第一次加载回调初始化方法
             if (!mInitialized) {
-                // 第一次初始化 回调初始化
                 mInitialized = true;
                 mCurrentChapter = chapter;
-                mOnChapterListener.onInitialized();
-            } else {
-                mOnChapterListener.onChapterLoaded();
+                notifyChapter(OnChapterListener.TYPE_INIT);
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            mOnChapterListener.onError(e);
+            notifyChapter(OnChapterListener.TYPE_ERROR, e);
         }
 
         @Override
         public void onComplete() {
-            mOnChapterListener.onComplete();
+            notifyChapter(OnChapterListener.TYPE_COMPLETE);
         }
     };
 
@@ -91,10 +94,13 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
     }
 
     public TxtChapterFactory() {
-        /***
-         * 章节获取监听 这里直接用自己作为章节获取的实现类 只需要在自己里面实现逻辑即可
-         */
-        mOnChapterRequestListener = this;
+        setChapterLoader(new ChapterLoader<TxtChapter>() {
+            @Override
+            public void loadChapter(boolean isPrepare, int needNo, ChapterResult<TxtChapter> result) {
+                TxtChapter chapter = parseChapter(mCurrentChapter.getChapterStart());
+                result.onResult(isPrepare, chapter);
+            }
+        });
     }
 
     @Override
@@ -103,8 +109,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
     }
 
     @Override
-    public void initData() {
-        super.initData();
+    public void onInitData() {
         openBook();
     }
 
@@ -113,17 +118,6 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
         super.recycle();
         // 取消子线程读取目录的操作
         mDisposableObserver.dispose();
-    }
-
-    /*****************************************章节获取*****************************************/
-    @Override
-    public void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener<TxtChapter> listener) {
-        TxtChapter chapter = parseChapter(mCurrentChapter.getChapterStart(), currentIndex);
-        if (chapter == null) {
-            listener.onGetChapterFailure(isPrepare, "解析失败");
-        } else {
-            listener.onGetChapterSuccess(isPrepare, chapter);
-        }
     }
 
     /**
@@ -175,7 +169,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
         }
     }
 
-    private TxtChapter parseChapter(int start, int chapterNo) {
+    private TxtChapter parseChapter(int start) {
         // 没有到书籍结尾 直到找到下一章节 这里只要找出end 当前章节的结束位置
         String paragraphStr = "";
         while (start < mFileLength) {
@@ -197,7 +191,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
                 chapter.setChapterEnd(start);
                 chapter.setChapterName(chapterName);
                 chapter.setChapterContent(content);
-                chapter.setChapterNo(chapterNo);
+                chapter.setChapterNo(mChapterNo);
                 BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
                 return chapter;
             }
@@ -237,10 +231,6 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> implements OnC
                 chapter.setChapterNo(mChapterNo);
                 //通知
                 emitter.onNext(chapter);
-                // 添加进map 存起来 下次直接读取
-                mChapters.put(getKey(mChapterNo), chapter);
-
-//                BubbleLog.e(TAG, chapter.getChapterName() + Thread.currentThread().getName());
                 mStartIndex = start;
             }
             start += paragraph.length;

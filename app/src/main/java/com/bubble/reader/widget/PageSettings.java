@@ -13,6 +13,19 @@ import com.bubble.common.utils.Dp2PxUtil;
  * @Desc
  */
 public class PageSettings {
+    public interface OnSettingListener {
+        /**
+         * 发生改变
+         */
+        void onChanged();
+    }
+
+    private OnSettingListener mOnSettingListener;
+
+    public PageSettings(OnSettingListener onSettingListener) {
+        mOnSettingListener = onSettingListener;
+    }
+
     /**
      * 正文字体大小
      */

@@ -129,6 +129,8 @@ public class DefaultPageCreator extends PageCreator {
             return mPageResult.set(false, false);
         }
 
+
+        /* *****以下内容表示有下一章 但是是否能直接获取 要根据具体情况 有可能需要加载后才能获取******* */
         mCancelPage = mVisiblePage;
         //该章节最后一页 获取下一章内容
         if (mVisiblePage.getPageCount() == mVisiblePage.getPageNum()) {
@@ -137,12 +139,13 @@ public class DefaultPageCreator extends PageCreator {
             // 获取当前章内容（上一步获取了下一章 下一章变为当前章）
             String content = mChapterFactory.getCurrentContent();
             if (TextUtils.isEmpty(content)) {
-                // 本章内容为空
+                // 获取不到 下一章的内容 需要从网络或者文件中重新读取
                 // 获取本章内容
                 mChapterFactory.loadChapter();
-
+                // 返回结果 有下一章 但是需要时间加载
+                return mPageResult.set(true, false);
             } else {
-                // 从工厂生成当前章节的页面
+                //能获取到内容 从工厂生成当前章节的页面
                 List<PageBean> pages = PageFactory.getInstance()
                         .createPages(mChapterFactory.getCurrentName()
                                 , mChapterFactory.getCurrentChapterNo()
@@ -151,10 +154,11 @@ public class DefaultPageCreator extends PageCreator {
                 mPageView.getCurrentPage().setPageBean(mVisiblePage);
                 mVisiblePage = pages.get(0);
                 mPageView.getNextPage().setPageBean(mVisiblePage);
+                // 缓存该章节的页面 下次如果没有切换章节 直接从map中读取 不用再次解析
                 mPages.putAll(PageFactory.getInstance().convertToMap(pages));
             }
         } else {
-            // 直接获取Map里面的
+            //不是最后一页 已经解析过了 直接获取Map里面的
             String key = PageFactory.getInstance().getKey(mChapterFactory.getCurrentName(), mChapterFactory.getCurrentChapterNo(), mVisiblePage.getPageNum() + 1);
             mVisiblePage = mPages.get(key);
             mPageView.getNextPage().setPageBean(mVisiblePage);
@@ -168,6 +172,7 @@ public class DefaultPageCreator extends PageCreator {
         if (mChapterFactory.isStart() && mVisiblePage.getPageNum() == 1) {
             return mPageResult.set(false, false);
         }
+        mCancelPage = mVisiblePage;
         // 当前是章节第一页 获取上一章内容
         if (mVisiblePage.getPageNum() == 1) {
             // 通知章节工厂 获取上一章
@@ -180,7 +185,6 @@ public class DefaultPageCreator extends PageCreator {
                             , mChapterFactory.getCurrentChapterNo()
                             , content);
             // 获取最后一页
-
             mPageView.getCurrentPage().setPageBean(mVisiblePage);
             mVisiblePage = pages.get(pages.size() - 1);
             mPageView.getNextPage().setPageBean(mVisiblePage);

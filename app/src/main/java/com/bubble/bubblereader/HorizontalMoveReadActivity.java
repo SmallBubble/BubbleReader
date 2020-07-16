@@ -78,6 +78,6 @@ public class HorizontalMoveReadActivity extends AppCompatActivity implements OnC
     }
 
     @Override
-    public void onRequest(boolean isPrepare, int currentIndex, OnChapterResultListener listener) {
+    public void onRequest(boolean isPrepare, int needIndex, OnChapterResultListener listener) {
     }
 }
