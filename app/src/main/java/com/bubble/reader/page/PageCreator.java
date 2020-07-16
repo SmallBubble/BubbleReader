@@ -1,6 +1,7 @@
 package com.bubble.reader.page;
 
 import com.bubble.common.log.BubbleLog;
+import com.bubble.reader.bean.PageBean;
 import com.bubble.reader.bean.PageResult;
 import com.bubble.reader.chapter.ChapterFactory;
 import com.bubble.reader.chapter.IChapterFactory;
@@ -12,7 +13,9 @@ import com.bubble.reader.widget.PageSettings;
 import com.bubble.reader.widget.PageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Bubble
@@ -24,6 +27,10 @@ import java.util.List;
  */
 public abstract class PageCreator {
     private final static String TAG = PageCreator.class.getSimpleName();
+    /**
+     * 解析出来的页面
+     */
+    protected Map<String, PageBean> mPages = new HashMap<>();
     /**
      * 阅读视图
      */
@@ -90,12 +97,6 @@ public abstract class PageCreator {
         mPageResult = new PageResult();
         BubbleLog.e(TAG, mContentWidth + "   " + mContentHeight);
 
-        PageFactory.getInstance()
-                .height(mContentHeight)
-                .width(mContentWidth)
-                .lineSpace(mSettings.getLineSpace())
-                .paragraphSpace(mSettings.getParagraphSpace())
-                .fontSize(mSettings.getFontSize());
         mChapterFactory.addOnChapterListener(new OnChapterListener() {
             @Override
             public void onInitialized() {
@@ -110,6 +111,7 @@ public abstract class PageCreator {
                 onCurrentChapterLoaded();
             }
         });
+        refreshPageConfig();
         mChapterFactory.init();
         initData();
     }
@@ -158,14 +160,24 @@ public abstract class PageCreator {
 
     }
 
-    public void refresh() {
+    /**
+     * 刷新页面
+     */
+    public void refreshPage() {
+        refreshPageConfig();
+        onChapterInitialized();
+    }
+
+    /**
+     * 刷新页面配置
+     */
+    private void refreshPageConfig() {
         PageFactory.getInstance()
                 .height(mContentHeight)
                 .width(mContentWidth)
                 .lineSpace(mSettings.getLineSpace())
                 .paragraphSpace(mSettings.getParagraphSpace())
                 .fontSize(mSettings.getFontSize());
-        onChapterInitialized();
     }
 
     public static abstract class Builder<C extends PageCreator, T extends Builder> {
@@ -252,6 +264,8 @@ public abstract class PageCreator {
 
     /**
      * 章节初始化完成 加载完第一章
+     * <p>
+     * 改变页面配置的时候 也需要回调这个方法
      */
     public abstract void onChapterInitialized();
 

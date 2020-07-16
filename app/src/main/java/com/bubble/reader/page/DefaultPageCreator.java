@@ -12,9 +12,7 @@ import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.reader.widget.draw.impl.HorizontalScrollDrawHelper;
 import com.bubble.reader.widget.listener.OnContentListener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Bubble
@@ -26,21 +24,12 @@ import java.util.Map;
  */
 public class DefaultPageCreator extends PageCreator {
     private static final String TAG = DefaultPageCreator.class.getSimpleName();
-    /**
-     * 解析出来的页面
-     */
-    private Map<String, PageBean> mPages = new HashMap<>();
 
 
     /**
      * 可见页
      */
     private PageBean mVisiblePage;
-    /**
-     * 不可见页
-     */
-    private PageBean mInvisiblePage;
-
     /**
      * 取消页
      */

@@ -91,7 +91,10 @@ public class PageSettings {
     }
 
     public void setFontSize(int fontSize) {
-        mFontSize = fontSize;
+        if (mFontSize != fontSize) {
+            mFontSize = fontSize;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getFontColor() {
@@ -107,7 +110,10 @@ public class PageSettings {
     }
 
     public void setLineSpace(int lineSpace) {
-        mLineSpace = lineSpace;
+        if (mLineSpace != lineSpace) {
+            mLineSpace = lineSpace;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getTitleFontSize() {
@@ -123,7 +129,10 @@ public class PageSettings {
     }
 
     public void setTitleFontSize(int titleFontSize) {
-        mTitleFontSize = titleFontSize;
+        if (mTitleFontSize != titleFontSize) {
+            mTitleFontSize = titleFontSize;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getParagraphSpace() {
@@ -131,7 +140,10 @@ public class PageSettings {
     }
 
     public void setParagraphSpace(int paragraphSpace) {
-        mParagraphSpace = paragraphSpace;
+        if (mParagraphSpace != paragraphSpace) {
+            mParagraphSpace = paragraphSpace;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getPaddingLeft() {
@@ -139,7 +151,10 @@ public class PageSettings {
     }
 
     public void setPaddingLeft(int paddingLeft) {
-        mPaddingLeft = paddingLeft;
+        if (mPaddingLeft != paddingLeft) {
+            mPaddingLeft = paddingLeft;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getPaddingRight() {
@@ -147,7 +162,10 @@ public class PageSettings {
     }
 
     public void setPaddingRight(int paddingRight) {
-        mPaddingRight = paddingRight;
+        if (mPaddingRight != paddingRight) {
+            mPaddingRight = paddingRight;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getPaddingTop() {
@@ -155,7 +173,10 @@ public class PageSettings {
     }
 
     public void setPaddingTop(int paddingTop) {
-        mPaddingTop = paddingTop;
+        if (mPaddingTop != paddingTop) {
+            mPaddingTop = paddingTop;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getPaddingBottom() {
@@ -163,7 +184,10 @@ public class PageSettings {
     }
 
     public void setPaddingBottom(int paddingBottom) {
-        mPaddingBottom = paddingBottom;
+        if (paddingBottom != mPaddingBottom) {
+            mPaddingBottom = paddingBottom;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getBottomHeight() {
@@ -171,7 +195,10 @@ public class PageSettings {
     }
 
     public void setBottomHeight(int bottomHeight) {
-        mBottomHeight = bottomHeight;
+        if (mBottomHeight != bottomHeight) {
+            mBottomHeight = bottomHeight;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getBottomFontSize() {
@@ -195,7 +222,10 @@ public class PageSettings {
     }
 
     public void setTopHeight(int topHeight) {
-        mTopHeight = topHeight;
+        if (topHeight != mTopHeight) {
+            mTopHeight = topHeight;
+            mOnSettingListener.onChanged();
+        }
     }
 
     public int getTopFontSize() {

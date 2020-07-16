@@ -75,7 +75,7 @@ public class PageView extends View {
     private PageSettings mSettings = new PageSettings(new PageSettings.OnSettingListener() {
         @Override
         public void onChanged() {
-            mPageCreator.refresh();
+            mPageCreator.refreshPage();
         }
     });
 
