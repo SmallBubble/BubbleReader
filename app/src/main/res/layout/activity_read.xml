@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".HorizontalMoveReadActivity">
 
-    <com.bubble.reader.widget.PageView
+    <com.bubble.breader.widget.PageView
         android:id="@+id/readView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

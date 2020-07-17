@@ -9,11 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bubble.reader.chapter.TxtChapterFactory;
-import com.bubble.reader.page.DefaultPageCreator;
-import com.bubble.reader.page.listener.OfflinePageListener;
-import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.impl.HorizontalMoveDrawHelper;
+import com.bubble.breader.chapter.TxtChapterFactory;
+import com.bubble.breader.page.BubblePageCreator;
+import com.bubble.breader.page.listener.OfflinePageListener;
+import com.bubble.breader.widget.PageView;
+import com.bubble.breader.widget.draw.impl.HorizontalMoveDrawHelper;
 
 import java.io.File;
 
@@ -21,7 +21,7 @@ public class HorizontalMoveReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
-    private DefaultPageCreator mPageCreator;
+    private BubblePageCreator mPageCreator;
 
 
     @Override
@@ -53,7 +53,7 @@ public class HorizontalMoveReadActivity extends AppCompatActivity {
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
 
-        mPageCreator = new DefaultPageCreator.Builder(mReadView)
+        mPageCreator = new BubblePageCreator.Builder(mReadView)
                 .chapterFactory(factory)
                 .build();
         mReadView.setDrawHelper(new HorizontalMoveDrawHelper(mReadView));

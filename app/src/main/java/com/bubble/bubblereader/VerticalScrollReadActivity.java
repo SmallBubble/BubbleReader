@@ -10,11 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bubble.reader.chapter.TxtChapterFactory;
-import com.bubble.reader.page.DefaultPageCreator;
-import com.bubble.reader.widget.PageView;
-import com.bubble.reader.widget.draw.impl.LoadingDrawHelper;
-import com.bubble.reader.widget.draw.impl.VerticalScrollDrawHelperV2;
+import com.bubble.breader.chapter.TxtChapterFactory;
+import com.bubble.breader.page.BubblePageCreator;
+import com.bubble.breader.widget.PageView;
+import com.bubble.breader.widget.draw.impl.LoadingDrawHelper;
+import com.bubble.breader.widget.draw.impl.VerticalScrollDrawHelperV2;
 
 import java.io.File;
 
@@ -22,7 +22,7 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
 
     PageView mReadView;
 
-    private DefaultPageCreator mPageCreator;
+    private BubblePageCreator mPageCreator;
 
 
     @Override
@@ -35,8 +35,6 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
-
-
     }
 
     @Override
@@ -53,7 +51,7 @@ public class VerticalScrollReadActivity extends AppCompatActivity {
         TxtChapterFactory factory = new TxtChapterFactory.Builder()
                 .file(directory.getAbsoluteFile() + "/test.txt")
                 .build();
-        mPageCreator = new DefaultPageCreator.Builder(mReadView)
+        mPageCreator = new BubblePageCreator.Builder(mReadView)
                 .chapterFactory(factory)
                 .build();
         mReadView.setDrawHelper(new VerticalScrollDrawHelperV2(mReadView));
