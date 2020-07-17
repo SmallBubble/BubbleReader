@@ -1,6 +1,6 @@
 package com.bubble.breader;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat;
  */
 public class BubbleReader {
     private static BubbleReader sReader;
-    private Context mContext;
+    private Application mContext;
 
     public static synchronized BubbleReader getInstance() {
         if (sReader == null) {
@@ -24,11 +24,11 @@ public class BubbleReader {
         return sReader;
     }
 
-    public Context getContext() {
+    public Application getContext() {
         return mContext;
     }
 
-    public void init(Context context) {
+    public void init(Application context) {
         mContext = context;
     }
 

@@ -332,7 +332,7 @@ public abstract class PageDrawHelper extends DrawHelper {
         mBottomPaint.setStyle(Paint.Style.STROKE);
         canvas.drawRoundRect(mBatteryRect, batterHeight / 6f, batterHeight / 6f, mBottomPaint);
         // 电量
-        mBatteryProgressRect.set(mBatteryRect.left + 2, mBatteryRect.top + 2, mBatteryRect.left + 2 + (mBatteryRect.right - mBatteryRect.left - 4) * 0.8f, mBatteryRect.bottom - 2);
+        mBatteryProgressRect.set(mBatteryRect.left + 2, mBatteryRect.top + 2, mBatteryRect.left + 2 + (mBatteryRect.width() - 4) * 0.8f, mBatteryRect.bottom - 2);
         mBottomPaint.setStyle(Paint.Style.FILL);
         canvas.drawRoundRect(mBatteryProgressRect, batterHeight / 6f, batterHeight / 6f, mBottomPaint);
 
@@ -341,7 +341,7 @@ public abstract class PageDrawHelper extends DrawHelper {
         canvas.drawRect(mBatteryHeadRect, mBottomPaint);
 
         // 电量文字
-        canvas.drawText("80%", mBatteryHeadRect.right + 10, mBatteryRect.bottom - mBottomPaint.descent(), mBottomPaint);
+        canvas.drawText("80%", mBatteryHeadRect.right + 10, mBatteryRect.bottom - mBottomPaint.ascent(), mBottomPaint);
 
 
         float width = mBottomPaint.measureText("1/8");

@@ -2,6 +2,7 @@ package com.bubble.breader.widget.draw.helper;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -36,7 +37,6 @@ public class SimulationDrawHelper extends PageDrawHelper {
     private PointF mPointI = new PointF();
     private PointF mPointJ = new PointF();
     private PointF mPointK = new PointF();
-    private PointF mTempPoint = new PointF();
 
     private Path mPathFront;
     private Path mPathBack;
@@ -46,6 +46,9 @@ public class SimulationDrawHelper extends PageDrawHelper {
     private Scroller mScroller;
     private boolean mRunning;
     private Path mTempPath;
+
+    private Matrix mMatrix;
+
 
     enum Op {
         /**
@@ -88,6 +91,7 @@ public class SimulationDrawHelper extends PageDrawHelper {
         mPathNext = new Path();
         mTempPath = new Path();
         calcPoints();
+        mMatrix = new Matrix();
     }
 
 
@@ -244,15 +248,9 @@ public class SimulationDrawHelper extends PageDrawHelper {
         mPaint.setColor(Color.BLUE);
         canvas.drawPath(mPathNext, mPaint);
         mTempPath.reset();
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            mTempPath.op(mPathFront, Path.Op.UNION);
-//            mTempPath.op(mPathBack, Path.Op.UNION);
-//
-//            mPathNext.op(mTempPath, Path.Op.DIFFERENCE);
-//        }
         canvas.clipPath(mPathNext);
         mPaint.setColor(Color.BLACK);
-//        canvas.drawText("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", 0, mPageHeight - 100, mPaint);
+        canvas.drawText("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", 0, mPageHeight - 100, mPaint);
         canvas.drawBitmap(mPageView.getNextPage().getBitmap(), 0, 0, null);
         canvas.restore();
     }
@@ -316,6 +314,18 @@ public class SimulationDrawHelper extends PageDrawHelper {
             mTempPath.op(mPathBack, Path.Op.UNION);
             mPathNext.op(mTempPath, Path.Op.DIFFERENCE);
         }
+    }
+
+    /**
+     * 处理背面区域
+     * 旋转 翻转 平移
+     */
+    private void dealBackContent() {
+        mMatrix.setTranslate(0, 0);
+
+        float[] matrixArray = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 1f};
+        float sin0 = 2;
+        mMatrix.setValues(matrixArray);
     }
 
     /**

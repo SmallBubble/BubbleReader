@@ -18,6 +18,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetManager {
     private static Retrofit sRetrofit;
 
+    public static void init() {
+
+    }
+
     public static void init(String baseUrl) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(RequestLogInterceptor.create())
