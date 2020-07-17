@@ -13,8 +13,8 @@ import androidx.core.app.ActivityCompat;
 import com.bubble.breader.chapter.TxtChapterFactory;
 import com.bubble.breader.page.BubblePageCreator;
 import com.bubble.breader.widget.PageView;
-import com.bubble.breader.widget.draw.impl.LoadingDrawHelper;
-import com.bubble.breader.widget.draw.impl.VerticalScrollDrawHelperV2;
+import com.bubble.breader.widget.draw.helper.LoadingDrawHelper;
+import com.bubble.breader.widget.draw.helper.VerticalScrollDrawHelperV2;
 
 import java.io.File;
 

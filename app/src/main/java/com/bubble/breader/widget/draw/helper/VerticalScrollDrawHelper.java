@@ -1,4 +1,4 @@
-package com.bubble.breader.widget.draw.impl;
+package com.bubble.breader.widget.draw.helper;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

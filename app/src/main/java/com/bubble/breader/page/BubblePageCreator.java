@@ -9,8 +9,8 @@ import com.bubble.breader.bean.PageResult;
 import com.bubble.breader.page.listener.PageListener;
 import com.bubble.breader.utils.PageFactory;
 import com.bubble.breader.widget.PageView;
-import com.bubble.breader.widget.draw.impl.HorizontalMoveDrawHelper;
-import com.bubble.breader.widget.draw.impl.HorizontalCoverDrawHelper;
+import com.bubble.breader.widget.draw.helper.HorizontalMoveDrawHelper;
+import com.bubble.breader.widget.draw.helper.HorizontalCoverDrawHelper;
 import com.bubble.breader.widget.listener.OnContentListener;
 
 import java.util.List;

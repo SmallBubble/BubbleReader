@@ -13,7 +13,7 @@ import com.bubble.breader.chapter.TxtChapterFactory;
 import com.bubble.breader.page.BubblePageCreator;
 import com.bubble.breader.page.listener.OfflinePageListener;
 import com.bubble.breader.widget.PageView;
-import com.bubble.breader.widget.draw.impl.HorizontalMoveDrawHelper;
+import com.bubble.breader.widget.draw.helper.HorizontalMoveDrawHelper;
 
 import java.io.File;
 
