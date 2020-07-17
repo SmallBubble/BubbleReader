@@ -196,6 +196,7 @@ public class ChapterFactory<T extends IChapter> implements IChapterFactory<T> {
 
     @Override
     public boolean isBookEnd() {
+        if (mCurrentChapter == null) return true;
         return mCurrentChapter.getChapterCount() == mCurrentChapter.getChapterNo();
     }
 

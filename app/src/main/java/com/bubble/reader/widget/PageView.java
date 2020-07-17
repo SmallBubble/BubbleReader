@@ -122,8 +122,7 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(true);
                 PageResult result = mPageCreator.onNextPage();
-                result.set(false, true);
-                if (result.isLoading() && mLoadingDrawHelper != null) {
+                if (result.isHasNext() && !result.isLoading() && mLoadingDrawHelper != null) {
                     mLoadingDrawHelper.startLoading();
                 }
                 return result;
@@ -136,7 +135,7 @@ public class PageView extends View {
             if (mPageCreator != null) {
                 exchangePage(false);
                 PageResult result = mPageCreator.onPrePage();
-                if (result.isLoading() && mLoadingDrawHelper != null) {
+                if (result.isHasNext() && !result.isLoading() && mLoadingDrawHelper != null) {
                     mLoadingDrawHelper.startLoading();
                 }
                 return result;
@@ -180,8 +179,6 @@ public class PageView extends View {
     }
 
     private void init() {
-        mLoadingDrawHelper = new DefaultLoadingDrawHelper(this, 10);
-        mLoadingDrawHelper.init();
     }
 
     private Runnable mDelayedInit = () -> delayedInit();
@@ -277,6 +274,12 @@ public class PageView extends View {
             mDrawHelper = new HorizontalScrollDrawHelper(this);
         }
         mDrawHelper.init();
+        if (mLoadingDrawHelper == null) {
+            mLoadingDrawHelper = new DefaultLoadingDrawHelper(this, 200);
+        }
+        mLoadingDrawHelper.init();
+
+        mLoadingDrawHelper.init();
         if (mPageCreator != null) {
             mPageCreator.init();
         }
@@ -314,6 +317,7 @@ public class PageView extends View {
 
     public void setLoadingDrawHelper(LoadingDrawHelper loadingDrawHelper) {
         mLoadingDrawHelper = loadingDrawHelper;
+        initData();
     }
 
     /**

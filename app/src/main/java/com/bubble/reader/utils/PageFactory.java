@@ -112,6 +112,7 @@ public class PageFactory {
      * @return
      */
     public List<PageBean> createPages(String chapterName, int chapterNo, String content) {
+        content += content + content;
         BubbleLog.e("PageFactory", mWidth + "   " + mHeight);
         List<PageBean> pages = new ArrayList<>();
         int pageCount = 0;

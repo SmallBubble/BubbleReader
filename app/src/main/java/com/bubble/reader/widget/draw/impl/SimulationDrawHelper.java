@@ -82,6 +82,7 @@ public class SimulationDrawHelper extends PageDrawHelper {
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.YELLOW);
+        mPaint.setTextSize(64);
         mPathFront = new Path();
         mPathBack = new Path();
         mPathNext = new Path();
@@ -216,8 +217,12 @@ public class SimulationDrawHelper extends PageDrawHelper {
     private void drawFront(Canvas canvas) {
         // 裁剪出正面
         canvas.save();
+        mPaint.setColor(Color.YELLOW);
         canvas.drawPath(mPathFront, mPaint);
         canvas.clipPath(mPathFront);
+        mPaint.setColor(Color.BLACK);
+
+//        canvas.drawText("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 0, mPageHeight - 100, mPaint);
         canvas.drawBitmap(mPageView.getCurrentPage().getBitmap(), 0, 0, mPaint);
         canvas.restore();
     }
@@ -244,6 +249,8 @@ public class SimulationDrawHelper extends PageDrawHelper {
 //            mPathNext.op(mTempPath, Path.Op.DIFFERENCE);
 //        }
         canvas.clipPath(mPathNext);
+        mPaint.setColor(Color.BLACK);
+//        canvas.drawText("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", 0, mPageHeight - 100, mPaint);
         canvas.drawBitmap(mPageView.getNextPage().getBitmap(), 0, 0, null);
         canvas.restore();
     }

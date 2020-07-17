@@ -8,6 +8,8 @@ import android.graphics.RectF;
 import com.bubble.common.utils.Dp2PxUtil;
 import com.bubble.reader.widget.PageView;
 
+import java.util.Random;
+
 /**
  * @author Bubble
  * @date 2020/7/16
@@ -21,9 +23,10 @@ public class DefaultLoadingDrawHelper extends LoadingDrawHelper {
     private int mAngle = 0;
     private Paint mBackgroundPaint;
     private Paint mForegroundPaint;
-    private float mLoadingWidth = Dp2PxUtil.dip2px(24);
-    private float mSweepAngle = 0;
+    private float mLoadingWidth = Dp2PxUtil.dip2px(72);
+    private float mSweepAngle = 90;
     private RectF mRectF;
+    private int[] colors = new int[]{Color.YELLOW, Color.GREEN, Color.RED, Color.BLUE};
 
     public DefaultLoadingDrawHelper(PageView pageView, int speed) {
         super(pageView, speed);
@@ -38,26 +41,32 @@ public class DefaultLoadingDrawHelper extends LoadingDrawHelper {
         mBackgroundPaint.setColor(Color.parseColor("#454545"));
 
         mForegroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mBackgroundPaint.setStyle(Paint.Style.STROKE);
-        mBackgroundPaint.setStrokeWidth(16);
-        mBackgroundPaint.setColor(Color.parseColor("#ff0000"));
-
-        mRectF = new RectF(mPageWidth / 2f - mLoadingWidth / 2f, 0, 0, 0);
+        mForegroundPaint.setStyle(Paint.Style.STROKE);
+        mForegroundPaint.setStrokeWidth(12);
+        mForegroundPaint.setStrokeCap(Paint.Cap.ROUND);
+        mForegroundPaint.setColor(Color.parseColor("#ff0000"));
+        mRandom = new Random();
+        mRectF = new RectF(mPageWidth / 2f - mLoadingWidth / 2f, mPageHeight / 2f - mLoadingWidth / 2f, mPageWidth / 2f + mLoadingWidth / 2f, mPageHeight / 2f + mLoadingWidth / 2f);
     }
+
+    private Random mRandom;
 
     @Override
     protected void onDraw(Canvas canvas, int pageWidth, int pageHeight) {
         super.onDraw(canvas, pageWidth, pageHeight);
+
         canvas.drawArc(mRectF, mAngle, mSweepAngle, false, mForegroundPaint);
     }
 
     @Override
     protected void updateValue() {
         super.updateValue();
+
         mAngle += 5;
-        mSweepAngle += 5;
+        mSweepAngle += 2;
         if (mSweepAngle > ANGLE_360) {
-            mSweepAngle = mSweepAngle - ANGLE_360;
+            mForegroundPaint.setColor(colors[mRandom.nextInt(colors.length)]);
+            mSweepAngle = 0;
         }
     }
 }

@@ -28,6 +28,7 @@ public abstract class LoadingDrawHelper extends DrawHelper {
 
     @Override
     public void init() {
+        super.init();
     }
 
     @Override
@@ -68,7 +69,7 @@ public abstract class LoadingDrawHelper extends DrawHelper {
                 return;
             }
             helper.updateValue();
-            sendEmptyMessageDelayed(0, helper.mSpeed);
+            helper.mPageView.postInvalidate();
         }
     }
 

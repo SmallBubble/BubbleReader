@@ -1,7 +1,5 @@
 package com.bubble.reader.chapter;
 
-import com.bubble.bubblereader.BuildConfig;
-import com.bubble.common.log.BubbleLog;
 import com.bubble.reader.bean.TxtChapter;
 import com.bubble.reader.chapter.listener.OnChapterListener;
 import com.bubble.reader.chapter.loader.ChapterLoader;
@@ -159,7 +157,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             parseChapter(emitter);
             // 解析完成
             emitter.onComplete();
-            BubbleLog.e(TAG, "解析成功" + Thread.currentThread().getName());
+//            BubbleLog.e(TAG, "解析成功" + Thread.currentThread().getName());
         } catch (Exception e) {
             emitter.onError(e);
             e.printStackTrace();
@@ -199,7 +197,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 chapter.setChapterContent(content);
                 chapter.setChapterNo(mChapterNo);
 
-                    BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
+//                    BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
                 return chapter;
             }
             start += paragraph.length;
