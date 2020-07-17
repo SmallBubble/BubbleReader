@@ -19,8 +19,8 @@ import com.bubble.breader.page.PageCreator;
 import com.bubble.breader.page.listener.PageListener;
 import com.bubble.breader.widget.draw.base.PageDrawHelper;
 import com.bubble.breader.widget.draw.impl.DefaultLoadingDrawHelper;
-import com.bubble.breader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.breader.widget.draw.impl.HorizontalCoverDrawHelper;
+import com.bubble.breader.widget.draw.impl.HorizontalMoveDrawHelper;
 import com.bubble.breader.widget.draw.impl.LoadingDrawHelper;
 import com.bubble.breader.widget.draw.impl.SimulationDrawHelper;
 import com.bubble.breader.widget.draw.impl.VerticalScrollDrawHelperV2;
@@ -110,10 +110,8 @@ public class PageView extends View {
         /**
          * 仿真翻页
          */
-        SIMULATION
+        SIMULATION;
     }
-
-
 
     /*===================================监听=====================================*/
     /**
@@ -293,18 +291,20 @@ public class PageView extends View {
     /**
      * 切换翻页模式
      *
-     * @param mode
+     * @param mode 模式
      */
     public void switchMode(TurnPageMode mode) {
         mTurnPageMode = mode;
         switch (mTurnPageMode) {
             case SIMULATION:
+                mSettings.setShowBottom(false);
                 if (mDrawHelpers.get(TurnPageMode.SIMULATION) == null) {
                     mDrawHelper = new SimulationDrawHelper(this);
                     initData();
                 } else {
                     mDrawHelper = mDrawHelpers.get(TurnPageMode.SIMULATION);
                 }
+
                 break;
             case HORIZONTAL_MOVE:
                 if (mDrawHelpers.get(TurnPageMode.HORIZONTAL_MOVE) == null) {

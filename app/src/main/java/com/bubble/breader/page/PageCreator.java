@@ -56,6 +56,9 @@ public abstract class PageCreator<T extends IPage> {
      * 页面监听
      */
     protected List<PageListener> mPageListeners = new ArrayList<>();
+    /**
+     * 是否已经初始化
+     */
     private boolean mInitialized;
 
     /**

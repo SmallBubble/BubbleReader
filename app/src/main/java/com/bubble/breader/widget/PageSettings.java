@@ -86,10 +86,29 @@ public class PageSettings {
      */
     private int mTopFontColor = 0x333333;
 
-
+    /**
+     * 是否显示顶部tips
+     */
     private Boolean mShowTop = true;
-
+    /**
+     * 是否显示底部tips
+     */
     private Boolean mShowBottom = true;
+    /**
+     * 底部和顶部时候滑动(上下滑动的时候回禁用滑动 底部和顶部不会跟随页面滑动)
+     */
+    private Boolean mBottomAndTopScrollEnable;
+
+    public Boolean getBottomAndTopScrollEnable() {
+        return mBottomAndTopScrollEnable;
+    }
+
+    public void setBottomAndTopScrollEnable(Boolean bottomAndTopScrollEnable) {
+        if (mBottomAndTopScrollEnable.equals(bottomAndTopScrollEnable)) {
+            mBottomAndTopScrollEnable = bottomAndTopScrollEnable;
+            mOnSettingListener.onChanged();
+        }
+    }
 
     public Boolean isShowTop() {
         return mShowTop;

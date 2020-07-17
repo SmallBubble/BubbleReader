@@ -96,34 +96,34 @@ public class SimulationDrawHelper extends PageDrawHelper {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mScroller.abortAnimation();
-                calcPoints();
-                if (event.getY() > mPageHeight / 3f * 2) {
-                    mOp = Op.BOTTOM;
-                    //右下角
-                    mPointF.set(mPageWidth, mPageHeight);
-                } else if (event.getY() < mPageHeight / 3f) {
-                    mOp = Op.TOP;
-                    // 右上角
-                    mPointF.set(mPageWidth, 0);
-                } else {
-                    mOp = Op.RIGHT;
-                    // 横向翻页
-                }
+                mRunning = false;
                 mStartPoint.set(event.getX(), event.getY());
                 mPointA.set(event.getX(), event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
+                // 获取横线滑动的距离
                 int moveX = (int) (event.getX() - mStartPoint.x);
-                if (moveX == 0 || event.getY() < 0 || event.getY() > mPageHeight) {
-                    return;
-                }
                 if (moveX > 0) {
-                    // 右滑
+                    // 右滑 上一页
                     mHasNext = mOnContentListener.onPrePage();
                     mNext = false;
                 } else {
+                    // 左滑下一页
                     mHasNext = mOnContentListener.onNextPage();
                     mNext = true;
+                    // 判断是右上角 中间还是右下角
+                    if (event.getY() > mPageHeight / 3f * 2) {
+                        mOp = Op.BOTTOM;
+                        //右下角
+                        mPointF.set(mPageWidth, mPageHeight);
+                    } else if (event.getY() < mPageHeight / 3f) {
+                        mOp = Op.TOP;
+                        // 右上角
+                        mPointF.set(mPageWidth, 0);
+                    } else {
+                        mOp = Op.RIGHT;
+                        // 横向翻页
+                    }
                 }
                 // 没有新的一页 没有翻页效果
                 if (mHasNext == null || !mHasNext.isHasNext()) {
@@ -134,7 +134,7 @@ public class SimulationDrawHelper extends PageDrawHelper {
                 mPageView.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                startCancel();
+//                startCancel();
                 mOp = Op.CANCEL;
                 break;
             default:
