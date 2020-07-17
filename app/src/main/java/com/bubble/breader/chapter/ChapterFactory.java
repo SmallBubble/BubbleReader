@@ -195,13 +195,23 @@ public class ChapterFactory<T extends IChapter> implements IChapterFactory<T> {
     }
 
     @Override
+    public String getBookName() {
+        return "";
+    }
+
+    @Override
     public boolean isBookEnd() {
-        if (mCurrentChapter == null) return true;
+        if (mCurrentChapter == null) {
+            return true;
+        }
         return mCurrentChapter.getChapterCount() == mCurrentChapter.getChapterNo();
     }
 
     @Override
     public boolean isStart() {
+        if (mCurrentChapter == null) {
+            return true;
+        }
         return mCurrentChapter.getChapterNo() == 1;
     }
 

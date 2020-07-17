@@ -2,7 +2,7 @@ package com.bubble.breader.chapter.loader;
 
 import android.app.Activity;
 
-import com.bubble.breader.bean.ChapterBean;
+import com.bubble.breader.bean.Chapter;
 
 /**
  * @author Bubble
@@ -12,7 +12,7 @@ import com.bubble.breader.bean.ChapterBean;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc TODO
  */
-public class DefaultLoader implements ChaptersLoader<ChapterBean>, ChapterLoader<ChapterBean> {
+public class DefaultLoader implements ChaptersLoader<Chapter>, ChapterLoader<Chapter> {
     private Activity mActivity;
 
     public DefaultLoader(Activity activity) {
@@ -20,12 +20,12 @@ public class DefaultLoader implements ChaptersLoader<ChapterBean>, ChapterLoader
     }
 
     @Override
-    public void loadCache(ChaptersResult<ChapterBean> result) {
+    public void loadCache(ChaptersResult<Chapter> result) {
 
     }
 
     @Override
-    public void loadChapter(boolean isPrepare, int needNo, ChapterResult<ChapterBean> result) {
+    public void loadChapter(boolean isPrepare, int needNo, ChapterResult<Chapter> result) {
 
     }
 

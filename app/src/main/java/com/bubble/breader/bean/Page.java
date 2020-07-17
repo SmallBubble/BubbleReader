@@ -15,7 +15,7 @@ import java.util.List;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc 默认实现的Page 实体类
  */
-public class ReadPage implements IPage, Parcelable, Serializable {
+public class Page implements IPage, Parcelable, Serializable {
     /**
      * 章节名称
      */
@@ -37,7 +37,7 @@ public class ReadPage implements IPage, Parcelable, Serializable {
      */
     private int mPageNum;
 
-    public ReadPage() {
+    public Page() {
         mContent = new ArrayList<>();
     }
 
@@ -112,7 +112,7 @@ public class ReadPage implements IPage, Parcelable, Serializable {
         dest.writeInt(this.mPageNum);
     }
 
-    protected ReadPage(Parcel in) {
+    protected Page(Parcel in) {
         this.mChapterName = in.readString();
         this.mChapterNo = in.readInt();
         this.mContent = in.createStringArrayList();
@@ -120,15 +120,15 @@ public class ReadPage implements IPage, Parcelable, Serializable {
         this.mPageNum = in.readInt();
     }
 
-    public static final Creator<ReadPage> CREATOR = new Creator<ReadPage>() {
+    public static final Creator<Page> CREATOR = new Creator<Page>() {
         @Override
-        public ReadPage createFromParcel(Parcel source) {
-            return new ReadPage(source);
+        public Page createFromParcel(Parcel source) {
+            return new Page(source);
         }
 
         @Override
-        public ReadPage[] newArray(int size) {
-            return new ReadPage[size];
+        public Page[] newArray(int size) {
+            return new Page[size];
         }
     };
 }

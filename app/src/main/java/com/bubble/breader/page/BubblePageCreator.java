@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.text.TextUtils;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.breader.bean.ReadPage;
+import com.bubble.breader.bean.Page;
 import com.bubble.breader.bean.PageResult;
 import com.bubble.breader.page.listener.PageListener;
 import com.bubble.breader.utils.PageFactory;
@@ -24,7 +24,7 @@ import java.util.List;
  * @Desc 页面生成器(默认的) 可以自己继承{@link PageCreator } 实现自己的生成器
  * 加上其他内容 例如加上图片大小 然后再{@link com.bubble.breader.widget.draw.base.DrawHelper#draw(Canvas)} 中绘制对应内容
  */
-public class BubblePageCreator extends PageCreator<ReadPage> {
+public class BubblePageCreator extends PageCreator<Page> {
     private static final String TAG = BubblePageCreator.class.getSimpleName();
 
 
@@ -82,7 +82,7 @@ public class BubblePageCreator extends PageCreator<ReadPage> {
     public void onChapterInitialized() {
         String content = mChapterFactory.getCurrentContent();
         // 从工厂生成当前章节的页面
-        List<ReadPage> pages = PageFactory.getInstance()
+        List<Page> pages = PageFactory.getInstance()
                 .setEncoding(getEncoding())
                 .createPages(mChapterFactory.getCurrentName()
                         , mChapterFactory.getCurrentChapterNo()
@@ -112,7 +112,7 @@ public class BubblePageCreator extends PageCreator<ReadPage> {
         //该章节最后一页 获取下一章内容
         if (mVisiblePage.getPageCount() == mVisiblePage.getPageNum()) {
             // 通知章节工厂 获取下一章
-            mChapterFactory.loadChapter(true);
+            boolean hasNext = mChapterFactory.loadChapter(true);
             // 获取当前章内容（上一步获取了下一章 下一章变为当前章）
             String content = mChapterFactory.getCurrentContent();
             if (TextUtils.isEmpty(content)) {
@@ -123,7 +123,7 @@ public class BubblePageCreator extends PageCreator<ReadPage> {
                 return mPageResult.set(true, false);
             } else {
                 //能获取到内容 从工厂生成当前章节的页面
-                List<ReadPage> pages = PageFactory.getInstance()
+                List<Page> pages = PageFactory.getInstance()
                         .createPages(mChapterFactory.getCurrentName()
                                 , mChapterFactory.getCurrentChapterNo()
                                 , content);
@@ -157,7 +157,7 @@ public class BubblePageCreator extends PageCreator<ReadPage> {
             // 获取当前章内容（上一步获取了上一章 上一章变为当前章）
             String content = mChapterFactory.getCurrentContent();
             // 从工厂生成当前章节的页面
-            List<ReadPage> pages = PageFactory.getInstance()
+            List<Page> pages = PageFactory.getInstance()
                     .createPages(mChapterFactory.getCurrentName()
                             , mChapterFactory.getCurrentChapterNo()
                             , content);

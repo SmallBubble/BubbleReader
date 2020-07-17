@@ -1,6 +1,6 @@
 package com.bubble.breader.bean;
 
-public class TxtChapter extends ChapterBean {
+public class TxtChapter extends Chapter {
 
     private int mChapterStart;
     private int mChapterEnd;

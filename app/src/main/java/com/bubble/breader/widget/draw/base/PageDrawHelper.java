@@ -11,7 +11,7 @@ import android.text.TextPaint;
 import android.view.MotionEvent;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.breader.bean.ReadPage;
+import com.bubble.breader.bean.Page;
 import com.bubble.breader.bean.PageBitmap;
 import com.bubble.breader.bean.PageResult;
 import com.bubble.breader.widget.PageView;
@@ -228,7 +228,7 @@ public abstract class PageDrawHelper extends DrawHelper {
         // 清除原来内容
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         // 页面所对应的内容
-        ReadPage pageBean = bitmap.getPageBean();
+        Page pageBean = bitmap.getPageBean();
         BubbleLog.e("drawPage" + (pageBean == null ? null : pageBean.toString()));
         if (pageBean == null) {
             return;

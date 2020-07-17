@@ -5,12 +5,12 @@ import com.bubble.breader.bean.IChapter;
 import java.util.Map;
 
 /**
- * @author  Bubble
- * @date    2020/7/14
- * @email   1337986595@qq.com
- * @GitHub  https://github.com/SmallBubble
- * @Gitte   https://gitee.com/SmallCatBubble
- * @Desc    TODO
+ * @author Bubble
+ * @date 2020/7/14
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc TODO
  */
 public interface IChapterFactory<T extends IChapter> {
     /**
@@ -71,6 +71,8 @@ public interface IChapterFactory<T extends IChapter> {
      * @return
      */
     String getEncoding();
+
+    String getBookName();
 
     /**
      * 是否到书记纪委

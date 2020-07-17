@@ -26,7 +26,7 @@ import io.reactivex.schedulers.Schedulers;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc Txt文件章节工厂
+ * @Desc Txt文件章节工厂 其他类型的文件可以仿照这个扩展
  */
 public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     private static final String TAG = TxtChapterFactory.class.getSimpleName();
@@ -84,6 +84,10 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
 
         @Override
         public void onComplete() {
+            // 解析完成以后 将所有的章节 设置章节数量
+            for (TxtChapter chapter : mChapters.values()) {
+                chapter.setChapterCount(mChapters.size());
+            }
             notifyChapter(OnChapterListener.TYPE_COMPLETE);
         }
     };
@@ -110,6 +114,11 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
     @Override
     public String getEncoding() {
         return mEncoding;
+    }
+
+    @Override
+    public String getBookName() {
+        return mBookFile == null ? "" : mBookFile.getName();
     }
 
     @Override
@@ -157,7 +166,6 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
             parseChapter(emitter);
             // 解析完成
             emitter.onComplete();
-//            BubbleLog.e(TAG, "解析成功" + Thread.currentThread().getName());
         } catch (Exception e) {
             emitter.onError(e);
             e.printStackTrace();
@@ -189,6 +197,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 String content = getContent(mStartIndex);
                 mChapterNo++;
                 TxtChapter chapter = new TxtChapter();
+                chapter.setBookName(getBookName());
                 chapter.setBookEnd(mFileLength == start);
                 chapter.setBookStart(mStartIndex == 0);
                 chapter.setChapterStart(mStartIndex);
@@ -196,8 +205,6 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 chapter.setChapterName(chapterName);
                 chapter.setChapterContent(content);
                 chapter.setChapterNo(mChapterNo);
-
-//                    BubbleLog.e(TAG, chapter.getChapterName() + "     " + chapter.getChapterStart() + "   " + chapter.getChapterEnd());
                 return chapter;
             }
             start += paragraph.length;
@@ -229,6 +236,7 @@ public class TxtChapterFactory extends ChapterFactory<TxtChapter> {
                 TxtChapter chapter = new TxtChapter();
                 chapter.setBookEnd(mFileLength == start);
                 chapter.setBookStart(mStartIndex == 0);
+                chapter.setBookName(getBookName());
                 chapter.setChapterStart(mStartIndex);
                 chapter.setChapterEnd(start);
                 chapter.setChapterName(chapterName);

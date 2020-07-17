@@ -199,9 +199,6 @@ public class PageView extends View {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        removeCallbacks(mDelayedInit);
-        mDrawHelper.recycle();
-        mLoadingDrawHelper.recycle();
         recycle();
     }
 
@@ -209,6 +206,13 @@ public class PageView extends View {
      * 回收资源
      */
     private void recycle() {
+        removeCallbacks(mDelayedInit);
+        // 内容绘制类释放
+        mDrawHelper.recycle();
+        // 加载释放
+        mLoadingDrawHelper.recycle();
+        // 页面生成器释放
+        mPageCreator.recycle();
         for (PageBitmap bitmap : mPageBitmaps) {
             bitmap.getBitmap().recycle();
             bitmap.setBitmap(null);

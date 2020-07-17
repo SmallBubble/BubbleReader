@@ -4,7 +4,7 @@ import android.graphics.Paint;
 import android.text.TextUtils;
 
 import com.bubble.common.log.BubbleLog;
-import com.bubble.breader.bean.ReadPage;
+import com.bubble.breader.bean.Page;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -111,10 +111,10 @@ public class PageFactory {
      * @param content     要分页的内容
      * @return
      */
-    public List<ReadPage> createPages(String chapterName, int chapterNo, String content) {
+    public List<Page> createPages(String chapterName, int chapterNo, String content) {
         content += content + content;
         BubbleLog.e("PageFactory", mWidth + "   " + mHeight);
-        List<ReadPage> pages = new ArrayList<>();
+        List<Page> pages = new ArrayList<>();
         int pageCount = 0;
         int pageNum = 0;
         try {
@@ -123,7 +123,7 @@ public class PageFactory {
             int start = 0;
             // 第一页的开始高度 == 标题文字大小+段间距
             int contentHeight = mTitleFontSize + mParagraphSpace;
-            ReadPage pageBean = new ReadPage();
+            Page pageBean = new Page();
             String paragraphStr = "";
             String line = "";
             int size = 0;
@@ -164,7 +164,7 @@ public class PageFactory {
                     pageBean.setChapterNo(chapterNo);
                     pages.add(pageBean);
                     // 重新創建一個新的頁面
-                    pageBean = new ReadPage();
+                    pageBean = new Page();
                 }
 
                 // 判断段落是否剩余文本
@@ -196,7 +196,7 @@ public class PageFactory {
         }
         // 章节所有的页面都生成出来以后 统一设置 页面数量
         if (!pages.isEmpty()) {
-            for (ReadPage bean : pages) {
+            for (Page bean : pages) {
                 bean.setPageCount(pageCount);
             }
         }
@@ -210,12 +210,12 @@ public class PageFactory {
      * @param pages list
      * @return map
      */
-    public Map<String, ReadPage> convertToMap(List<ReadPage> pages) {
+    public Map<String, Page> convertToMap(List<Page> pages) {
         if (pages == null) {
             return null;
         }
-        Map<String, ReadPage> mapPages = new HashMap<>();
-        for (ReadPage bean : pages) {
+        Map<String, Page> mapPages = new HashMap<>();
+        for (Page bean : pages) {
             //以页号作为key存取页面
             String key = getKey(bean.getChapterName(), bean.getChapterNo(), bean.getPageNum());
             mapPages.put(key, bean);

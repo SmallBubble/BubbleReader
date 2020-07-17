@@ -2,7 +2,7 @@ package com.bubble.breader.page;
 
 import com.bubble.common.log.BubbleLog;
 import com.bubble.breader.bean.IPage;
-import com.bubble.breader.bean.ReadPage;
+import com.bubble.breader.bean.Page;
 import com.bubble.breader.bean.PageResult;
 import com.bubble.breader.chapter.ChapterFactory;
 import com.bubble.breader.chapter.IChapterFactory;
@@ -35,11 +35,11 @@ public abstract class PageCreator<T extends IPage> {
     /**
      * 可见页
      */
-    protected ReadPage mVisiblePage;
+    protected Page mVisiblePage;
     /**
      * 取消页
      */
-    protected ReadPage mCancelPage;
+    protected Page mCancelPage;
     /**
      * 阅读视图
      */

@@ -8,14 +8,20 @@ package com.bubble.breader.bean;
  * @Gitte https://gitee.com/SmallCatBubble
  * @Desc
  */
-public class ChapterBean implements IChapter {
+public class Chapter implements IChapter {
+    public String mBookName;
     public String mChapterName;
     public String mChapterContent;
     private int mChapterNo;
-    private int mChapterCount;
+    private int mChapterCount = Integer.MAX_VALUE;
     private boolean mBookStart;
     private boolean mBookEnd;
 
+
+    @Override
+    public String getBookName() {
+        return mBookName;
+    }
 
     @Override
     public String getChapterName() {
@@ -45,6 +51,10 @@ public class ChapterBean implements IChapter {
     @Override
     public String getContent() {
         return mChapterContent;
+    }
+
+    public void setBookName(String bookName) {
+        mBookName = bookName;
     }
 
     public void setChapterName(String chapterName) {

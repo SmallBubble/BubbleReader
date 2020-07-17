@@ -1,6 +1,6 @@
 package com.bubble.breader.page.listener;
 
-import com.bubble.breader.bean.ReadPage;
+import com.bubble.breader.bean.Page;
 
 /**
  * @author Bubble
@@ -16,5 +16,5 @@ public interface OnPageChangedListener {
      *
      * @param pageBean 当前改变的页面
      */
-    void onPageChanged(ReadPage pageBean);
+    void onPageChanged(Page pageBean);
 }

@@ -10,6 +10,13 @@ package com.bubble.breader.bean;
  */
 public interface IChapter {
     /**
+     * 获取书籍名称
+     *
+     * @return
+     */
+    String getBookName();
+
+    /**
      * 获取章节名称
      *
      * @return

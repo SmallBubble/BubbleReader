@@ -22,7 +22,7 @@ public class PageBitmap implements Parcelable, Serializable {
     /**
      * 要绘制的内容
      */
-    private ReadPage mPageBean;
+    private Page mPageBean;
     /**
      * 偏移的距离
      */
@@ -48,11 +48,11 @@ public class PageBitmap implements Parcelable, Serializable {
         mTranslationY = translationY;
     }
 
-    public ReadPage getPageBean() {
+    public Page getPageBean() {
         return mPageBean;
     }
 
-    public void setPageBean(ReadPage pageBean) {
+    public void setPageBean(Page pageBean) {
         mPageBean = pageBean;
     }
 
@@ -81,7 +81,7 @@ public class PageBitmap implements Parcelable, Serializable {
 
     protected PageBitmap(Parcel in) {
         this.mBitmap = in.readParcelable(Bitmap.class.getClassLoader());
-        this.mPageBean = in.readParcelable(ReadPage.class.getClassLoader());
+        this.mPageBean = in.readParcelable(Page.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<PageBitmap> CREATOR = new Parcelable.Creator<PageBitmap>() {

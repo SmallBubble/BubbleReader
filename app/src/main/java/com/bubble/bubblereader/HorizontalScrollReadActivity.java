@@ -73,4 +73,5 @@ public class HorizontalScrollReadActivity extends AppCompatActivity {
             }
         });
     }
+
 }
