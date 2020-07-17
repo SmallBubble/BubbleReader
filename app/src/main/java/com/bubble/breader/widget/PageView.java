@@ -86,10 +86,14 @@ public class PageView extends View {
      * 是否初始化完成
      */
     private boolean mInitialized;
+
+
     /**
      * 翻页模式
      */
     private TurnPageMode mTurnPageMode = TurnPageMode.HORIZONTAL_SCROLL;
+
+
 
     enum TurnPageMode {
         /**
@@ -109,6 +113,8 @@ public class PageView extends View {
          */
         SIMULATION
     }
+
+
 
     /*===================================监听=====================================*/
     /**
@@ -292,35 +298,35 @@ public class PageView extends View {
         mTurnPageMode = mode;
         switch (mTurnPageMode) {
             case SIMULATION:
-                if (mDrawHelpers.get("SIMULATION") == null) {
+                if (mDrawHelpers.get(TurnPageMode.SIMULATION) == null) {
                     mDrawHelper = new SimulationDrawHelper(this);
                     initData();
                 } else {
-                    mDrawHelper = mDrawHelpers.get("SIMULATION");
+                    mDrawHelper = mDrawHelpers.get(TurnPageMode.SIMULATION);
                 }
                 break;
             case HORIZONTAL_MOVE:
-                if (mDrawHelpers.get("HORIZONTAL_MOVE") == null) {
+                if (mDrawHelpers.get(TurnPageMode.HORIZONTAL_MOVE) == null) {
                     mDrawHelper = new HorizontalMoveDrawHelper(this);
                     initData();
                 } else {
-                    mDrawHelper = mDrawHelpers.get("HORIZONTAL_MOVE");
+                    mDrawHelper = mDrawHelpers.get(TurnPageMode.HORIZONTAL_MOVE);
                 }
                 break;
             case HORIZONTAL_SCROLL:
-                if (mDrawHelpers.get("HORIZONTAL_SCROLL") == null) {
+                if (mDrawHelpers.get(TurnPageMode.HORIZONTAL_SCROLL) == null) {
                     mDrawHelper = new HorizontalScrollDrawHelper(this);
                     initData();
                 } else {
-                    mDrawHelper = mDrawHelpers.get("HORIZONTAL_SCROLL");
+                    mDrawHelper = mDrawHelpers.get(TurnPageMode.HORIZONTAL_SCROLL);
                 }
                 break;
             case VERTICAL_SCROLL:
-                if (mDrawHelpers.get("VERTICAL_SCROLL") == null) {
+                if (mDrawHelpers.get(TurnPageMode.VERTICAL_SCROLL) == null) {
                     mDrawHelper = new VerticalScrollDrawHelperV2(this);
                     initData();
                 } else {
-                    mDrawHelper = mDrawHelpers.get("VERTICAL_SCROLL");
+                    mDrawHelper = mDrawHelpers.get(TurnPageMode.VERTICAL_SCROLL);
                 }
                 break;
             default:

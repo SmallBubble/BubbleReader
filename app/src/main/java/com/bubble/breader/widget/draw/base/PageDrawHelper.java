@@ -27,7 +27,6 @@ import com.bubble.breader.widget.listener.OnContentListener;
  */
 public abstract class PageDrawHelper extends DrawHelper {
     private static final String TAG = PageDrawHelper.class.getSimpleName();
-
     /**
      * 开始触发事件的点
      */
@@ -36,7 +35,6 @@ public abstract class PageDrawHelper extends DrawHelper {
      * 当前触摸的点
      */
     protected PointF mTouchPoint;
-
     /**
      * 对图片的裁剪 也就是说你想绘制图片的哪一部分
      */
@@ -45,17 +43,14 @@ public abstract class PageDrawHelper extends DrawHelper {
      * 该图片绘画的位置，就是你想把这张裁剪好的图片放在屏幕的什么位置上
      */
     protected Rect mDestRect;
-
     /**
      * 是否取消翻页
      */
     protected boolean mCancel;
-
     /**
      * 画笔
      */
     private TextPaint mPaint;
-
     /**
      * 顶部画笔
      */
@@ -68,6 +63,10 @@ public abstract class PageDrawHelper extends DrawHelper {
      * 电池主体
      */
     public RectF mBatteryRect = new RectF();
+    /**
+     * 电量
+     */
+    public RectF mBatteryProgressRect = new RectF();
     /**
      * 电池头部
      */
@@ -118,6 +117,11 @@ public abstract class PageDrawHelper extends DrawHelper {
         mBottomPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBottomPaint.setTextSize(mSettings.getBottomFontSize());
         mBottomPaint.setColor(mSettings.getBottomFontColor());
+
+        mBatteryRect = new RectF();
+        mBatteryHeadRect = new RectF();
+        mBatteryProgressRect = new RectF();
+
         initData();
     }
 
@@ -229,7 +233,6 @@ public abstract class PageDrawHelper extends DrawHelper {
             return;
         }
         canvas.drawColor(Color.YELLOW);
-
         // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
         mBaseLine = mSettings.getTopHeight() - mSettings.getPaddingTop();
         // 获取基线
@@ -271,9 +274,11 @@ public abstract class PageDrawHelper extends DrawHelper {
      * @param canvas
      */
     private void drawTop(Canvas canvas) {
-        mTopPaint.setColor(Color.RED);
-        canvas.drawRect(new RectF(0, 0, mPageWidth, mSettings.getTopHeight()), mTopPaint);
-        onDrawTop(canvas, 0, 0, mPageWidth, mSettings.getTopHeight());
+        if (mSettings.isShowTop()) {
+            mTopPaint.setColor(Color.RED);
+            canvas.drawRect(new RectF(0, 0, mPageWidth, mSettings.getTopHeight()), mTopPaint);
+            onDrawTop(canvas, 0, 0, mPageWidth, mSettings.getTopHeight());
+        }
     }
 
     /**
@@ -303,7 +308,25 @@ public abstract class PageDrawHelper extends DrawHelper {
     }
 
     private void drawDefaultBottom(Canvas canvas, int left, int top, int right, int bottom) {
+        // 中间
+        int centerLine = bottom - top / 2;
+        // 电池高度
+        int batteryHeight = bottom - top - 10;
+        int margin = 5;
+        mBatteryRect.set(left, centerLine, left + batteryHeight * 2, batteryHeight + centerLine);
 
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(5);
+        canvas.drawRoundRect(mBatteryRect, 10, 10, mPaint);
+
+        mBatteryHeadRect.set(mBatteryRect.right + margin / 2f, mBatteryRect.top + (mBatteryRect.bottom - mBatteryRect.top) / 3, mBatteryRect.right + 20, mBatteryRect.top + ((mBatteryRect.bottom - mBatteryRect.top) / 3) * 2);
+        canvas.drawRoundRect(mBatteryHeadRect, 10, 10, mPaint);
+
+        int width = batteryHeight * 2;
+        width = (int) (width * 0.5f);
+        mBatteryRect.set(left + margin, margin + centerLine, left + width, batteryHeight - margin + centerLine);
+        mPaint.setStyle(Paint.Style.FILL);
+        canvas.drawRoundRect(mBatteryRect, 10, 10, mPaint);
     }
 
     /**
@@ -312,7 +335,9 @@ public abstract class PageDrawHelper extends DrawHelper {
      * @param canvas
      */
     private void drawBottom(Canvas canvas) {
-        canvas.drawRect(new RectF(0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight), mTopPaint);
-        onDrawBottom(canvas, 0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight);
+        if (mSettings.isShowBottom()) {
+            canvas.drawRect(new RectF(0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight), mTopPaint);
+            onDrawBottom(canvas, 0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight);
+        }
     }
 }

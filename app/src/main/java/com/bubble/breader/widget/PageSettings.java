@@ -26,6 +26,8 @@ public class PageSettings {
         mOnSettingListener = onSettingListener;
     }
 
+
+
     /**
      * 正文字体大小
      */
@@ -61,7 +63,7 @@ public class PageSettings {
     /**
      * 底部区域
      */
-    private int mBottomHeight = 32;
+    private int mBottomHeight = 100;
     /**
      * 顶部字体大小
      */
@@ -74,7 +76,7 @@ public class PageSettings {
     /**
      * 顶部区域
      */
-    private int mTopHeight = 32;
+    private int mTopHeight = 100;
 
     /**
      * 顶部字体大小
@@ -85,6 +87,32 @@ public class PageSettings {
      */
     private int mTopFontColor = 0x333333;
 
+
+    private Boolean mShowTop = true;
+
+    private Boolean mShowBottom = true;
+
+    public Boolean isShowTop() {
+        return mShowTop;
+    }
+
+    public void setShowTop(Boolean showTop) {
+        if (mShowTop.equals(showTop)) {
+            mShowTop = showTop;
+            mOnSettingListener.onChanged();
+        }
+    }
+
+    public Boolean isShowBottom() {
+        return mShowBottom;
+    }
+
+    public void setShowBottom(Boolean showBottom) {
+        if (mShowBottom.equals(showBottom)) {
+            mShowBottom = showBottom;
+            mOnSettingListener.onChanged();
+        }
+    }
 
     public int getFontSize() {
         return mFontSize;

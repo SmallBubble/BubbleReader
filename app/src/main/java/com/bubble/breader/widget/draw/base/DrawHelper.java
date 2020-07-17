@@ -4,13 +4,14 @@ import android.graphics.Canvas;
 
 import com.bubble.breader.widget.PageSettings;
 import com.bubble.breader.widget.PageView;
+
 /**
- * @author  Bubble
- * @date    2020/7/14
- * @email   1337986595@qq.com
- * @GitHub  https://github.com/SmallBubble
- * @Gitte   https://gitee.com/SmallCatBubble
- * @Desc    TODO
+ * @author Bubble
+ * @date 2020/7/14
+ * @email 1337986595@qq.com
+ * @GitHub https://github.com/SmallBubble
+ * @Gitte https://gitee.com/SmallCatBubble
+ * @Desc TODO
  */
 public abstract class DrawHelper implements IDrawHelper {
     protected PageView mPageView;
@@ -22,6 +23,9 @@ public abstract class DrawHelper implements IDrawHelper {
      * 页面高度
      */
     protected int mPageHeight;
+    /**
+     * 页面设置
+     */
     protected PageSettings mSettings;
 
     /*=======================================初始化=========================================*/
@@ -35,6 +39,14 @@ public abstract class DrawHelper implements IDrawHelper {
         mSettings = mPageView.getSettings();
         mPageWidth = mPageView.getMeasuredWidth();
         mPageHeight = mPageView.getMeasuredHeight();
+        if (!mSettings.isShowBottom()) {
+            // 不显示底部 需要减掉底部高度
+            mPageHeight = mPageHeight - mSettings.getBottomHeight();
+        }
+        if (!mSettings.isShowTop()) {
+            // 不显示顶部 减掉顶部高度
+            mPageHeight = mPageHeight - mSettings.getTopHeight();
+        }
     }
 
     @Override

@@ -132,7 +132,9 @@ public class VerticalScrollDrawHelperV2 extends PageDrawHelper {
 
     private void scroll(int moveY, boolean move) {
         mOffsetY += moveY;
-        if (moveY == 0) return;
+        if (moveY == 0) {
+            return;
+        }
         BubbleLog.e(TAG, "==============================" + mOffsetY + "============================" + move);
         if (moveY > 0) {
             // 往下滑 获取上一页内容
@@ -140,7 +142,6 @@ public class VerticalScrollDrawHelperV2 extends PageDrawHelper {
                 mOnContentListener.onCancel();
                 mState = State.IDLE;
             }
-
             if (mOffsetY >= mPageHeight) {
                 mState = State.IDLE;
             }
@@ -151,9 +152,6 @@ public class VerticalScrollDrawHelperV2 extends PageDrawHelper {
                 }
                 mHasNext = mOnContentListener.onPrePage();
                 mState = State.PRE_FINISHED;
-            }
-            if (mNext) {
-//                mOnContentListener.onCancel();
             }
             mNext = false;
         } else {
@@ -175,9 +173,6 @@ public class VerticalScrollDrawHelperV2 extends PageDrawHelper {
                 }
                 mState = State.NEXT_FINISHED;
                 mHasNext = mOnContentListener.onNextPage();
-            }
-            if (!mNext) {
-//                mOnContentListener.onCancel();
             }
             mNext = true;
         }
@@ -270,5 +265,13 @@ public class VerticalScrollDrawHelperV2 extends PageDrawHelper {
     @Override
     public boolean isRunning() {
         return mRunning;
+    }
+
+    @Override
+    protected void onDrawTop(Canvas canvas, int left, int top, int right, int bottom) {
+    }
+
+    @Override
+    protected void onDrawBottom(Canvas canvas, int left, int top, int right, int bottom) {
     }
 }

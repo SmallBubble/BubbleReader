@@ -160,8 +160,10 @@ public class SimulationDrawHelper extends PageDrawHelper {
 
     }
 
+    /**
+     * 取消翻页
+     */
     private void startCancel() {
-
         if (mOp == Op.TOP) {
             int dx = (int) (mPointF.x - mPointA.x);
             int dy = -(int) (mPointA.y);
