@@ -28,6 +28,7 @@ public abstract class DrawHelper implements IDrawHelper {
      */
     protected PageSettings mSettings;
 
+    private boolean mInitialized;
     /*=======================================初始化=========================================*/
 
     public DrawHelper(PageView pageView) {
@@ -36,6 +37,7 @@ public abstract class DrawHelper implements IDrawHelper {
 
     @Override
     public void init() {
+        mInitialized = true;
         mSettings = mPageView.getSettings();
         mPageWidth = mPageView.getMeasuredWidth();
         mPageHeight = mPageView.getMeasuredHeight();
@@ -52,5 +54,9 @@ public abstract class DrawHelper implements IDrawHelper {
     @Override
     public void draw(Canvas canvas) {
 
+    }
+
+    public boolean isInit() {
+        return mInitialized;
     }
 }

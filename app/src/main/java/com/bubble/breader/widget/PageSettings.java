@@ -27,7 +27,6 @@ public class PageSettings {
     }
 
 
-
     /**
      * 正文字体大小
      */
@@ -63,15 +62,15 @@ public class PageSettings {
     /**
      * 底部区域
      */
-    private int mBottomHeight = 100;
+    private int mBottomHeight = 50;
     /**
      * 顶部字体大小
      */
-    private int mBottomFontSize = Dp2PxUtil.dip2px(12);
+    private int mBottomFontSize = Dp2PxUtil.sp2px(24);
     /**
      * 顶部tips字体颜色
      */
-    private int mBottomFontColor = 0x333333;
+    private int mBottomFontColor = Color.parseColor("#333333");
 
     /**
      * 顶部区域
@@ -81,7 +80,7 @@ public class PageSettings {
     /**
      * 顶部字体大小
      */
-    private int mTopFontSize = Dp2PxUtil.dip2px(12);
+    private int mTopFontSize = Dp2PxUtil.sp2px(12);
     /**
      * 顶部tips字体颜色
      */

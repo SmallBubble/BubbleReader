@@ -102,6 +102,7 @@ public abstract class PageDrawHelper extends DrawHelper {
     @Override
     public final void init() {
         super.init();
+
         mTitlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTitlePaint.setTextSize(mSettings.getTitleFontSize());
         mTitlePaint.setColor(mSettings.getTitleFontColor());
@@ -232,7 +233,7 @@ public abstract class PageDrawHelper extends DrawHelper {
         if (pageBean == null) {
             return;
         }
-        canvas.drawColor(Color.YELLOW);
+//        canvas.drawColor(Color.YELLOW);
         // 真正开始绘制内容的顶部是页面高度减掉顶部高度减去顶部内边距
         mBaseLine = mSettings.getTopHeight() - mSettings.getPaddingTop();
         // 获取基线
@@ -282,6 +283,19 @@ public abstract class PageDrawHelper extends DrawHelper {
     }
 
     /**
+     * 绘制底部
+     *
+     * @param canvas
+     */
+    private void drawBottom(Canvas canvas) {
+        if (mSettings.isShowBottom()) {
+            canvas.drawRect(new RectF(0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight), mTopPaint);
+            onDrawBottom(canvas, 0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight);
+        }
+    }
+
+
+    /**
      * 绘制顶部
      *
      * @param canvas
@@ -308,36 +322,30 @@ public abstract class PageDrawHelper extends DrawHelper {
     }
 
     private void drawDefaultBottom(Canvas canvas, int left, int top, int right, int bottom) {
-        // 中间
-        int centerLine = bottom - top / 2;
-        // 电池高度
-        int batteryHeight = bottom - top - 10;
-        int margin = 5;
-        mBatteryRect.set(left, centerLine, left + batteryHeight * 2, batteryHeight + centerLine);
+        BubbleLog.e(TAG, left + "   " + top + "  " + right + "   " + bottom);
+        int batterHeight = (int) (mSettings.getBottomHeight() * 0.5f);
+        int centerLine = (int) (top + mSettings.getBottomHeight() / 2f);
+        // 电池外框
+        mBatteryRect.set(mSettings.getPaddingLeft() + 20, centerLine - batterHeight / 2f, batterHeight * 2.4f, centerLine + batterHeight / 2f);
+        BubbleLog.e(TAG, mBatteryRect.toShortString());
+        mBottomPaint.setStrokeWidth(2);
+        mBottomPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawRoundRect(mBatteryRect, batterHeight / 6f, batterHeight / 6f, mBottomPaint);
+        // 电量
+        mBatteryProgressRect.set(mBatteryRect.left + 2, mBatteryRect.top + 2, mBatteryRect.left + 2 + (mBatteryRect.right - mBatteryRect.left - 4) * 0.8f, mBatteryRect.bottom - 2);
+        mBottomPaint.setStyle(Paint.Style.FILL);
+        canvas.drawRoundRect(mBatteryProgressRect, batterHeight / 6f, batterHeight / 6f, mBottomPaint);
 
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(5);
-        canvas.drawRoundRect(mBatteryRect, 10, 10, mPaint);
+        // 电池头
+        mBatteryHeadRect.set(mBatteryRect.right + 2, mBatteryRect.top + batterHeight / 4f, mBatteryRect.right + batterHeight / 4f, mBatteryRect.bottom - batterHeight / 4f);
+        canvas.drawRect(mBatteryHeadRect, mBottomPaint);
 
-        mBatteryHeadRect.set(mBatteryRect.right + margin / 2f, mBatteryRect.top + (mBatteryRect.bottom - mBatteryRect.top) / 3, mBatteryRect.right + 20, mBatteryRect.top + ((mBatteryRect.bottom - mBatteryRect.top) / 3) * 2);
-        canvas.drawRoundRect(mBatteryHeadRect, 10, 10, mPaint);
+        // 电量文字
+        canvas.drawText("80%", mBatteryHeadRect.right + 10, mBatteryRect.bottom - mBottomPaint.descent(), mBottomPaint);
 
-        int width = batteryHeight * 2;
-        width = (int) (width * 0.5f);
-        mBatteryRect.set(left + margin, margin + centerLine, left + width, batteryHeight - margin + centerLine);
-        mPaint.setStyle(Paint.Style.FILL);
-        canvas.drawRoundRect(mBatteryRect, 10, 10, mPaint);
-    }
 
-    /**
-     * 绘制底部
-     *
-     * @param canvas
-     */
-    private void drawBottom(Canvas canvas) {
-        if (mSettings.isShowBottom()) {
-            canvas.drawRect(new RectF(0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight), mTopPaint);
-            onDrawBottom(canvas, 0, mPageHeight - mSettings.getBottomHeight(), mPageWidth, mPageHeight);
-        }
+        float width = mBottomPaint.measureText("1/8");
+
+        canvas.drawText("1/8", right - width - 20, mBatteryRect.bottom - mBottomPaint.descent(), mBottomPaint);
     }
 }

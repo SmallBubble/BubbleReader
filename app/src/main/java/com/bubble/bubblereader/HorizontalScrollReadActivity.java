@@ -13,7 +13,7 @@ import com.bubble.breader.chapter.TxtChapterFactory;
 import com.bubble.breader.page.BubblePageCreator;
 import com.bubble.breader.page.listener.OfflinePageListener;
 import com.bubble.breader.widget.PageView;
-import com.bubble.breader.widget.draw.impl.HorizontalScrollDrawHelper;
+import com.bubble.breader.widget.draw.impl.HorizontalCoverDrawHelper;
 
 import java.io.File;
 
@@ -55,7 +55,7 @@ public class HorizontalScrollReadActivity extends AppCompatActivity {
         mPageCreator = new BubblePageCreator.Builder(mReadView)
                 .chapterFactory(factory)
                 .build();
-        mReadView.setDrawHelper(new HorizontalScrollDrawHelper(mReadView));
+        mReadView.setDrawHelper(new HorizontalCoverDrawHelper(mReadView));
         mReadView.setPageCreator(mPageCreator);
         mPageCreator.addPageListener(new OfflinePageListener() {
             @Override

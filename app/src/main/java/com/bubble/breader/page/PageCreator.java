@@ -56,6 +56,7 @@ public abstract class PageCreator<T extends IPage> {
      * 页面监听
      */
     protected List<PageListener> mPageListeners = new ArrayList<>();
+    private boolean mInitialized;
 
     /**
      * 初始化 数据 子类重写
@@ -93,10 +94,15 @@ public abstract class PageCreator<T extends IPage> {
         mPageView = readView;
     }
 
+    public boolean isInit() {
+        return mInitialized;
+    }
+
     /**
      * 通用數據初始化
      */
     public final void init() {
+        mInitialized = true;
         if (mChapterFactory == null) {
             throw new RuntimeException("请设置章节工厂");
         }

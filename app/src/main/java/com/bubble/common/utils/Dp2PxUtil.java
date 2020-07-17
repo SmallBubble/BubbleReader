@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
-import com.bubble.common.base.BaseApplication;
+import com.bubble.breader.BubbleReader;
 
 
 /**
@@ -14,23 +14,24 @@ public class Dp2PxUtil {
 
     public static int dip2px(float dpValue) {
         return (int) dpValue;
-//        final float scale = BaseApplication.getContext().getResources().getDisplayMetrics().density;
+//        final float scale = BubbleReader.getInstance().getContext().getResources().getDisplayMetrics().density;
 //        return (int) (dpValue * scale + 0.5f);
     }
 
     public static int px2dip(float pxValue) {
-        final float scale = BaseApplication.getContext().getResources().getDisplayMetrics().density;
+        final float scale = BubbleReader.getInstance().getContext().getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
     public static int px2sp(float pxValue) {
-        final float scale = BaseApplication.getContext().getResources().getDisplayMetrics().density;
+        final float scale = BubbleReader.getInstance().getContext().getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
     public static int sp2px(float spValue) {
-        final float scale = BaseApplication.getContext().getResources().getDisplayMetrics().density;
-        return (int) (spValue / scale + 0.5f);
+        return (int) spValue;
+//        final float scale = BubbleReader.getInstance().getContext().getResources().getDisplayMetrics().density;
+//        return (int) (spValue / scale + 0.5f);
     }
 
     /**

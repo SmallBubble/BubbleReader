@@ -20,7 +20,7 @@ import com.bubble.breader.page.listener.PageListener;
 import com.bubble.breader.widget.draw.base.PageDrawHelper;
 import com.bubble.breader.widget.draw.impl.DefaultLoadingDrawHelper;
 import com.bubble.breader.widget.draw.impl.HorizontalMoveDrawHelper;
-import com.bubble.breader.widget.draw.impl.HorizontalScrollDrawHelper;
+import com.bubble.breader.widget.draw.impl.HorizontalCoverDrawHelper;
 import com.bubble.breader.widget.draw.impl.LoadingDrawHelper;
 import com.bubble.breader.widget.draw.impl.SimulationDrawHelper;
 import com.bubble.breader.widget.draw.impl.VerticalScrollDrawHelperV2;
@@ -91,8 +91,7 @@ public class PageView extends View {
     /**
      * 翻页模式
      */
-    private TurnPageMode mTurnPageMode = TurnPageMode.HORIZONTAL_SCROLL;
-
+    private TurnPageMode mTurnPageMode = TurnPageMode.HORIZONTAL_COVER;
 
 
     enum TurnPageMode {
@@ -101,9 +100,9 @@ public class PageView extends View {
          */
         HORIZONTAL_MOVE,
         /**
-         * 水平滑动
+         * 水平覆盖
          */
-        HORIZONTAL_SCROLL,
+        HORIZONTAL_COVER,
         /**
          * 上下滑动
          */
@@ -180,7 +179,7 @@ public class PageView extends View {
     };
 
     /**
-     * 延迟加载 测量布局完后加载
+     * 延迟加载 测量布局完后加载 bitmap DrawHelper PageCreator 等 都在这之后才会初始化
      */
     private Runnable mDelayedInit = () -> delayedInit();
     /*===================================初始化=====================================*/
@@ -272,16 +271,18 @@ public class PageView extends View {
             return;
         }
         if (mDrawHelper == null) {
-            mDrawHelper = new HorizontalScrollDrawHelper(this);
+            mDrawHelper = new HorizontalCoverDrawHelper(this);
         }
-        mDrawHelper.init();
+        if (!mDrawHelper.isInit()) {
+            mDrawHelper.init();
+        }
         if (mLoadingDrawHelper == null) {
             mLoadingDrawHelper = new DefaultLoadingDrawHelper(this, 200);
         }
-        mLoadingDrawHelper.init();
-
-        mLoadingDrawHelper.init();
-        if (mPageCreator != null) {
+        if (!mLoadingDrawHelper.isInit()) {
+            mLoadingDrawHelper.init();
+        }
+        if (mPageCreator != null && !mPageCreator.isInit()) {
             mPageCreator.init();
         }
         mInitialized = true;
@@ -313,12 +314,12 @@ public class PageView extends View {
                     mDrawHelper = mDrawHelpers.get(TurnPageMode.HORIZONTAL_MOVE);
                 }
                 break;
-            case HORIZONTAL_SCROLL:
-                if (mDrawHelpers.get(TurnPageMode.HORIZONTAL_SCROLL) == null) {
-                    mDrawHelper = new HorizontalScrollDrawHelper(this);
+            case HORIZONTAL_COVER:
+                if (mDrawHelpers.get(TurnPageMode.HORIZONTAL_COVER) == null) {
+                    mDrawHelper = new HorizontalCoverDrawHelper(this);
                     initData();
                 } else {
-                    mDrawHelper = mDrawHelpers.get(TurnPageMode.HORIZONTAL_SCROLL);
+                    mDrawHelper = mDrawHelpers.get(TurnPageMode.HORIZONTAL_COVER);
                 }
                 break;
             case VERTICAL_SCROLL:

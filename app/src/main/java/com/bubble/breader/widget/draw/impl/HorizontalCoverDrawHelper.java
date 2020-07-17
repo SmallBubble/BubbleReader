@@ -17,11 +17,11 @@ import com.bubble.breader.widget.draw.base.PageDrawHelper;
  * @email 1337986595@qq.com
  * @GitHub https://github.com/SmallBubble
  * @Gitte https://gitee.com/SmallCatBubble
- * @Desc 水平滑动
+ * @Desc 水平覆盖
  */
-public class HorizontalScrollDrawHelper extends PageDrawHelper {
+public class HorizontalCoverDrawHelper extends PageDrawHelper {
 
-    private static final String TAG = HorizontalScrollDrawHelper.class.getSimpleName();
+    private static final String TAG = HorizontalCoverDrawHelper.class.getSimpleName();
     /**
      * 阴影
      */
@@ -47,7 +47,7 @@ public class HorizontalScrollDrawHelper extends PageDrawHelper {
      */
     private VelocityTracker mVelocityTracker;
 
-    public HorizontalScrollDrawHelper(PageView pageView) {
+    public HorizontalCoverDrawHelper(PageView pageView) {
         super(pageView);
     }
 

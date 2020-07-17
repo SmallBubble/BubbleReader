@@ -10,7 +10,7 @@ import com.bubble.breader.page.listener.PageListener;
 import com.bubble.breader.utils.PageFactory;
 import com.bubble.breader.widget.PageView;
 import com.bubble.breader.widget.draw.impl.HorizontalMoveDrawHelper;
-import com.bubble.breader.widget.draw.impl.HorizontalScrollDrawHelper;
+import com.bubble.breader.widget.draw.impl.HorizontalCoverDrawHelper;
 import com.bubble.breader.widget.listener.OnContentListener;
 
 import java.util.List;
@@ -69,7 +69,7 @@ public class BubblePageCreator extends PageCreator<ReadPage> {
      * <p>
      * {@link HorizontalMoveDrawHelper }
      * <p>
-     * {@link HorizontalScrollDrawHelper}
+     * {@link HorizontalCoverDrawHelper}
      */
     @Override
     public void onCancel() {

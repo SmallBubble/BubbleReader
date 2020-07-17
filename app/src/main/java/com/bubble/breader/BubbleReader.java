@@ -24,6 +24,10 @@ public class BubbleReader {
         return sReader;
     }
 
+    public Context getContext() {
+        return mContext;
+    }
+
     public void init(Context context) {
         mContext = context;
     }
