@@ -1,2 +1,3 @@
 rootProject.name='BubbleReader'
 include ':app',":common"
+include ':breader'
